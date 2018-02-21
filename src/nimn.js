@@ -6,12 +6,7 @@ function nimn(schema) {
 }
 
 nimn.prototype.encode = function(jObj){
-    //var isData = hasData(jObj);
-    //if(isData === true){
         return this.e(jObj,this.e_schema)
-    //}else{
-    //    return isData;
-    //}
 }
 
 function getKey(obj,i){
@@ -40,20 +35,10 @@ nimn.prototype.e = function(jObj,e_schema){
                 for(var arr_i=0;arr_i < arr_len;arr_i++){
                     //if arraySepChar presents, next item is an array item.
                     if(itemSchemaType !== "array" && itemSchemaType !== "object" ){
-                        //str += chars.arraySepChar;
-                        //str = appendBoundryCharIfNeeded(str,jObj[key]);
                         str += checkForNilOrUndefined(jObj[key][arr_i],itemSchemaType);
                     }else{
                         var r =  this.e(jObj[key][arr_i],itemSchema) ;
-                        if(r === chars.emptyChar && chars.boundryChar  === str[str.length -1]){
-                            str = str.replace(/.$/,chars.emptyChar);
-                        }else{
-                            if(!isAppChar(r[0]) && ( str.length > 0 && !isAppChar(str[str.length-1]))){
-                                str += chars.boundryChar + r;
-                            }else{
-                                str += r;
-                            }
-                        }
+                        str = processObject(str,r);
                     }
                     if(arr_len > arr_i+1){
                         str += chars.arraySepChar;
@@ -69,17 +54,8 @@ nimn.prototype.e = function(jObj,e_schema){
                 var itemType = properties[key];
                 //boundry chars is needed for decoding
                 str = appendBoundryCharIfNeeded(str);
-                var r = this.e(jObj[key],itemType);
-                if(r === chars.emptyChar && chars.boundryChar  === str[str.length -1]){
-                    str = str.replace(/.$/,chars.emptyChar);
-                }else{
-                    if(!isAppChar(r[0]) && ( str.length > 0 && !isAppChar(str[str.length-1]))){
-                        str += chars.boundryChar + r;
-                    }else{
-                        str += r;
-                    }
-                }
-                //str = appendBoundryCharIfNeeded(str);
+                var r = this.e(jObj[key],itemType)
+                str = processObject(str,r);
             }else{
                 str += isData;
             }
@@ -89,6 +65,19 @@ nimn.prototype.e = function(jObj,e_schema){
         }
     }
     return str;
+}
+
+function processObject(str,r){
+    if(r === chars.emptyChar && chars.boundryChar  === str[str.length -1]){
+        str = str.replace(/.$/,chars.emptyChar);
+    }else{
+        if(!isAppChar(r[0]) && ( str.length > 0 && !isAppChar(str[str.length-1]))){
+            str += chars.boundryChar + r;
+        }else{
+            str += r;
+        }
+    }
+    return str
 }
 
 var checkForNilOrUndefined= function(a,type){
