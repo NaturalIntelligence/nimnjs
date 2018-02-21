@@ -1,5 +1,5 @@
 var nimn = require("../src/nimn");
-var chars = require("../src/chars");
+var chars = require("../src/chars").chars;
 
 describe("Nimn Encoder", function () {
 

@@ -7,7 +7,7 @@ var char = require("./util").char;
 219-223
  */
 
-module.exports = {
+const chars= {
     nilChar : char(0),
     missingChar : char(0),
     nilPremitive : char(176),
@@ -16,9 +16,18 @@ module.exports = {
     yesChar : char(217),
     noChar : char(218),
     boundryChar : char(186),
-    //fieldSepChar : char(221),
     arraySepChar: char(197)
 }
+
+const charsArr = [
+    chars.nilChar ,
+    chars.nilPremitive,
+    chars.boundryChar ,
+    chars.emptyChar,
+    chars.yesChar,
+    chars.noChar,
+    chars.arraySepChar,
+]
 
 //SPEC
 /*
@@ -31,3 +40,6 @@ module.exports = {
 
 
 */
+
+exports.chars = chars; 
+exports.charsArr = charsArr; 

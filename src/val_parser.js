@@ -1,4 +1,4 @@
-var chars = require("./chars");
+var chars = require("./chars").chars;
 
 function parseNumber(val){
     return val;
