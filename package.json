@@ -4,14 +4,21 @@
   "description": "Schema awared compression of JSON data",
   "main": "nimn.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jasmine test/*test.js",
+    "coverage": "node ./benchmark/perfTest.js; istanbul cover -x \"test/*test.js\" jasmine test/*test.js;",
+    "coverage:check": "istanbul check-coverage --branch 90 --statement 90"
   },
   "keywords": [
     "nimn"
   ],
   "author": "Amit Gupta",
   "license": "ISC",
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {
+    "benchmark": "^2.1.4",
+    "browserify": "^15.1.0",
+    "coveralls": "^3.0.0",
+    "istanbul": "^0.4.5",
     "jasmine": "^3.0.0",
     "jasmine-core": "^2.99.1"
   }
