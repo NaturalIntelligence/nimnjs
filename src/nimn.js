@@ -1,4 +1,5 @@
 var chars = require("./chars");
+var valParser = require("./val_parser");
 
 function nimn(schema) {
     this.e_schema = schema;
@@ -37,7 +38,7 @@ nimn.prototype.e = function(jObj,e_schema){
                     if(itemSchemaType !== "array" && itemSchemaType !== "object" ){
                         //str += chars.arraySepChar;
                         //str = appendBoundryCharIfNeeded(str,jObj[key]);
-                        str += checkForNilOrUndefined(jObj[key][arr_i]);
+                        str += checkForNilOrUndefined(jObj[key][arr_i],itemSchemaType);
                     }else{
                         str += /* chars.arraySepChar + */ this.e(jObj[key][arr_i],itemSchema) ;
                     }
@@ -75,7 +76,7 @@ var checkForNilOrUndefined= function(a,type){
 
 var parseValue = function(val,type){
     if(type === "string") return val;
-    else if(type === "boolean") return val;
+    else if(type === "boolean") return valParser.parseBoolean(val);
     else if(type === "number") return val;
     else if(type === "date") return val;
     else return val;
@@ -99,20 +100,28 @@ function hasData(jObj){
  * @param {*} str 
  */
 function appendBoundryCharIfNeeded(str,next){
-    if( str.length > 0 && !isNonDataChar(str[str.length -1]) &&  !isNonDataValue(next) ){
+    if( str.length > 0 && !isNonAppChar(str[str.length -1]) &&  !isNonDataValue(next) ){
             str += chars.boundryChar;
     }
     return str;
 }
 
+//TODO: change name
 function isNonDataValue(ch){
-    return ch === null || ch === undefined || ( typeof ch === "object" && ch.length === 0 );
+    return ch === null 
+    || ch === undefined 
+    || ( typeof ch === "object" && ch.length === 0 )
+    || ch === true
+    || ch === false;
 }
 
-function isNonDataChar(ch){
+//TODO: convert into array for fast comparision
+function isNonAppChar(ch){
     return ch === chars.nilChar ||  ch === chars.nilPremitive
      ||  ch === chars.boundryChar 
-     || ch === chars.emptyChar;
+     || ch === chars.emptyChar
+     || ch === chars.yesChar
+     || ch === chars.noChar;
 }
 
 

@@ -9,12 +9,15 @@ E: emptyChar
 Y: true
 N: false
 !: nil, missing
+@: object or array nil/missing
 
 array
 1. str[item,item]
     > str|itemAitem
 1a. MISSING[item,item]
     > !itemAitem
+1b. MISSINGMISSING
+    > !@
 2. true[item,item]
     > YitemAitem
 3. [true][item,item]
@@ -43,7 +46,7 @@ array
 
 */
 describe("Nimn Encoder", function () {
-    it("1. & 1a. should append boundry char if last field can have dynamic data", function () {
+    it("1. & 1a. & 1b. should append boundry char if last field can have dynamic data", function () {
         var schema = {
             type : "object",
             properties : {
@@ -54,20 +57,20 @@ describe("Nimn Encoder", function () {
                         "name" : { type : "string" }
                     }
                 },
-               /*  "str" : { type : "string"},
-                "names" : {
+                "str" : { type : "string"},
+                "names2" : {
                     type: "array",
                     properties : {
                         "name" : { type : "string" }
                     }
                 },
                 "bool" : { type : "boolean"},
-                "names" : {
+                "names3" : {
                     type: "array",
                     properties : {
                         "name" : { type : "string" }
                     }
-                } */
+                }
             }
         }
 
@@ -75,17 +78,39 @@ describe("Nimn Encoder", function () {
 
         var jData = {
             age : 32,
-            names : ["amit", "kumar"]
+            names : ["amit", "kumar"],
         }
-        var expected = "32" + chars.boundryChar + "amit" + chars.arraySepChar + "kumar";
+        var expected = "32" 
+            + chars.boundryChar 
+            + "amit" + chars.arraySepChar + "kumar"
+            + chars.nilPremitive + chars.nilChar
+            + chars.nilPremitive + chars.nilChar;
+
+        var result = nimnEncoder.encode(jData);
+        expect(result).toEqual(expected); 
+
+
+        var jData = {
+            age : 32,
+            names : ["amit", "kumar"],
+            names2 : ["amit2", "kumar2"],
+            bool: false
+        }
+        var expected = "32" 
+            + chars.boundryChar 
+            + "amit" + chars.arraySepChar + "kumar"
+            + chars.nilPremitive
+            + "amit2" + chars.arraySepChar + "kumar2"
+            + chars.noChar + chars.nilChar;
+
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
 
         var jData = {
             //age : 32,
-            names : ["amit", "kumar"],
+            //names : ["amit", "kumar"],
         }
-        var expected = chars.nilPremitive + "amit" + chars.arraySepChar + "kumar";
+        var expected = chars.emptyChar;
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
     });
