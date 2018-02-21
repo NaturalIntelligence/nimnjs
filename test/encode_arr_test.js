@@ -26,6 +26,10 @@ array
     > YitemAitem
 5. [item][item,item]
     > item|itemAitem
+5a. [item][true,true]
+    > itemtrueAtrue
+5b. [true][item,item]
+    > trueitemAitem
 
 6. [][item,item]
     > EitemAitem
@@ -115,11 +119,17 @@ describe("Nimn Encoder", function () {
         expect(result).toEqual(expected); 
     });
 
-    it("3. & 4. should append boundry char only if two consecutive fields can have dynamic data", function () {
+    it("3., 4., 5., 5a., & 5b. should append boundry char only if two consecutive fields can have dynamic data", function () {
         var schema = {
             type : "object",
             properties : {
                 "names" : {
+                    type: "array",
+                    properties : {
+                        "name" : { type : "string" }
+                    }
+                },
+                "names0" : {
                     type: "array",
                     properties : {
                         "name" : { type : "string" }
@@ -155,11 +165,13 @@ describe("Nimn Encoder", function () {
 
         var jData = {
             names : ["true", "false"],
+            names0 : ["true", "false"],
             names2 : [true, false],
             names3 : [true, false],
-            names4 : [{ name: "somename"}],
+            names4 : [{ name: "somename"}]  ,
         }
         var expected = "true" + chars.arraySepChar + "false" 
+            + chars.boundryChar + "true" + chars.arraySepChar + "false" 
             + chars.yesChar + chars.arraySepChar +  chars.noChar
             + chars.yesChar + chars.arraySepChar +  chars.noChar
             + "somename";
@@ -168,7 +180,7 @@ describe("Nimn Encoder", function () {
 
     });
 
-    it("should not append boundry char if last field is empty array", function () {
+    it(" 6., 7. should not append boundry char if last field is empty array", function () {
         var schema = {
             type : "object",
             properties : {
@@ -178,7 +190,18 @@ describe("Nimn Encoder", function () {
                         "name" : { type : "string" }
                     }
                 },
-                "age" : { type : "number"}
+                "names1" : {
+                    type: "array",
+                    properties : {
+                        "name" : { type : "boolean" }
+                    }
+                },
+                "names2" : {
+                    type: "object",
+                    properties : {
+                        "name" : { type : "string" }
+                    }
+                }
             }
         }
 
@@ -186,9 +209,12 @@ describe("Nimn Encoder", function () {
 
         var jData = {
             names : [],
-            age : 32
+            names1 : [true, false],
+            names2 : {}
         }
-        var expected = chars.emptyChar + "32";
+        var expected = chars.emptyChar 
+            + chars.yesChar + chars.arraySepChar + chars.noChar
+            + chars.emptyChar;
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
     });
