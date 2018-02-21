@@ -206,32 +206,6 @@ describe("Nimn Encoder", function () {
         expect(result).toEqual(expected); 
     });
 
-    it("should not append boundry char if last field is empty array", function () {
-        var schema = {
-            type : "object",
-            properties : {
-                "names" : {
-                    type: "array",
-                    properties : {
-                        "name" : { type : "string" }
-                    }
-                },
-                "age" : { type : "number"}
-            }
-        }
-
-        var nimnEncoder = new nimn(schema);
-
-        var jData = {
-            names : [],
-            age : 32
-        }
-        var expected = chars.emptyChar + "32";
-        var result = nimnEncoder.encode(jData);
-        expect(result).toEqual(expected); 
-    });
-    
-
     it("should encode data in the order it defines in schema", function () {
         var jData = {
             age : 32,
@@ -247,6 +221,7 @@ describe("Nimn Encoder", function () {
             ]
         }
 
+        //([12]|(.*?\b|[123])(.*?\b|[123])(.*?|[123]))
         var expected = chars.nilPremitive + "kumar" + chars.boundryChar + "gupta"
             + chars.arraySepChar 
             + "Stubmatic" + chars.boundryChar + "QA friendly tool to mock HTTP(s) calls"

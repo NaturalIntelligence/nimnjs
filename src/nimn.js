@@ -4,12 +4,6 @@ function nimn(schema) {
     this.e_schema = schema;
 }
 
-var checkForNilOrUndefined= function(a){
-    if(a === undefined || a === null) return chars.nilPremitive;
-    else return a;
-}
-
-
 nimn.prototype.encode = function(jObj){
     var isData = hasData(jObj);
     if(isData === true){
@@ -19,6 +13,9 @@ nimn.prototype.encode = function(jObj){
     }
 }
 
+function getKey(obj,i){
+    return obj[Object.keys(obj)[i]];
+}
 nimn.prototype.e = function(jObj,e_schema){
     var properties = e_schema.properties;
     var keys = Object.keys(properties);
@@ -31,14 +28,22 @@ nimn.prototype.e = function(jObj,e_schema){
         if(properties[key].type === "array"){
             var isData = hasData(jObj[key]);
             if(isData === true){
-                var itemType = properties[key].properties[Object.keys(properties[key].properties)[0]];
+                var itemSchema = getKey(properties[key].properties,0);
+                var itemSchemaType = itemSchema.type;
                 var arr_len = jObj[key].length;
+                str = appendBoundryCharIfNeeded(str,jObj[key]);
                 for(var arr_i=0;arr_i < arr_len;arr_i++){
                     //if arraySepChar presents, next item is an array item.
-                    str += chars.arraySepChar + this.e(jObj[key][arr_i],itemType) ;
-                    /* if(arr_len > arr_i+1){
+                    if(itemSchemaType !== "array" && itemSchemaType !== "object" ){
+                        //str += chars.arraySepChar;
+                        //str = appendBoundryCharIfNeeded(str,jObj[key]);
+                        str += checkForNilOrUndefined(jObj[key][arr_i]);
+                    }else{
+                        str += /* chars.arraySepChar + */ this.e(jObj[key][arr_i],itemSchema) ;
+                    }
+                    if(arr_len > arr_i+1){
                         str += chars.arraySepChar;
-                    } */
+                    }
                 }
                 str = appendBoundryCharIfNeeded(str);
             }else{
@@ -57,12 +62,24 @@ nimn.prototype.e = function(jObj,e_schema){
             }
         }else{
             str = appendBoundryCharIfNeeded(str,jObj[key]);
-            str += checkForNilOrUndefined(jObj[key]);
+            str += checkForNilOrUndefined(jObj[key],properties[key].type);
         }
     }
     return str;
 }
 
+var checkForNilOrUndefined= function(a,type){
+    if(a === undefined || a === null) return chars.nilPremitive;
+    else return parseValue(a,type);
+}
+
+var parseValue = function(val,type){
+    if(type === "string") return val;
+    else if(type === "boolean") return val;
+    else if(type === "number") return val;
+    else if(type === "date") return val;
+    else return val;
+}
 /**
  * Check if the given object is empty, null, or undefined. Returns true otherwise.
  * @param {*} jObj 
@@ -82,14 +99,10 @@ function hasData(jObj){
  * @param {*} str 
  */
 function appendBoundryCharIfNeeded(str,next){
-    if( 
-        str.length > 0 && !isNonDataChar(str[str.length -1])
-        &&  !isNonDataValue(next) 
-    ){
+    if( str.length > 0 && !isNonDataChar(str[str.length -1]) &&  !isNonDataValue(next) ){
             str += chars.boundryChar;
     }
     return str;
-
 }
 
 function isNonDataValue(ch){
@@ -101,5 +114,7 @@ function isNonDataChar(ch){
      ||  ch === chars.boundryChar 
      || ch === chars.emptyChar;
 }
+
+
 
 module.exports = nimn;
