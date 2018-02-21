@@ -29,8 +29,6 @@ N: false
 
 4. {{}}str
     > Estr
-5. {}{}str
-    > EEstr
 
 */
 
@@ -59,5 +57,231 @@ describe("Nimn Encoder", function () {
         var expected = "amit" + chars.boundryChar + "amit";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
+
+        var jData = {
+            names1 : { name: "amit"}
+        }
+        var expected =  chars.nilPremitive + "amit";
+        var result = nimnEncoder.encode(jData);
+        expect(result).toEqual(expected); 
+
+        var jData = {
+            name : "amit",
+            names1 : {}
+        }
+        var expected =  "amit" + chars.emptyChar;
+        var result = nimnEncoder.encode(jData);
+        expect(result).toEqual(expected); 
+
+        var jData = {
+            name : "amit",
+        }
+        var expected =  "amit" + chars.nilChar;
+        var result = nimnEncoder.encode(jData);
+        expect(result).toEqual(expected); 
+
     });
+
+    it(" 3. ", function () {
+        var schema = {
+            type : "object",
+            properties : {
+                "names1" : {
+                    type: "object",
+                    properties : {
+                        "name" : { type : "boolean" }
+                    }
+                },
+                "names2" : {
+                    type: "object",
+                    properties : {
+                        "name" : { type : "string" }
+                    }
+                }
+            }
+        }
+
+        var nimnEncoder = new nimn(schema);
+
+        var jData = {
+            names1 : { name: true},
+            names2 : { name: "amit"}
+        }
+        var expected = chars.yesChar + "amit";
+        var result = nimnEncoder.encode(jData);
+        expect(result).toEqual(expected); 
+
+        var jData = {
+            names2 : { name: "amit"}
+        }
+        var expected =  chars.nilChar + "amit";
+        var result = nimnEncoder.encode(jData);
+        expect(result).toEqual(expected); 
+
+        var jData = {
+            names1 : { name: true},
+            names2 : {}
+        }
+        var expected =  chars.yesChar + chars.emptyChar;
+        var result = nimnEncoder.encode(jData);
+        expect(result).toEqual(expected); 
+
+        var jData = {
+            names1 : { name: true},
+        }
+        var expected =  chars.yesChar + chars.nilChar;
+        var result = nimnEncoder.encode(jData);
+        expect(result).toEqual(expected); 
+
+    });
+
+    it(" 2. for boolean value;  should not append boundry char if conseucative fields can have dynamic value", function () {
+        var schema = {
+            type : "object",
+            properties : {
+                "name" : { type : "boolean" },
+                "names1" : {
+                    type: "object",
+                    properties : {
+                        "name" : { type : "string" }
+                    }
+                }
+            }
+        }
+
+        var nimnEncoder = new nimn(schema);
+
+        var jData = {
+            name : true,
+            names1 : { name: "amit"}
+        }
+        var expected = chars.yesChar + "amit";
+        var result = nimnEncoder.encode(jData);
+        expect(result).toEqual(expected); 
+
+        var jData = {
+            names1 : { name: "amit"}
+        }
+        var expected =  chars.nilPremitive + "amit";
+        var result = nimnEncoder.encode(jData);
+        expect(result).toEqual(expected); 
+
+        var jData = {
+            name : true,
+            names1 : {}
+        }
+        var expected =  chars.yesChar + chars.emptyChar;
+        var result = nimnEncoder.encode(jData);
+        expect(result).toEqual(expected); 
+
+        var jData = {
+            name : "amit",
+        }
+        var expected =  chars.yesChar + chars.nilChar;
+        var result = nimnEncoder.encode(jData);
+        expect(result).toEqual(expected); 
+
+    });
+
+    it(" 3b. ", function () {
+        var schema = {
+            type : "object",
+            properties : {
+                "names1" : {
+                    type: "object",
+                    properties : {
+                        "name" : { type : "string" }
+                    }
+                },
+                "names2" : {
+                    type: "object",
+                    properties : {
+                        "name" : { type : "string" }
+                    }
+                }
+            }
+        }
+
+        var nimnEncoder = new nimn(schema);
+
+        var jData = {
+            names1 : { name: "amit"},
+            names2 : { name: "amit"}
+        }
+        var expected =  "amit" + chars.boundryChar+ "amit";
+        var result = nimnEncoder.encode(jData);
+        expect(result).toEqual(expected); 
+
+        var jData = {
+            names2 : { name: "amit"}
+        }
+        var expected =  chars.nilChar + "amit";
+        var result = nimnEncoder.encode(jData);
+        expect(result).toEqual(expected); 
+
+        var jData = {
+            names1 : { name: "amit"},
+            names2 : {}
+        }
+        var expected =  "amit" + chars.emptyChar;
+        var result = nimnEncoder.encode(jData);
+        expect(result).toEqual(expected); 
+
+    });
+
+    it(" 4.", function () {
+        var schema = {
+            type : "object",
+            properties : {
+                "names1" : {
+                    type: "object",
+                    properties : {
+                        "obj" : {
+                            type : "object",
+                            properties : {
+                                "name" : { type : "string" }
+                            }
+                        }
+                    }
+                },
+                "name" : { type : "string" },
+                
+            }
+        }
+
+        var nimnEncoder = new nimn(schema);
+
+        var jData = {
+            names1 : { "obj" : {name: "amit"}},
+            name : "amit",
+        }
+        var expected = "amit" + chars.boundryChar + "amit";
+        var result = nimnEncoder.encode(jData);
+        expect(result).toEqual(expected); 
+
+        var jData = {
+            names1 : { "obj" : {}},
+            name : "amit",
+        }
+        var expected =  chars.emptyChar + "amit";
+        var result = nimnEncoder.encode(jData);
+        expect(result).toEqual(expected); 
+
+        var jData = {
+            names1 : {},
+            name : "amit",
+        }
+        var expected =  chars.emptyChar + "amit";
+        var result = nimnEncoder.encode(jData);
+        expect(result).toEqual(expected); 
+
+        var jData = {
+            name : "amit",
+        }
+        var expected =  chars.nilChar + "amit";
+        var result = nimnEncoder.encode(jData);
+        expect(result).toEqual(expected); 
+
+    });
+    
 });
