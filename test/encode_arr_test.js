@@ -46,7 +46,7 @@ array
 
 */
 describe("Nimn Encoder", function () {
-    it("1. & 1a. & 1b. should append boundry char if last field can have dynamic data", function () {
+    it("1. , 1a. , 1b. & 2 should append boundry char only if surronuding field can have dynamic data", function () {
         var schema = {
             type : "object",
             properties : {
@@ -115,15 +115,37 @@ describe("Nimn Encoder", function () {
         expect(result).toEqual(expected); 
     });
 
-    it("1. & 1a. should append boundry char if last field can have dynamic data", function () {
+    it("3. & 4. should append boundry char only if two consecutive fields can have dynamic data", function () {
         var schema = {
             type : "object",
             properties : {
-                "age" : { type : "number"},
                 "names" : {
                     type: "array",
                     properties : {
                         "name" : { type : "string" }
+                    }
+                },
+                "names2" : {
+                    type: "array",
+                    properties : {
+                        "name" : { type : "boolean" }
+                    }
+                },
+                "names3" : {
+                    type: "array",
+                    properties : {
+                        "name" : { type : "boolean" }
+                    }
+                },
+                "names4" : {
+                    type: "array",
+                    properties : {
+                        "obj": {
+                            type : "object",
+                            properties : {
+                                "name" : { type : "string" }
+                            }
+                        }
                     }
                 }
             }
@@ -132,20 +154,18 @@ describe("Nimn Encoder", function () {
         var nimnEncoder = new nimn(schema);
 
         var jData = {
-            age : 32,
-            names : ["amit", "kumar"],
+            names : ["true", "false"],
+            names2 : [true, false],
+            names3 : [true, false],
+            names4 : [{ name: "somename"}],
         }
-        var expected = "32" + chars.boundryChar + "amit" + chars.arraySepChar + "kumar";
+        var expected = "true" + chars.arraySepChar + "false" 
+            + chars.yesChar + chars.arraySepChar +  chars.noChar
+            + chars.yesChar + chars.arraySepChar +  chars.noChar
+            + "somename";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
 
-        var jData = {
-            //age : 32,
-            names : ["amit", "kumar"],
-        }
-        var expected = chars.nilPremitive + "amit" + chars.arraySepChar + "kumar";
-        var result = nimnEncoder.encode(jData);
-        expect(result).toEqual(expected); 
     });
 
     it("should not append boundry char if last field is empty array", function () {

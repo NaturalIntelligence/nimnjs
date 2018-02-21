@@ -32,7 +32,7 @@ nimn.prototype.e = function(jObj,e_schema){
                 var itemSchema = getKey(properties[key].properties,0);
                 var itemSchemaType = itemSchema.type;
                 var arr_len = jObj[key].length;
-                str = appendBoundryCharIfNeeded(str,jObj[key]);
+                str = appendBoundryCharIfNeeded(str,jObj[key][0]);
                 for(var arr_i=0;arr_i < arr_len;arr_i++){
                     //if arraySepChar presents, next item is an array item.
                     if(itemSchemaType !== "array" && itemSchemaType !== "object" ){
