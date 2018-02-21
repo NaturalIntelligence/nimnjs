@@ -48,7 +48,11 @@ nimn.prototype.e = function(jObj,e_schema){
                         if(r === chars.emptyChar && chars.boundryChar  === str[str.length -1]){
                             str = str.replace(/.$/,chars.emptyChar);
                         }else{
-                            str += r;
+                            if(!isAppChar(r[0]) && ( str.length > 0 && !isAppChar(str[str.length-1]))){
+                                str += chars.boundryChar + r;
+                            }else{
+                                str += r;
+                            }
                         }
                     }
                     if(arr_len > arr_i+1){
@@ -69,7 +73,11 @@ nimn.prototype.e = function(jObj,e_schema){
                 if(r === chars.emptyChar && chars.boundryChar  === str[str.length -1]){
                     str = str.replace(/.$/,chars.emptyChar);
                 }else{
-                    str += r;
+                    if(!isAppChar(r[0]) && !isAppChar(str[str.length-1])){
+                        str += chars.boundryChar + r;
+                    }else{
+                        str += r;
+                    }
                 }
                 //str = appendBoundryCharIfNeeded(str);
             }else{
@@ -135,7 +143,8 @@ function isAppChar(ch){
      ||  ch === chars.boundryChar 
      || ch === chars.emptyChar
      || ch === chars.yesChar
-     || ch === chars.noChar;
+     || ch === chars.noChar
+     || ch === chars.arraySepChar;
 }
 
 
