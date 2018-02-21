@@ -267,4 +267,36 @@ describe("Nimn Encoder", function () {
         //console.log(result);
         expect(result).toEqual(expected); 
     });
+
+    it(" 9., 10. should not append boundry char if surrounding field can have dynamic value while the array itself is empty", function () {
+        var schema = {
+            type : "object",
+            properties : {
+                "name" : { type : "string" },
+                "names1" : {
+                    type: "array",
+                    properties : {
+                        "name" : { type : "boolean" }
+                    }
+                },
+                "names2" : {
+                    type: "object",
+                    properties : {
+                        "name" : { type : "string" }
+                    }
+                }
+            }
+        }
+
+        var nimnEncoder = new nimn(schema);
+
+        var jData = {
+            name : "amit",
+            names1 : [],
+            names2 : {}
+        }
+        var expected = "amit" + chars.emptyChar + chars.emptyChar;
+        var result = nimnEncoder.encode(jData);
+        expect(result).toEqual(expected); 
+    });
 });
