@@ -223,7 +223,7 @@ describe("Nimn Encoder", function () {
 
         //([12]|(.*?\b|[123])(.*?\b|[123])(.*?|[123]))
         var expected = chars.nilPremitive + "kumar" + chars.boundryChar + "gupta"
-            + chars.arraySepChar 
+            + chars.boundryChar 
             + "Stubmatic" + chars.boundryChar + "QA friendly tool to mock HTTP(s) calls"
             + chars.arraySepChar 
             + "java aggregator" + chars.boundryChar + "1"

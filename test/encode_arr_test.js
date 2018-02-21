@@ -38,13 +38,9 @@ array
 
 8. [{item},{}][item]
     > itemAE|item
-9. [item,item][item]
-    > itemAitem|item
-10. [item,item][true]
-    > itemAitemY
-11. str[]
+9. str[]
     > strE
-12. [][]str
+10. [][]str
     > EEstr
 
 
@@ -180,7 +176,7 @@ describe("Nimn Encoder", function () {
 
     });
 
-    it(" 6., 7. should not append boundry char if last field is empty array", function () {
+    it(" 6., 7. should not append boundry char if surrounding field is empty array/object", function () {
         var schema = {
             type : "object",
             properties : {
@@ -219,20 +215,36 @@ describe("Nimn Encoder", function () {
         expect(result).toEqual(expected); 
     });
 
-    it("should not append boundry char or arraySepChar if last field is an empty object", function () {
+    it("8. should not append boundry char when nearby field of surrounding array of object is app handle char", function () {
         var schema = {
             type : "object",
             properties : {
-                "obj" : {
-                    type : "object",
-                    properties : {
-                        "age" : { type : "number"}
-                    }
-                },
                 "names" : {
                     type: "array",
                     properties : {
+                        "obj": {
+                            type : "object",
+                            properties : {
+                                "name" : { type : "string" }
+                            }
+                        }
+                    }
+                },
+                "names1" : {
+                    type: "array",
+                    properties : {
                         "name" : { type : "string" }
+                    }
+                },
+                "names2" : {
+                    type: "array",
+                    properties : {
+                        "obj": {
+                            type : "object",
+                            properties : {
+                                "name" : { type : "string" }
+                            }
+                        }
                     }
                 }
                 
@@ -242,23 +254,17 @@ describe("Nimn Encoder", function () {
         var nimnEncoder = new nimn(schema);
 
         var jData = {
-            obj: {age : 32},
-            names : ["somename"],
+            names : [{ name : "someone"}, {}],
+            names1 : ["somename2","somename4"],
+            names2 : [{}, { name : "someone3"}],
         }
-        //var expected = "32" + chars.arraySepChar + "somename";
-        var expected = "32" + chars.boundryChar  + "somename";
-
+        var expected = "someone" + chars.arraySepChar + chars.emptyChar
+        + "somename2" + chars.arraySepChar + "somename4"
+        + chars.emptyChar + chars.arraySepChar  + "someone3";
+        
         var result = nimnEncoder.encode(jData);
-        expect(result).toEqual(expected); 
-
-
-        var jData = {
-            obj: {},
-            names : ["somename"],
-        }
-        var expected = chars.emptyChar + "somename";
-
-        var result = nimnEncoder.encode(jData);
+        //console.log(chars);
+        //console.log(result);
         expect(result).toEqual(expected); 
     });
 });

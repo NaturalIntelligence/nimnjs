@@ -6,18 +6,22 @@ function nimn(schema) {
 }
 
 nimn.prototype.encode = function(jObj){
-    var isData = hasData(jObj);
-    if(isData === true){
+    //var isData = hasData(jObj);
+    //if(isData === true){
         return this.e(jObj,this.e_schema)
-    }else{
-        return isData;
-    }
+    //}else{
+    //    return isData;
+    //}
 }
 
 function getKey(obj,i){
     return obj[Object.keys(obj)[i]];
 }
 nimn.prototype.e = function(jObj,e_schema){
+    var isData1 = hasData(jObj);
+    if(isData1 !== true){
+        return isData1;
+    }
     var properties = e_schema.properties;
     var keys = Object.keys(properties);
     var len = keys.length;
@@ -40,7 +44,12 @@ nimn.prototype.e = function(jObj,e_schema){
                         //str = appendBoundryCharIfNeeded(str,jObj[key]);
                         str += checkForNilOrUndefined(jObj[key][arr_i],itemSchemaType);
                     }else{
-                        str += /* chars.arraySepChar + */ this.e(jObj[key][arr_i],itemSchema) ;
+                        var r =  this.e(jObj[key][arr_i],itemSchema) ;
+                        if(r === chars.emptyChar && chars.boundryChar  === str[str.length -1]){
+                            str = str.replace(/.$/,chars.emptyChar);
+                        }else{
+                            str += r;
+                        }
                     }
                     if(arr_len > arr_i+1){
                         str += chars.arraySepChar;
@@ -56,7 +65,12 @@ nimn.prototype.e = function(jObj,e_schema){
                 var itemType = properties[key];
                 //boundry chars is needed for decoding
                 str = appendBoundryCharIfNeeded(str);
-                str += this.e(jObj[key],itemType);
+                var r = this.e(jObj[key],itemType);
+                if(r === chars.emptyChar && chars.boundryChar  === str[str.length -1]){
+                    str = str.replace(/.$/,chars.emptyChar);
+                }else{
+                    str += r;
+                }
                 //str = appendBoundryCharIfNeeded(str);
             }else{
                 str += isData;
@@ -100,7 +114,7 @@ function hasData(jObj){
  * @param {*} str 
  */
 function appendBoundryCharIfNeeded(str,next){
-    if( str.length > 0 && !isNonAppChar(str[str.length -1]) &&  !isNonDataValue(next) ){
+    if( str.length > 0 && !isAppChar(str[str.length -1]) &&  !isNonDataValue(next) ){
             str += chars.boundryChar;
     }
     return str;
@@ -116,7 +130,7 @@ function isNonDataValue(ch){
 }
 
 //TODO: convert into array for fast comparision
-function isNonAppChar(ch){
+function isAppChar(ch){
     return ch === chars.nilChar ||  ch === chars.nilPremitive
      ||  ch === chars.boundryChar 
      || ch === chars.emptyChar
