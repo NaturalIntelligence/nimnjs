@@ -57,6 +57,9 @@ describe("Nimn Encoder", function () {
         var expected = "amit" + chars.boundryChar + "amit";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
+        result = nimnEncoder.decode(result);
+        //console.log(JSON.stringify(result));
+        expect(result).toEqual(jData); 
 
         var jData = {
             names1 : { name: "amit"}
@@ -64,6 +67,9 @@ describe("Nimn Encoder", function () {
         var expected =  chars.nilPremitive + "amit";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
+        result = nimnEncoder.decode(result);
+        //console.log(JSON.stringify(result));
+        expect(result).toEqual(jData); 
 
         var jData = {
             name : "amit",
@@ -71,7 +77,9 @@ describe("Nimn Encoder", function () {
         }
         var expected =  "amit" + chars.emptyChar;
         var result = nimnEncoder.encode(jData);
-        expect(result).toEqual(expected); 
+        expect(result).toEqual(expected);
+        result = nimnEncoder.decode(result);
+        expect(result).toEqual(jData);  
 
         var jData = {
             name : "amit",
@@ -79,6 +87,8 @@ describe("Nimn Encoder", function () {
         var expected =  "amit" + chars.nilChar;
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
+        result = nimnEncoder.decode(result);
+        expect(result).toEqual(jData); 
 
     });
 
@@ -110,6 +120,9 @@ describe("Nimn Encoder", function () {
         var expected = chars.yesChar + "amit";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
+        result = nimnEncoder.decode(result);
+        //console.log(JSON.stringify(result));
+        expect(result).toEqual(jData); 
 
         var jData = {
             names2 : { name: "amit"}
@@ -117,6 +130,9 @@ describe("Nimn Encoder", function () {
         var expected =  chars.nilChar + "amit";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
+        result = nimnEncoder.decode(result);
+        //console.log(JSON.stringify(result));
+        expect(result).toEqual(jData); 
 
         var jData = {
             names1 : { name: true},
@@ -125,6 +141,9 @@ describe("Nimn Encoder", function () {
         var expected =  chars.yesChar + chars.emptyChar;
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
+        result = nimnEncoder.decode(result);
+        //console.log(JSON.stringify(result));
+        expect(result).toEqual(jData); 
 
         var jData = {
             names1 : { name: true},
@@ -132,6 +151,9 @@ describe("Nimn Encoder", function () {
         var expected =  chars.yesChar + chars.nilChar;
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
+        result = nimnEncoder.decode(result);
+        //console.log(JSON.stringify(result));
+        expect(result).toEqual(jData); 
 
     });
 
@@ -158,6 +180,9 @@ describe("Nimn Encoder", function () {
         var expected = chars.yesChar + "amit";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
+        result = nimnEncoder.decode(result);
+        //console.log(JSON.stringify(result));
+        expect(result).toEqual(jData); 
 
         var jData = {
             names1 : { name: "amit"}
@@ -165,6 +190,9 @@ describe("Nimn Encoder", function () {
         var expected =  chars.nilPremitive + "amit";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
+        result = nimnEncoder.decode(result);
+        //console.log(JSON.stringify(result));
+        expect(result).toEqual(jData); 
 
         var jData = {
             name : true,
@@ -173,13 +201,19 @@ describe("Nimn Encoder", function () {
         var expected =  chars.yesChar + chars.emptyChar;
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
+        result = nimnEncoder.decode(result);
+        //console.log(JSON.stringify(result));
+        expect(result).toEqual(jData); 
 
         var jData = {
-            name : "amit",
+            name : true,
         }
         var expected =  chars.yesChar + chars.nilChar;
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
+        result = nimnEncoder.decode(result);
+        //console.log(JSON.stringify(result));
+        expect(result).toEqual(jData); 
 
     });
 
@@ -211,6 +245,9 @@ describe("Nimn Encoder", function () {
         var expected =  "amit" + chars.boundryChar+ "amit";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
+        result = nimnEncoder.decode(result);
+        //console.log(JSON.stringify(result));
+        expect(result).toEqual(jData); 
 
         var jData = {
             names2 : { name: "amit"}
@@ -218,6 +255,9 @@ describe("Nimn Encoder", function () {
         var expected =  chars.nilChar + "amit";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
+        result = nimnEncoder.decode(result);
+        //console.log(JSON.stringify(result));
+        expect(result).toEqual(jData); 
 
         var jData = {
             names1 : { name: "amit"},
@@ -226,6 +266,9 @@ describe("Nimn Encoder", function () {
         var expected =  "amit" + chars.emptyChar;
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
+        result = nimnEncoder.decode(result);
+        //console.log(JSON.stringify(result));
+        expect(result).toEqual(jData); 
 
     });
 
@@ -258,7 +301,12 @@ describe("Nimn Encoder", function () {
         var expected = "amit" + chars.boundryChar + "amit";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
+        result = nimnEncoder.decode(result);
+        //console.log(JSON.stringify(result));
+        expect(result).toEqual(jData); 
 
+
+        //TODO: mark special case in specs
         var jData = {
             names1 : { "obj" : {}},
             name : "amit",
@@ -266,6 +314,9 @@ describe("Nimn Encoder", function () {
         var expected =  chars.emptyChar + "amit";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
+        result = nimnEncoder.decode(result);
+        //console.log(JSON.stringify(result));
+        //expect(result).toEqual(jData);
 
         var jData = {
             names1 : {},
@@ -273,7 +324,10 @@ describe("Nimn Encoder", function () {
         }
         var expected =  chars.emptyChar + "amit";
         var result = nimnEncoder.encode(jData);
-        expect(result).toEqual(expected); 
+        expect(result).toEqual(expected);
+        result = nimnEncoder.decode(result);
+        //console.log(JSON.stringify(result));
+        expect(result).toEqual(jData);  
 
         var jData = {
             name : "amit",
@@ -281,6 +335,9 @@ describe("Nimn Encoder", function () {
         var expected =  chars.nilChar + "amit";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
+        result = nimnEncoder.decode(result);
+        //console.log(JSON.stringify(result));
+        expect(result).toEqual(jData); 
 
     });
     
