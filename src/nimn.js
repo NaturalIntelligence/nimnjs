@@ -5,11 +5,17 @@ var dataType = require("./schema").dataType;
 
 function nimn(schema) {
 
-    updateDataType(schema);
-
+    var lastFieldSchemaToSet = updateDataType(schema);
+    setReadUntil(lastFieldSchemaToSet,{});
     this.e_schema = schema;
 }
 
+/**
+ * Update schema type with equivalent dataType key for for fast processing. 
+ * Update each field in schema to be aware with next field for fast and easy decoding.
+ * @param {*} schema 
+ * @param {*} lastfieldSchema 
+ */
 function updateDataType(schema,lastfieldSchema){
     schema.type = dataType.getType(schema.type);
     var properties = schema.properties;
@@ -57,12 +63,12 @@ function setReadUntil(current,next){
         //do nothing
     }else{
         if(next.type === "boolean" || next.type === dataType.BOOLEAN){
-            (current.readUntil = current.readUntil || []).push(chars.yesChar, chars.noChar);
+            (current.readUntil = current.readUntil || []).push(chars.yesChar, chars.noChar, chars.nilPremitive);
         }else if(next.type === "object" || next.type === dataType.OBJECT
             || next.type === "array" || next.type === dataType.ARRAY){
                 (current.readUntil = current.readUntil || []).push(chars.nilChar, chars.emptyChar);
         }else{
-            (current.readUntil = current.readUntil || []).push(chars.boundryChar);
+            (current.readUntil = current.readUntil || []).push(chars.boundryChar, chars.nilPremitive);
         }
     }
 }
@@ -189,4 +195,83 @@ function isAppChar(ch){
     return charsArr.indexOf(ch) !== -1;
 }
 
+nimn.prototype.decode = function(objStr,options){
+    this.decodingOptions = options;
+    return this._d(objStr,0,this.e_schema).val;
+}
+
+nimn.prototype._d = function(objStr,index,schema){
+    var properties = schema.properties;
+    var keys = Object.keys(properties);
+    var len = keys.length;
+    var obj = {}
+    for(var i=0; i< len; i++){
+        var key = keys[i];
+        var nextKey = keys[i+1];
+        var schemaOfCurrentKey = properties[key];
+        if(schemaOfCurrentKey.type === dataType.ARRAY){
+            var itemSchema = getKey(schemaOfCurrentKey.properties,0); //schema of array item
+            if(objStr[index] === chars.nilChar){
+                index++;
+            }else if(objStr[index] === chars.emptyChar){
+                obj[key] = [];
+                index++;
+            }else{
+                do{
+                    var result = this._d(objStr,index,itemSchema);
+                    index = result.index;
+                    if(result.val !== undefined){
+                        obj[key] = result.val;
+                    }
+                }while(obj[index] === chars.arraySepChar && index++);
+            }
+        }else if(schemaOfCurrentKey.type === dataType.OBJECT){
+            //recursive call
+            if(objStr[index] === chars.nilChar){
+                index++;
+            }else if(objStr[index] === chars.emptyChar){
+                obj[key] = {};
+                index++;
+            }else{
+                var result = this._d(objStr,index,schemaOfCurrentKey);
+                index = result.index;
+                if(result.val !== undefined){
+                    obj[key] = result.val;
+                }
+            }
+        }else{
+            //read until you find boundry or any app supported char
+            var val = "";
+            if(schemaOfCurrentKey.readUntil){
+                val = readFieldValue(objStr,index,schemaOfCurrentKey.readUntil);
+            }else{
+                val = objStr[index];
+            }
+            index+=val.length;
+            if(objStr[index] === chars.boundryChar) index++;
+            if(val !== chars.nilPremitive){
+                obj[key] = valParser.unparse[schemaOfCurrentKey.type](val);
+            }
+        }
+    }
+    return { index: index, val: obj};
+}
+
+/**
+ * Read characters until app supported char is found
+ * @param {string} str 
+ * @param {number} i 
+ */
+function readFieldValue(str,from,until){
+    var val = "";
+    var len = str.length;
+    var start = from;
+    if(str[start] === chars.nilPremitive){
+        return chars.nilPremitive;
+    }else{
+        for(;from < len && until.indexOf(str[from]) === -1;from++ );
+        return str.substr(start, from);
+    }
+    
+}
 module.exports = nimn;
