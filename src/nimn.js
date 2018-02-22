@@ -37,7 +37,8 @@ function updateDataType(schema,lastfieldSchema){
             if(schemaOfNextKey === undefined){
                 return lastFieldSchemaToSet;
             }else{
-                setReadUntil(lastFieldSchemaToSet,schemaOfNextKey);
+                var isArray = schemaOfCurrentKey.type === "array" || schemaOfCurrentKey.type === dataType.ARRAY;
+                setReadUntil(lastFieldSchemaToSet,schemaOfNextKey,isArray);
             }
         }else{
             if( i===0 && lastfieldSchema){
@@ -58,18 +59,18 @@ function isArrayOrObject(schema){
     || schema.type === dataType.ARRAY || schema.type === dataType.OBJECT;
 }
 
-function setReadUntil(current,next){
+function setReadUntil(current,next,isArray){
     if(current.type === "boolean" || current.type === dataType.BOOLEAN){
         //do nothing
     }else{
         if(next.type === "boolean" || next.type === dataType.BOOLEAN){
             (current.readUntil = current.readUntil || []).push(chars.yesChar, chars.noChar, chars.nilPremitive);
-        }else if(next.type === "object" || next.type === dataType.OBJECT
-            || next.type === "array" || next.type === dataType.ARRAY){
+        }else if(isArrayOrObject(next)){
                 (current.readUntil = current.readUntil || []).push(chars.nilChar, chars.emptyChar);
         }else{
             (current.readUntil = current.readUntil || []).push(chars.boundryChar, chars.nilPremitive);
         }
+        if(isArray) current.readUntil.push (chars.arraySepChar);
     }
 }
 
@@ -210,7 +211,6 @@ nimn.prototype._d = function(objStr,index,schema){
         var nextKey = keys[i+1];
         var schemaOfCurrentKey = properties[key];
         if(schemaOfCurrentKey.type === dataType.ARRAY){
-            var itemSchema = getKey(schemaOfCurrentKey.properties,0); //schema of array item
             if(objStr[index] === chars.nilChar){
                 index++;
             }else if(objStr[index] === chars.emptyChar){
@@ -218,15 +218,20 @@ nimn.prototype._d = function(objStr,index,schema){
                 index++;
             }else{
                 do{
-                    var result = this._d(objStr,index,itemSchema);
-                    index = result.index;
-                    if(result.val !== undefined){
-                        obj[key] = result.val;
-                    }
-                }while(obj[index] === chars.arraySepChar && index++);
+                    var itemSchema = schemaOfCurrentKey.properties; //schema of array item
+                    if(itemSchema.properties){
+                        var result = this._d(objStr,index,itemSchema);
+                        index = result.index;
+                        if(result.val !== undefined){
+                            obj[key] = result.val;
+                        }
+                    }else{
+                        index = processPremitiveValue(obj,key,objStr,index,getKey(itemSchema,0));
+                    }   
+                    
+                }while(objStr[index] === chars.arraySepChar && ++index);
             }
         }else if(schemaOfCurrentKey.type === dataType.OBJECT){
-            //recursive call
             if(objStr[index] === chars.nilChar){
                 index++;
             }else if(objStr[index] === chars.emptyChar){
@@ -241,7 +246,7 @@ nimn.prototype._d = function(objStr,index,schema){
             }
         }else{
             //read until you find boundry or any app supported char
-            var val = "";
+            /* var val = "";
             if(schemaOfCurrentKey.readUntil){
                 val = readFieldValue(objStr,index,schemaOfCurrentKey.readUntil);
             }else{
@@ -251,12 +256,31 @@ nimn.prototype._d = function(objStr,index,schema){
             if(objStr[index] === chars.boundryChar) index++;
             if(val !== chars.nilPremitive){
                 obj[key] = valParser.unparse[schemaOfCurrentKey.type](val);
-            }
+            } */
+            index = processPremitiveValue(obj,key,objStr,index,schemaOfCurrentKey);
         }
     }
     return { index: index, val: obj};
 }
 
+function processObjectValue(){
+    
+}
+
+function processPremitiveValue(obj,key,objStr,index,schemaOfCurrentKey){
+    var val = "";
+    if(schemaOfCurrentKey.readUntil){
+        val = readFieldValue(objStr,index,schemaOfCurrentKey.readUntil);
+    }else{
+        val = objStr[index];
+    }
+    index+=val.length;
+    if(objStr[index] === chars.boundryChar) index++;
+    if(val !== chars.nilPremitive){
+        obj[key] = valParser.unparse[schemaOfCurrentKey.type](val);
+    }
+    return index;
+}
 /**
  * Read characters until app supported char is found
  * @param {string} str 
@@ -270,7 +294,7 @@ function readFieldValue(str,from,until){
         return chars.nilPremitive;
     }else{
         for(;from < len && until.indexOf(str[from]) === -1;from++ );
-        return str.substr(start, from);
+        return str.substr(start, from-start);
     }
     
 }
