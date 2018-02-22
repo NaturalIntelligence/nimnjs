@@ -1,3 +1,4 @@
+var getKey = require("./util").getKey;
 var chars = require("./chars").chars;
 var charsArr = require("./chars").charsArr;
 var valParser = require("./val_parser");
@@ -11,13 +12,12 @@ function nimn(schema) {
 }
 
 nimn.prototype.encode = function(jObj){
-        return this._e(jObj,this.e_schema)
+        return _e(jObj,this.e_schema)
 }
 
-function getKey(obj,i){
-    return obj[Object.keys(obj)[i]];
-}
-nimn.prototype._e = function(jObj,e_schema){
+
+
+var _e = function(jObj,e_schema){
     var isData1 = hasData(jObj);
     if(isData1 !== true){
         return isData1;
@@ -42,7 +42,7 @@ nimn.prototype._e = function(jObj,e_schema){
                     if(itemSchemaType !== dataType.ARRAY && itemSchemaType !== dataType.OBJECT ){
                         str += checkForNilOrUndefined(jObj[key][arr_i],itemSchemaType);
                     }else{
-                        var r =  this._e(jObj[key][arr_i],itemSchema) ;
+                        var r =  _e(jObj[key][arr_i],itemSchema) ;
                         str = processObject(str,r);
                     }
                     if(arr_len > arr_i+1){
@@ -59,7 +59,7 @@ nimn.prototype._e = function(jObj,e_schema){
                 var itemType = properties[key];
                 //boundry chars is needed for decoding
                 str = appendBoundryCharIfNeeded(str);
-                var r = this._e(jObj[key],itemType)
+                var r = _e(jObj[key],itemType)
                 str = processObject(str,r);
             }else{
                 str += isData;
@@ -129,6 +129,5 @@ nimn.prototype.decode = function(objStr,options){
     this.decodingOptions = options;
     return decode(objStr,0,this.e_schema).val;
 }
-
 
 module.exports = nimn;

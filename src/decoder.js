@@ -1,7 +1,7 @@
 var chars = require("./chars").chars;
 var valParser = require("./val_parser");
 var dataType = require("./schema").dataType;
-
+var getKey = require("./util").getKey;
 
 var _d = function(objStr,index,schema){
     var properties = schema.properties;
