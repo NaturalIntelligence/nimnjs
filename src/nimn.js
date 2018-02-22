@@ -10,13 +10,13 @@ function nimn(schema) {
 }
 
 nimn.prototype.encode = function(jObj){
-        return this.e(jObj,this.e_schema)
+        return this._e(jObj,this.e_schema)
 }
 
 function getKey(obj,i){
     return obj[Object.keys(obj)[i]];
 }
-nimn.prototype.e = function(jObj,e_schema){
+nimn.prototype._e = function(jObj,e_schema){
     var isData1 = hasData(jObj);
     if(isData1 !== true){
         return isData1;
@@ -41,7 +41,7 @@ nimn.prototype.e = function(jObj,e_schema){
                     if(itemSchemaType !== dataType.ARRAY && itemSchemaType !== dataType.OBJECT ){
                         str += checkForNilOrUndefined(jObj[key][arr_i],itemSchemaType);
                     }else{
-                        var r =  this.e(jObj[key][arr_i],itemSchema) ;
+                        var r =  this._e(jObj[key][arr_i],itemSchema) ;
                         str = processObject(str,r);
                     }
                     if(arr_len > arr_i+1){
@@ -58,7 +58,7 @@ nimn.prototype.e = function(jObj,e_schema){
                 var itemType = properties[key];
                 //boundry chars is needed for decoding
                 str = appendBoundryCharIfNeeded(str);
-                var r = this.e(jObj[key],itemType)
+                var r = this._e(jObj[key],itemType)
                 str = processObject(str,r);
             }else{
                 str += isData;
@@ -86,16 +86,9 @@ function processObject(str,r){
 
 var checkForNilOrUndefined= function(a,type){
     if(a === undefined || a === null) return chars.nilPremitive;
-    else return parseValue(a,type);
+    else return valParser.parse[type](a);
 }
 
-var parseValue = function(val,type){
-    if(type === dataType.STRING) return val;
-    else if(type === dataType.BOOLEAN) return valParser.parseBoolean(val);
-    else if(type === dataType.NUMBER) return val;
-    else if(type === dataType.DATE) return val;
-    else return val;
-}
 /**
  * Check if the given object is empty, null, or undefined. Returns true otherwise.
  * @param {*} jObj 

@@ -7,9 +7,23 @@ function parseNumber(val){
 }
 
 
-function parseBoolean(val){
+function parseBooleanValue(val){
     return val ? chars.yesChar : chars.noChar;
 }
+
+function parseStringValue(val){
+    return val;
+}
+
+function parseNumberValue(val){
+    return val;
+}
+
+function parseDateValue(val){
+    return val;
+}
+
+
 function unparseBooleanValue(val){
     return val === chars.yesChar ? true : false;
 }
@@ -29,6 +43,11 @@ unparse[dataType.NUMBER] = unparseNumberValue;
 unparse[dataType.DATE] = unparseDateValue;
 
 
-exports.parseBoolean = parseBoolean;
-exports.parseNumber = parseNumber;
+var parse = {};
+parse[dataType.BOOLEAN] = parseBooleanValue;
+parse[dataType.STRING] = parseStringValue;
+parse[dataType.NUMBER] = parseNumberValue;
+parse[dataType.DATE] = parseDateValue;
+
+exports.parse = parse;
 exports.unparse = unparse;
