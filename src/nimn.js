@@ -6,23 +6,63 @@ var dataType = require("./schema").dataType;
 function nimn(schema) {
 
     updateDataType(schema);
+
     this.e_schema = schema;
 }
 
-function updateDataType(schema){
+function updateDataType(schema,lastfieldSchema){
     schema.type = dataType.getType(schema.type);
     var properties = schema.properties;
     var keys = Object.keys(properties);
+    var lastFieldSchemaToSet;
     var len = keys.length;
-    
-    var str = "";
     for(var i=0; i< len; i++){
         var key = keys[i];
-        
-        if(properties[key].type === "array" || properties[key].type === "object"){
-            updateDataType(properties[key]);
+        var nextKey = keys[i+1];
+        var schemaOfLastKey = properties[keys[i-1]];
+        var schemaOfCurrentKey = properties[key];
+        var schemaOfNextKey = properties[nextKey];
+        if(isArrayOrObject(schemaOfCurrentKey)){
+            if(schemaOfLastKey && isArrayOrObject(schemaOfLastKey) && lastFieldSchemaToSet){
+                lastFieldSchemaToSet = updateDataType(schemaOfCurrentKey,lastFieldSchemaToSet);
+            }else{
+                lastFieldSchemaToSet = updateDataType(schemaOfCurrentKey,schemaOfLastKey);
+            }
+            if(schemaOfNextKey === undefined){
+                return lastFieldSchemaToSet;
+            }else{
+                setReadUntil(lastFieldSchemaToSet,schemaOfNextKey);
+            }
         }else{
-            properties[key].type = dataType.getType(properties[key].type);
+            if( i===0 && lastfieldSchema){
+                setReadUntil(lastfieldSchema,schemaOfCurrentKey);
+            }
+            schemaOfCurrentKey.type = dataType.getType(schemaOfCurrentKey.type);
+            if(schemaOfNextKey === undefined){
+                return schemaOfCurrentKey;//in the hope someone down the floor will set it up
+            }else{
+                setReadUntil(schemaOfCurrentKey,schemaOfNextKey);
+            }
+        }
+    }
+}
+
+function isArrayOrObject(schema){
+    return schema.type === "array" || schema.type === "object"
+    || schema.type === dataType.ARRAY || schema.type === dataType.OBJECT;
+}
+
+function setReadUntil(current,next){
+    if(current.type === "boolean" || current.type === dataType.BOOLEAN){
+        //do nothing
+    }else{
+        if(next.type === "boolean" || next.type === dataType.BOOLEAN){
+            (current.readUntil = current.readUntil || []).push(chars.yesChar, chars.noChar);
+        }else if(next.type === "object" || next.type === dataType.OBJECT
+            || next.type === "array" || next.type === dataType.ARRAY){
+                (current.readUntil = current.readUntil || []).push(chars.nilChar, chars.emptyChar);
+        }else{
+            (current.readUntil = current.readUntil || []).push(chars.boundryChar);
         }
     }
 }
