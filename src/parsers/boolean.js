@@ -5,7 +5,7 @@ function parse(val){
 }
 
 function parseBack(val,callback){
-    callback(chars.yesChar ? true : false);
+    callback(val === chars.yesChar ? true : false);
 }
 
 
