@@ -24,17 +24,17 @@ function parseDateValue(val){
 }
 
 
-function unparseBooleanValue(val){
-    return val === chars.yesChar ? true : false;
+function unparseBooleanValue(val,callback){
+    callback(chars.yesChar ? true : false);
 }
-function unparseStringValue(val){
-    return val;
+function unparseStringValue(val,callback){
+    callback(val);
 }
-function unparseNumberValue(val){
-    return val;
+function unparseNumberValue(val,callback){
+    callback(val);
 }
-function unparseDateValue(val){
-    return val;
+function unparseDateValue(val,callback){
+    callback(val);
 }
 var unparse = {};
 unparse[dataType.BOOLEAN] = unparseBooleanValue;

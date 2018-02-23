@@ -63,7 +63,10 @@ function processPremitiveValue(obj,key,objStr,index,schemaOfCurrentKey){
     index+=val.length;
     if(objStr[index] === chars.boundryChar) index++;
     if(val !== chars.nilPremitive){
-        obj[key] = valParser.unparse[schemaOfCurrentKey.type](val);
+        valParser.unparse[schemaOfCurrentKey.type](val,function(result){
+            obj[key] = result;
+        });
+        //obj[key] = valParser.unparse[schemaOfCurrentKey.type](val);
     }
     return index;
 }
