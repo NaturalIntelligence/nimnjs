@@ -41,8 +41,7 @@ nimn.prototype.encode = function(jObj){
 }
 
 nimn.prototype.decode = function(objStr,options){
-    this.decodingOptions = options;
-    return decode(objStr,0,this.e_schema).val;
+    return decode(objStr,this.e_schema);
 }
 
 module.exports = nimn;

@@ -24,10 +24,10 @@ var _d = function(objStr,index,schema){
                         var result = _d(objStr,index,itemSchema);
                         index = result.index;
                         if(result.val !== undefined){
-                            obj[key] = result.val;
+                            (obj[key] = obj[key] || []).push(result.val);
                         }
                     }else{
-                        index = processPremitiveValue(obj,key,objStr,index,getKey(itemSchema,0));
+                        index = processPremitiveValue(obj,key,objStr,index,getKey(itemSchema,0),true);
                     }   
                     
                 }while(objStr[index] === chars.arraySepChar && ++index);
@@ -52,7 +52,7 @@ var _d = function(objStr,index,schema){
     return { index: index, val: obj};
 }
 
-function processPremitiveValue(obj,key,objStr,index,schemaOfCurrentKey){
+function processPremitiveValue(obj,key,objStr,index,schemaOfCurrentKey,isArray){
     var val = "";
     if(schemaOfCurrentKey.readUntil){
         val = readFieldValue(objStr,index,schemaOfCurrentKey.readUntil);
@@ -63,7 +63,11 @@ function processPremitiveValue(obj,key,objStr,index,schemaOfCurrentKey){
     if(objStr[index] === chars.boundryChar) index++;
     if(val !== chars.nilPremitive){
         schemaOfCurrentKey.type.parseBack(val,function(result){
-            obj[key] = result;
+            if(isArray){
+                (obj[key] = obj[key] || []).push(result);
+            }else{
+                obj[key] = result;
+            }
         });
     }
     return index;
@@ -86,4 +90,16 @@ function readFieldValue(str,from,until){
     
 }
 
-exports.decode= _d;
+var decode = function(objStr,schema){
+    if(!objStr || typeof objStr !== "string" || objStr.length === 0) throw Error("input should be a valid string");
+    if(objStr.length === 1){
+        if(objStr === chars.emptyChar){
+            return {};
+        }else if(objStr === chars.nilChar){
+            return undefined;
+        }
+    } 
+    return _d(objStr,0,schema).val;
+}
+
+exports.decode= decode;

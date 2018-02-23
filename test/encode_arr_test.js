@@ -88,6 +88,10 @@ describe("Nimn Encoder", function () {
 
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
+        //console.log(result);
+        result = nimnEncoder.decode(result);
+        //console.log(JSON.stringify(result));
+        expect(result).toEqual(jData); 
 
 
         var jData = {
@@ -105,6 +109,9 @@ describe("Nimn Encoder", function () {
 
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
+        result = nimnEncoder.decode(result);
+        //console.log(JSON.stringify(result));
+        expect(result).toEqual(jData); 
 
         var jData = {
             //age : 32,
@@ -113,6 +120,9 @@ describe("Nimn Encoder", function () {
         var expected = chars.emptyChar;
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
+        result = nimnEncoder.decode(result);
+        //console.log(JSON.stringify(result));
+        expect(result).toEqual(jData); 
     });
 
     it("3., 4., 5., 5a., & 5b. should append boundry char only if two consecutive fields can have dynamic data", function () {
