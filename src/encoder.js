@@ -1,5 +1,4 @@
 var chars = require("./chars").chars;
-var valParser = require("./val_parser");
 var dataType = require("./schema").dataType;
 var getKey = require("./util").getKey;
 var charsArr = require("./chars").charsArr;
@@ -17,7 +16,7 @@ var encode = function(jObj,e_schema){
     for(var i=0; i< len; i++){
         var key = keys[i];
         var nextKey = keys[i+1];
-        if(properties[key].type === dataType.ARRAY){
+        if(properties[key].type.value === dataType.ARRAY.value){
             var isData = hasData(jObj[key]);
             if(isData === true){
                 var itemSchema = getKey(properties[key].properties,0);
@@ -26,7 +25,7 @@ var encode = function(jObj,e_schema){
                 str = appendBoundryCharIfNeeded(str,jObj[key][0]);
                 for(var arr_i=0;arr_i < arr_len;arr_i++){
                     //if arraySepChar presents, next item is an array item.
-                    if(itemSchemaType !== dataType.ARRAY && itemSchemaType !== dataType.OBJECT ){
+                    if(itemSchemaType.value !== dataType.ARRAY.value && itemSchemaType.value !== dataType.OBJECT.value ){
                         str += checkForNilOrUndefined(jObj[key][arr_i],itemSchemaType);
                     }else{
                         var r =  encode(jObj[key][arr_i],itemSchema) ;
@@ -40,7 +39,7 @@ var encode = function(jObj,e_schema){
             }else{
                 str += isData;
             }
-        }else if(properties[key].type === dataType.OBJECT){
+        }else if(properties[key].type.value === dataType.OBJECT.value){
             var isData = hasData(jObj[key]);
             if(isData === true){
                 var itemType = properties[key];
@@ -74,7 +73,7 @@ function processObject(str,r){
 
 var checkForNilOrUndefined= function(a,type){
     if(a === undefined || a === null) return chars.nilPremitive;
-    else return valParser.parse[type](a);
+    else return type.parse(a);
 }
 
 /**

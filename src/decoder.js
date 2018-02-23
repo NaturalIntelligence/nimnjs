@@ -1,5 +1,4 @@
 var chars = require("./chars").chars;
-var valParser = require("./val_parser");
 var dataType = require("./schema").dataType;
 var getKey = require("./util").getKey;
 
@@ -12,7 +11,7 @@ var _d = function(objStr,index,schema){
         var key = keys[i];
         var nextKey = keys[i+1];
         var schemaOfCurrentKey = properties[key];
-        if(schemaOfCurrentKey.type === dataType.ARRAY){
+        if(schemaOfCurrentKey.type.value === dataType.ARRAY.value){
             if(objStr[index] === chars.nilChar){
                 index++;
             }else if(objStr[index] === chars.emptyChar){
@@ -33,7 +32,7 @@ var _d = function(objStr,index,schema){
                     
                 }while(objStr[index] === chars.arraySepChar && ++index);
             }
-        }else if(schemaOfCurrentKey.type === dataType.OBJECT){
+        }else if(schemaOfCurrentKey.type.value === dataType.OBJECT.value){
             if(objStr[index] === chars.nilChar){
                 index++;
             }else if(objStr[index] === chars.emptyChar){
@@ -63,10 +62,9 @@ function processPremitiveValue(obj,key,objStr,index,schemaOfCurrentKey){
     index+=val.length;
     if(objStr[index] === chars.boundryChar) index++;
     if(val !== chars.nilPremitive){
-        valParser.unparse[schemaOfCurrentKey.type](val,function(result){
+        schemaOfCurrentKey.type.parseBack(val,function(result){
             obj[key] = result;
         });
-        //obj[key] = valParser.unparse[schemaOfCurrentKey.type](val);
     }
     return index;
 }
