@@ -1,7 +1,5 @@
-var getKey = require("./util").getKey;
-var chars = require("./chars").chars;
-var charsArr = require("./chars").charsArr;
 var boolean = require("./parsers/boolean");
+var numParser = require("./parsers/number");
 var dataType = require("./schema").dataType;
 var updateSchema = require("./schema_updater").updateSchema;
 var decode = require("./decoder").decode;
@@ -10,7 +8,7 @@ var encode = require("./encoder").encode;
 function nimn(schema) {
     this.configDataType("boolean",boolean.parse,boolean.parseBack);
     this.configDataType("string",returnBack,returnCallBack);
-    this.configDataType("number",returnBack,returnCallBack);
+    this.configDataType("number",numParser.parse,numParser.parseBack);
     this.configDataType("date",returnBack,returnCallBack);
     this.configDataType("object",returnBack,returnCallBack);
     this.configDataType("array",returnBack,returnCallBack);
