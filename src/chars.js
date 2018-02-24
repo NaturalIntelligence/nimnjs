@@ -13,6 +13,7 @@ const chars= {
     nilPremitive : char(176),
     missingPremitive : char(176),
     emptyChar : char(177),
+    emptyValue:  char(178),
     yesChar : char(217),
     noChar : char(218),
     boundryChar : char(186),
@@ -28,18 +29,6 @@ const charsArr = [
     chars.noChar,
     chars.arraySepChar,
 ]
-
-//SPEC
-/*
-1. null and undefined will be treated as same
-2. an array or object can be empty not a premetive field
-3. nilChar for an array or object will be different than char for premetive field
-4. boundry char will be used to identify the boundries
-5. arraySepChar say if next sequence is repeated array item
-
-
-
-*/
 
 exports.chars = chars; 
 exports.charsArr = charsArr; 
