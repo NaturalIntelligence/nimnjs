@@ -13,13 +13,18 @@
   ],
   "author": "Amit Gupta",
   "license": "ISC",
-  "dependencies": {},
+  "dependencies": {
+    
+  },
   "devDependencies": {
+    "fast-json-stringify": "^1.1.1",
     "benchmark": "^2.1.4",
     "browserify": "^15.1.0",
     "coveralls": "^3.0.0",
     "istanbul": "^0.4.5",
     "jasmine": "^3.0.0",
-    "jasmine-core": "^2.99.1"
+    "jasmine-core": "^2.99.1",
+    "cbor": "^4.0.0",
+    "msgpack": "^1.0.2"
   }
 }
