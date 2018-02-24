@@ -11,64 +11,68 @@ decoder.prototype._d = function(schema){
         var key = keys[i];
         var nextKey = keys[i+1];
         var schemaOfCurrentKey = properties[key];
-        if(this.dataToDecode[this.index] === chars.boundryChar/*  || fieldVal === "" */) {
+        if(this.currentChar() === chars.boundryChar/*  || fieldVal === "" */) {
             this.index++; 
         } 
         if(schemaOfCurrentKey.type.value === dataType.ARRAY.value){
             var itemSchema = schemaOfCurrentKey.properties; //schema of array item
             var item = getKey(itemSchema,0);
-            if(this.dataToDecode[this.index] === chars.nilChar){
+            if(this.currentChar() === chars.nilChar){
                 this.index++;
-            }else if(this.dataToDecode[this.index] === chars.emptyChar){
+            }else if(this.currentChar() === chars.emptyChar){
                 obj[key] = [];
                 this.index++;
-            }else if(this.dataToDecode[this.index] !== chars.arrStart){
+            }else if(this.currentChar() !== chars.arrStart){
                 throw Error("Parsing error: Array start char was expcted");
             }else{
                 this.index++;
                 obj[key] = []
                 do{
                     if(item.properties){
-                        if(this.dataToDecode[this.index] === chars.nilChar ){//don't add any key
-                            this.index++;
-                        }else if(this.dataToDecode[this.index] === chars.emptyChar){
-                            obj[key].push({}); this.index++;
-                        }else if(this.dataToDecode[this.index] !== chars.objStart){
-                            throw Error("Parsing error: Object start char was expcted");
-                        }else{
-                            this.index++;
-                            var result = this._d(item);
-                            if(result !== undefined){
-                                obj[key].push(result);
-                            }
-                        }
+                        this.processObject(item, function(result){
+                            obj[key].push(result);
+                        });
                     }else{
                         this.processPremitiveValue(obj,key,item,true);
                     }   
-                    
-                }while(this.dataToDecode[this.index] === chars.arraySepChar && ++this.index);
+                }while(this.currentChar() === chars.arraySepChar && ++this.index);
             }
         }else if(schemaOfCurrentKey.type.value === dataType.OBJECT.value){
-            if(this.dataToDecode[this.index] === chars.nilChar){
-                this.index++;
-            }else if(this.dataToDecode[this.index] === chars.emptyChar){
-                obj[key] = {};
-                this.index++;
-            }else if(this.dataToDecode[this.index] !== chars.objStart){
-                throw Error("Parsing error: Object start char was expcted");
-            }else{
-                this.index++;
-                var result = this._d(schemaOfCurrentKey);
-                if(result !== undefined){
-                    obj[key] = result;
-                }
-            }
+            this.processObject(schemaOfCurrentKey, function(result){
+                obj[key] = result;
+            });
         }else{
             this.processPremitiveValue(obj,key,schemaOfCurrentKey);
         }
     }
     return obj;
 }
+
+
+decoder.prototype.processObject = function(item,callback){
+    if(this.currentChar() === chars.nilChar){
+        this.index++;
+    }else if(this.currentChar() === chars.emptyChar){
+        callback({});
+        this.index++;
+    }else if(this.currentChar() !== chars.objStart){
+        throw Error("Parsing error: Object start char was expcted");
+    }else{
+        this.index++;
+        var result = this._d(item);
+        if(result !== undefined){
+            callback(result);
+        }
+    }
+}
+
+/**
+ * returns character index pointing to
+ */
+decoder.prototype.currentChar = function(){
+    return this.dataToDecode[this.index];
+}
+
 
 decoder.prototype.processPremitiveValue = function(obj,key,schemaOfCurrentKey,isArray){
     var val = "";
