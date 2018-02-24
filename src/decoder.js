@@ -1,6 +1,5 @@
 var chars = require("./chars").chars;
 var dataType = require("./schema").dataType;
-var getKey = require("./util").getKey;
 
 decoder.prototype._d = function(schema){
     var properties = schema.properties;
@@ -16,7 +15,7 @@ decoder.prototype._d = function(schema){
         } 
         if(schemaOfCurrentKey.type.value === dataType.ARRAY.value){
             var itemSchema = schemaOfCurrentKey.properties; //schema of array item
-            var item = getKey(itemSchema,0);
+            var item = itemSchema[schemaOfCurrentKey.name];//getKey(itemSchema,0);
             if(this.dataToDecode[this.index] === chars.nilChar){
                 this.index++;
             }else if(this.dataToDecode[this.index] === chars.emptyChar){

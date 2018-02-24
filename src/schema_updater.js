@@ -21,6 +21,11 @@ function updateDataType(schema,lastfieldSchema){
         var schemaOfCurrentKey = properties[key];
         var schemaOfNextKey = properties[nextKey];
         if(isArrayOrObject(schemaOfCurrentKey)){
+            var Ks = Object.keys(schemaOfCurrentKey.properties);
+            if(isArray(schemaOfCurrentKey) && Ks.length > 1) {
+                throw Error("Schema Error: Multiple objects are not allowed inside array");
+            }
+            schemaOfCurrentKey.name = Ks[0];
             if(schemaOfLastKey && isArrayOrObject(schemaOfLastKey) && lastFieldSchemaToSet){
                 lastFieldSchemaToSet = updateDataType(schemaOfCurrentKey,lastFieldSchemaToSet);
             }else{
@@ -29,8 +34,7 @@ function updateDataType(schema,lastfieldSchema){
             if(schemaOfNextKey === undefined){
                 return lastFieldSchemaToSet;
             }else{
-                var isArray = schemaOfCurrentKey.type === "array" || schemaOfCurrentKey.type === dataType.ARRAY;
-                setReadUntil(lastFieldSchemaToSet,schemaOfNextKey,isArray);
+                setReadUntil(lastFieldSchemaToSet,schemaOfNextKey,isArray(schemaOfCurrentKey));
             }
         }else{
             if( i===0 && lastfieldSchema){

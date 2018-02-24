@@ -1,6 +1,5 @@
 var chars = require("./chars").chars;
 var dataType = require("./schema").dataType;
-var getKey = require("./util").getKey;
 var charsArr = require("./chars").charsArr;
 
 var encode = function(jObj,e_schema){
@@ -20,20 +19,20 @@ var encode = function(jObj,e_schema){
             var isData = hasData(jObj[key]);
             if(isData === true){
                 str += chars.arrStart;
-                var itemSchema = getKey(properties[key].properties,0);
+                //var itemSchema = getKey(properties[key].properties,0);
+                var itemSchema = properties[key].properties[properties[key].name];
                 var itemSchemaType = itemSchema.type;
                 var arr_len = jObj[key].length;
-                for(var arr_i=0;arr_i < arr_len;arr_i++){
+                for(var arr_i=0;arr_i < arr_len;){
                     //if arraySepChar presents, next item is an array item.
                     if(itemSchemaType.value !== dataType.ARRAY.value && itemSchemaType.value !== dataType.OBJECT.value ){
                         str += checkForNilOrUndefined(jObj[key][arr_i],itemSchemaType);
                     }else{
-                        
                         var r =  encode(jObj[key][arr_i],itemSchema) ;
                         if( r !== chars.emptyChar) str += chars.objStart;
                         str = processObject(str,r);
                     }
-                    if(arr_len > arr_i+1){
+                    if(arr_len > ++arr_i){
                         str += chars.arraySepChar;
                     }
                 }
