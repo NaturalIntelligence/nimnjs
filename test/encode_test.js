@@ -65,6 +65,9 @@ describe("Nimn Encoder", function () {
         var expected = "gupta" + chars.boundryChar + "32";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected);
+        result = nimnEncoder.getDecoder().decode(result);
+        //console.log(JSON.stringify(result));
+        expect(result).toEqual(jData); 
     });
 
     it("should append undefined or null char without boundry char if last field undefined or null", function () {
@@ -85,6 +88,9 @@ describe("Nimn Encoder", function () {
         var expected = chars.nilPremitive + "32";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected);
+        result = nimnEncoder.getDecoder().decode(result);
+        //console.log(JSON.stringify(result));
+        expect(result).toEqual(jData); 
 
         var jData = {
             name : null,
@@ -93,6 +99,9 @@ describe("Nimn Encoder", function () {
         var expected = chars.nilPremitive + "32";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected);
+        result = nimnEncoder.getDecoder().decode(result);
+        //console.log(JSON.stringify(result));
+        expect(result).toEqual({ age : 32}); 
 
     }); 
 
@@ -118,11 +127,17 @@ describe("Nimn Encoder", function () {
             name : { first : null , middle: "kumar", last: "gupta"} ,
             age : 32
         }
-        var expected = chars.nilPremitive + "kumar" + chars.boundryChar + "gupta"
+        var expected = chars.objStart + chars.nilPremitive  + "kumar" + chars.boundryChar + "gupta"
             + chars.boundryChar
             + "32";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected);
+        result = nimnEncoder.getDecoder().decode(result);
+        //console.log(JSON.stringify(result));
+        expect(result).toEqual({
+            name : { middle: "kumar", last: "gupta"} ,
+            age : 32
+        }); 
     });
 
     it("should not append boundry char if last field can have dynamic value but it is undefined or null", function () {
@@ -147,19 +162,31 @@ describe("Nimn Encoder", function () {
             name : { first : null , middle: "kumar", last: null} ,
             age : 32
         }
-        var expected = chars.nilPremitive + "kumar" + chars.nilPremitive
+        var expected = chars.objStart + chars.nilPremitive + "kumar" + chars.nilPremitive
             + "32";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected);
+        result = nimnEncoder.getDecoder().decode(result);
+        //console.log(JSON.stringify(result));
+        expect(result).toEqual({
+            name : { middle: "kumar"} ,
+            age : 32
+        }); 
 
         var jData = {
             name : { first : null , middle: "kumar"} ,
             age : 32
         }
-        var expected = chars.nilPremitive + "kumar" + chars.nilPremitive
+        var expected = chars.objStart + chars.nilPremitive + "kumar" + chars.nilPremitive
             + "32";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected);
+        result = nimnEncoder.getDecoder().decode(result);
+        //console.log(JSON.stringify(result));
+        expect(result).toEqual({
+            name : { middle: "kumar"} ,
+            age : 32
+        }); 
 
         var jData = {
             name : null ,
@@ -168,6 +195,9 @@ describe("Nimn Encoder", function () {
         var expected = chars.nilChar + "32";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected);
+        result = nimnEncoder.getDecoder().decode(result);
+        //console.log(JSON.stringify(result));
+        expect(result).toEqual({ age : 32}); 
 
         var jData = {
             //name : {},
@@ -176,6 +206,9 @@ describe("Nimn Encoder", function () {
         var expected = chars.nilChar + "32";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected);
+        result = nimnEncoder.getDecoder().decode(result);
+        //console.log(JSON.stringify(result));
+        expect(result).toEqual(jData); 
 
     });
 
@@ -204,6 +237,9 @@ describe("Nimn Encoder", function () {
         var expected = chars.emptyChar + "32";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
+        result = nimnEncoder.getDecoder().decode(result);
+        //console.log(JSON.stringify(result));
+        expect(result).toEqual(jData); 
     });
 
     it("should encode data in the order it defines in schema", function () {
@@ -221,22 +257,35 @@ describe("Nimn Encoder", function () {
             ]
         }
 
-        //([12]|(.*?\b|[123])(.*?\b|[123])(.*?|[123]))
-        var expected = chars.nilPremitive + "kumar" + chars.boundryChar + "gupta"
-            + chars.boundryChar 
-            + "Stubmatic" + chars.boundryChar + "QA friendly tool to mock HTTP(s) calls"
+        var expected = chars.objStart + chars.nilPremitive + "kumar" + chars.boundryChar + "gupta"
+            + chars.arrStart 
+            + chars.objStart + "Stubmatic" + chars.boundryChar + "QA friendly tool to mock HTTP(s) calls"
             + chars.arraySepChar 
-            + "java aggregator" + chars.boundryChar + "1"
+            + chars.objStart + "java aggregator" + chars.boundryChar + "1"
             + chars.boundryChar 
             + "32";
 
         var nimnEncoder = new nimn(schema);
         var result = nimnEncoder.encode(jData);
-
-
         //console.log(result.length);
         //console.log(result);
         expect(result).toEqual(expected);
+        result = nimnEncoder.getDecoder().decode(result);
+        //console.log(JSON.stringify(result));
+        expect(result).toEqual({
+            age : 32,
+            name : {  middle: "kumar", last: "gupta"} ,
+            projects : [
+                {
+                    name : "Stubmatic",
+                    description : "QA friendly tool to mock HTTP(s) calls"
+                },{
+                    name : "java aggregator",
+                    description: "1"
+                }
+            ]
+        }
+); 
     });
 
 });

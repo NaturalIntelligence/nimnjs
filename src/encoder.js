@@ -19,6 +19,7 @@ var encode = function(jObj,e_schema){
         if(properties[key].type.value === dataType.ARRAY.value){
             var isData = hasData(jObj[key]);
             if(isData === true){
+                str += chars.arrStart;
                 var itemSchema = getKey(properties[key].properties,0);
                 var itemSchemaType = itemSchema.type;
                 var arr_len = jObj[key].length;
@@ -28,7 +29,9 @@ var encode = function(jObj,e_schema){
                     if(itemSchemaType.value !== dataType.ARRAY.value && itemSchemaType.value !== dataType.OBJECT.value ){
                         str += checkForNilOrUndefined(jObj[key][arr_i],itemSchemaType);
                     }else{
+                        
                         var r =  encode(jObj[key][arr_i],itemSchema) ;
+                        if( r !== chars.emptyChar) str += chars.objStart;
                         str = processObject(str,r);
                     }
                     if(arr_len > arr_i+1){
@@ -42,10 +45,12 @@ var encode = function(jObj,e_schema){
         }else if(properties[key].type.value === dataType.OBJECT.value){
             var isData = hasData(jObj[key]);
             if(isData === true){
+                str += chars.objStart;
                 var itemType = properties[key];
                 //boundry chars is needed for decoding
                 str = appendBoundryCharIfNeeded(str);
                 var r = encode(jObj[key],itemType)
+                //if( r !== chars.emptyChar) str += chars.objStart;
                 str = processObject(str,r);
             }else{
                 str += isData;
@@ -59,20 +64,24 @@ var encode = function(jObj,e_schema){
 }
 
 function processObject(str,r){
-    if(r === chars.emptyChar && chars.boundryChar  === str[str.length -1]){
-        str = str.replace(/.$/,chars.emptyChar);
+    if(!str) return r;
+
+    var lastChar = str[str.length - 1];
+    if(r === chars.emptyChar && chars.boundryChar  === lastChar){
+        //str = str.replace(/.$/,chars.emptyChar);
+        str = str.substring(0,str.length-1) + chars.emptyChar;
     }else{
-        if(!isAppChar(r[0]) && ( str.length > 0 && !isAppChar(str[str.length-1]))){
-            str += chars.boundryChar + r;
-        }else{
-            str += r;
+        if(!isAppChar(r[0]) && !isAppChar(lastChar)){
+            str += chars.boundryChar;
         }
+        str += r;
     }
     return str
 }
 
 var checkForNilOrUndefined= function(a,type){
     if(a === undefined || a === null) return chars.nilPremitive;
+    else if( a === "") return chars.emptyValue;
     else return type.parse(a);
 }
 

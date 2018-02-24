@@ -17,7 +17,9 @@ const chars= {
     yesChar : char(217),
     noChar : char(218),
     boundryChar : char(186),
-    arraySepChar: char(197)
+    arraySepChar: char(197),
+    objStart: char(198),
+    arrStart: char(199)
 }
 
 const charsArr = [
@@ -28,6 +30,8 @@ const charsArr = [
     chars.yesChar,
     chars.noChar,
     chars.arraySepChar,
+    chars.objStart,
+    chars.arrStart
 ]
 
 exports.chars = chars; 

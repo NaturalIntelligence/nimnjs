@@ -2,7 +2,7 @@ var boolean = require("./parsers/boolean");
 var numParser = require("./parsers/number");
 var dataType = require("./schema").dataType;
 var updateSchema = require("./schema_updater").updateSchema;
-var decode = require("./decoder").decode;
+var decoder = require("./decoder");
 var encode = require("./encoder").encode;
 
 function nimn(schema) {
@@ -13,13 +13,16 @@ function nimn(schema) {
     this.configDataType("object",returnBack,returnCallBack);
     this.configDataType("array",returnBack,returnCallBack);
 
-    updateSchema(schema);
-    this.e_schema = schema;
+    this.e_schema = Object.assign({},schema);
+    updateSchema(this.e_schema);
 }
 
 function returnBack(a){ return a}
 function returnCallBack(a,callBack){ callBack(a)}
 
+nimn.prototype.getDecoder= function(){
+    return new decoder(this.e_schema);
+}
 /**
  * To register encoder and decoder for specific data type. 
  * 
@@ -38,10 +41,6 @@ nimn.prototype.configDataType = function(type,parseWith,parseBackWith){
 
 nimn.prototype.encode = function(jObj){
         return encode(jObj,this.e_schema)
-}
-
-nimn.prototype.decode = function(objStr,options){
-    return decode(objStr,this.e_schema);
 }
 
 module.exports = nimn;

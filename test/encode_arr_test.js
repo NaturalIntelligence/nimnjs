@@ -81,7 +81,7 @@ describe("Nimn Encoder", function () {
             names : ["amit", "kumar"],
         }
         var expected = "32" 
-            + chars.boundryChar 
+            + chars.arrStart 
             + "amit" + chars.arraySepChar + "kumar"
             + chars.nilPremitive + chars.nilChar
             + chars.nilPremitive + chars.nilChar;
@@ -89,10 +89,9 @@ describe("Nimn Encoder", function () {
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
         //console.log(result);
-        result = nimnEncoder.decode(result);
+        result = nimnEncoder.getDecoder().decode(result);
         //console.log(JSON.stringify(result));
         expect(result).toEqual(jData); 
-
 
         var jData = {
             age : 32,
@@ -101,15 +100,16 @@ describe("Nimn Encoder", function () {
             bool: false
         }
         var expected = "32" 
-            + chars.boundryChar 
+            + chars.arrStart  
             + "amit" + chars.arraySepChar + "kumar"
             + chars.nilPremitive
+            + chars.arrStart 
             + "amit2" + chars.arraySepChar + "kumar2"
             + chars.noChar + chars.nilChar;
 
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
-        result = nimnEncoder.decode(result);
+        result = nimnEncoder.getDecoder().decode(result);
         //console.log(JSON.stringify(result));
         expect(result).toEqual(jData); 
 
@@ -120,12 +120,61 @@ describe("Nimn Encoder", function () {
         var expected = chars.emptyChar;
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
-        result = nimnEncoder.decode(result);
+        result = nimnEncoder.getDecoder().decode(result);
+        //console.log(JSON.stringify(result));
+        expect(result).toEqual(jData);  
+    }); 
+
+    it("1. , 1a. , 1b. & 2 should append boundry char only if surronuding field can have dynamic data", function () {
+        var schema = {
+            type : "object",
+            properties : {
+                "age" : { type : "number"},
+                "names" : {
+                    type: "array",
+                    properties : {
+                        "name" : { type : "string" }
+                    }
+                },
+                "str" : { type : "string"},
+                "names2" : {
+                    type: "array",
+                    properties : {
+                        "name" : { type : "string" }
+                    }
+                },
+                "names3" : {
+                    type: "array",
+                    properties : {
+                        "name" : { type : "string" }
+                    }
+                }
+            }
+        }
+
+        var nimnEncoder = new nimn(schema);
+
+        var jData = {
+            age : 32,
+            names : ["amit", "kumar"],
+            names2 : [""]
+        }
+        var expected = "32" 
+            + chars.arrStart 
+            + "amit" + chars.arraySepChar + "kumar"
+            + chars.nilPremitive 
+            + chars.arrStart + chars.emptyValue
+            + chars.nilChar;
+
+        var result = nimnEncoder.encode(jData);
+        expect(result).toEqual(expected); 
+        //console.log(result);
+        result = nimnEncoder.getDecoder().decode(result);
         //console.log(JSON.stringify(result));
         expect(result).toEqual(jData); 
     });
 
-    it("3., 4., 5., 5a., & 5b. should append boundry char only if two consecutive fields can have dynamic data", function () {
+     it("3., 4., 5., 5a., & 5b. should append boundry char only if two consecutive fields can have dynamic data", function () {
         var schema = {
             type : "object",
             properties : {
@@ -176,13 +225,16 @@ describe("Nimn Encoder", function () {
             names3 : [true, false],
             names4 : [{ name: "somename"}]  ,
         }
-        var expected = "true" + chars.arraySepChar + "false" 
-            + chars.boundryChar + "true" + chars.arraySepChar + "false" 
-            + chars.yesChar + chars.arraySepChar +  chars.noChar
-            + chars.yesChar + chars.arraySepChar +  chars.noChar
-            + "somename";
+        var expected = chars.arrStart  + "true" + chars.arraySepChar + "false" 
+            + chars.arrStart  + "true" + chars.arraySepChar + "false" 
+            + chars.arrStart + chars.yesChar + chars.arraySepChar +  chars.noChar
+            + chars.arrStart  + chars.yesChar + chars.arraySepChar +  chars.noChar
+            + chars.arrStart + chars.objStart + "somename";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
+        result = nimnEncoder.getDecoder().decode(result);
+        //console.log(JSON.stringify(result));
+        expect(result).toEqual(jData); 
 
     });
 
@@ -218,12 +270,15 @@ describe("Nimn Encoder", function () {
             names1 : [true, false],
             names2 : {}
         }
-        var expected = chars.emptyChar 
-            + chars.yesChar + chars.arraySepChar + chars.noChar
+        var expected =  chars.emptyChar 
+            + chars.arrStart  + chars.yesChar + chars.arraySepChar + chars.noChar
             + chars.emptyChar;
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
-    });
+        result = nimnEncoder.getDecoder().decode(result);
+        //console.log(JSON.stringify(result));
+        expect(result).toEqual(jData); 
+    }); 
 
     it("8. should not append boundry char when nearby field of surrounding array of object is app handle char", function () {
         var schema = {
@@ -268,14 +323,17 @@ describe("Nimn Encoder", function () {
             names1 : ["somename2","somename4"],
             names2 : [{}, { name : "someone3"}],
         }
-        var expected = "someone" + chars.arraySepChar + chars.emptyChar
-        + "somename2" + chars.arraySepChar + "somename4"
-        + chars.emptyChar + chars.arraySepChar  + "someone3";
+        var expected = chars.arrStart + chars.objStart + "someone" + chars.arraySepChar + chars.emptyChar
+        + chars.arrStart + "somename2" + chars.arraySepChar + "somename4"
+        + chars.arrStart + chars.emptyChar + chars.arraySepChar  + chars.objStart + "someone3";
         
         var result = nimnEncoder.encode(jData);
         //console.log(chars);
         //console.log(result);
         expect(result).toEqual(expected); 
+        result = nimnEncoder.getDecoder().decode(result);
+        //console.log(JSON.stringify(result));
+        expect(result).toEqual(jData); 
     });
 
     it(" 9., 10. should not append boundry char if surrounding field can have dynamic value while the array itself is empty", function () {
@@ -308,5 +366,81 @@ describe("Nimn Encoder", function () {
         var expected = "amit" + chars.emptyChar + chars.emptyChar;
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
-    });
+        result = nimnEncoder.getDecoder().decode(result);
+        //console.log(JSON.stringify(result));
+        expect(result).toEqual(jData); 
+    }); 
+
+    it(" custom", function () {
+        var schema = {
+            "type" : "object",
+            "properties" : {
+                "persons" : {
+                    "type" : "array",
+                        "properties" : {
+                            "person" : {
+                                "type" : "object",
+                                "properties" : {
+                                    "name" : { "type" : "string" },
+                                    "age" : { "type" : "number" },
+                                    "registered" : { "type" : "boolean" },
+                                    "calldetails" : {
+                                        "type": "array",
+                                        "properties" : {
+                                            "calldetail" : {
+                                                "type": "object",
+                                                "properties" : {
+                                                    "from" : { "type" : "string" },
+                                                    "to" : { "type" : "string" },
+                                                    "when" : { "type" : "date" }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                        }
+                    }
+                }
+            }
+        };
+
+        var nimnEncoder = new nimn(schema);
+
+        var data = { 
+            persons : [
+                {
+                    "name" : "somename",
+                    "age": 30,
+                    "registered" : true,
+                    "calldetails" : [
+                        {
+                            "from" : "123456789",
+                            "to" : "123456789",
+                            "when" : "2018-02-23T10:12:30.041Z"
+                        },
+                        {
+                            "from" : "123456789",
+                            "to" : "123456789",
+                            "when" : "2018-02-23T10:12:30.041Z"
+                        }
+                    ]
+                }
+            ]
+        };
+
+        var expected = chars.arrStart + chars.objStart
+        + "somename" + chars.boundryChar + "30" + chars.yesChar
+        + chars.arrStart + chars.objStart
+        + "123456789" + chars.boundryChar + "123456789" + chars.boundryChar + "2018-02-23T10:12:30.041Z"
+        + chars.arraySepChar + chars.objStart
+        + "123456789" + chars.boundryChar + "123456789" + chars.boundryChar + "2018-02-23T10:12:30.041Z"
+        ;
+        var result = nimnEncoder.encode(data);
+        //console.log(result);
+        expect(result).toEqual(expected); 
+        result = nimnEncoder.getDecoder().decode(result);
+        //console.log(JSON.stringify(result));
+        expect(result).toEqual(data); 
+
+    }); 
 });
