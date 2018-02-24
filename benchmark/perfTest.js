@@ -1,5 +1,5 @@
 var Benchmark = require('benchmark');
-var suite = new Benchmark.Suite("XML Parser benchmark");
+var suite = new Benchmark.Suite("JSON transformation benchmark");
 
 var nimn = require("../src/nimn");
 var schema = {
@@ -60,6 +60,9 @@ var msgpack = require('msgpack');
 var msgPackArr = msgpack.pack(data);
 console.log("MSGPACK arr: ", msgPackArr.length);
 
+var notepack = require('notepack.io');
+var pack = notepack.encode(data);
+console.log("notepack message: ", pack.length);
 /* 
 var toArr = function(obj){
     Object.keys(obj).map(function (key) { 
@@ -70,11 +73,14 @@ var toArr = function(obj){
 console.log("flat object: " + Object.values(data));
  */
 suite
+.add('JSON.stringify', function() {
+    JSON.stringify(data); 
+})
 .add('nimn Encode', function() {
   nimnEncoder.encode(data); 
 })
-.add('JSON.stringify', function() {
-    JSON.stringify(data); 
+.add('notepack messagepack encode', function() {
+    notepack.encode(data);
 })
 /* .add('cbore encode', function() {
     cbor.encode(data);
@@ -88,10 +94,12 @@ suite
 }) */
 .add('nimn Decode', function() {
   nimnEncoder.getDecoder().decode(nimnStr); 
-
 })
 .add('JSON.parse', function() {
     JSON.parse(jsonStr); 
+})
+.add('notepack messagepack decode', function() {
+    notepack.decode(pack); 
 })
 /* .add('cbore decode', function() {
     cbor.decode(cborArr);
