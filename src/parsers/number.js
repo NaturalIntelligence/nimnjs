@@ -4,13 +4,13 @@ function parse(val){
     return val;
 }
 
-function parseBack(val,callback){
+function parseBack(val){
     if(val.indexOf(".") !== -1){
         val = Number.parseFloat(val);
     }else{
         val = Number.parseInt(val,10);
     }
-    callback(val);
+    return val;
 }
 
 

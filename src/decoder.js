@@ -91,13 +91,12 @@ decoder.prototype.processPremitiveValue = function(obj,key,schemaOfCurrentKey,is
     }
     if(this.dataToDecode[this.index] === chars.boundryChar) this.index++;
     if(val !== chars.nilPremitive){
-        schemaOfCurrentKey.type.parseBack(val,function(result){
-            if(isArr){
-                obj[key].push(result);
-            }else{
-                obj[key] = result;
-            }
-        });
+        var result = schemaOfCurrentKey.type.parseBack(val);
+        if(isArr){
+            obj[key].push(result);
+        }else{
+            obj[key] = result;
+        }
     }
 }
 /**

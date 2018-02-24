@@ -7,18 +7,18 @@ var encode = require("./encoder").encode;
 
 function nimn(schema) {
     this.configDataType("boolean",boolean.parse,boolean.parseBack);
-    this.configDataType("string",returnBack,returnCallBack);
+    this.configDataType("string",returnBack,returnBack);
     this.configDataType("number",numParser.parse,numParser.parseBack);
-    this.configDataType("date",returnBack,returnCallBack);
-    this.configDataType("object",returnBack,returnCallBack);
-    this.configDataType("array",returnBack,returnCallBack);
+    this.configDataType("date",returnBack,returnBack);
+    this.configDataType("object",returnBack,returnBack);
+    this.configDataType("array",returnBack,returnBack);
 
     this.e_schema = Object.assign({},schema);
     updateSchema(this.e_schema);
 }
 
 function returnBack(a){ return a}
-function returnCallBack(a,callBack){ callBack(a)}
+//function returnCallBack(a,callBack){ callBack(a)}
 
 nimn.prototype.getDecoder= function(){
     return new decoder(this.e_schema);

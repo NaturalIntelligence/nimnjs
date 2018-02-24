@@ -4,8 +4,8 @@ function parse(val){
     return val ? chars.yesChar : chars.noChar;
 }
 
-function parseBack(val,callback){
-    callback(val === chars.yesChar ? true : false);
+function parseBack(val){
+    return val === chars.yesChar ? true : false;
 }
 
 
