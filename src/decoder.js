@@ -2,106 +2,86 @@ var chars = require("./chars").chars;
 var dataType = require("./schema").dataType;
 var getKey = require("./util").getKey;
 
-decoder.prototype._d = function(schema,fieldVal){
+decoder.prototype._d = function(schema){
     var properties = schema.properties;
     var keys = Object.keys(properties);
     var len = keys.length;
-    var obj = {};
-    //var fieldVal = this.readFieldValue();
+    var obj = {}
     for(var i=0; i< len; i++){
         var key = keys[i];
         var nextKey = keys[i+1];
         var schemaOfCurrentKey = properties[key];
-        if(fieldVal === chars.boundryChar/*  || fieldVal === "" */) {
-            fieldVal = this.readFieldValue();  
+        if(this.dataToDecode[this.index] === chars.boundryChar/*  || fieldVal === "" */) {
+            this.index++; 
         } 
-       if(schemaOfCurrentKey.type.value === dataType.ARRAY.value){
+        if(schemaOfCurrentKey.type.value === dataType.ARRAY.value){
             var itemSchema = schemaOfCurrentKey.properties; //schema of array item
             var item = getKey(itemSchema,0);
-            if(fieldVal === chars.nilChar ){//don't add any key
-            }else if(fieldVal === chars.emptyChar){
+            if(this.dataToDecode[this.index] === chars.nilChar){
+                this.index++;
+            }else if(this.dataToDecode[this.index] === chars.emptyChar){
                 obj[key] = [];
-            }else if(fieldVal !== chars.arrStart){
+                this.index++;
+            }else if(this.dataToDecode[this.index] !== chars.arrStart){
                 throw Error("Parsing error: Array start char was expcted");
             }else{
-                fieldVal = this.readFieldValue();
-                obj[key] = [];
-                while(true){
-                    
-                    if(item.properties){//object or array type
-                        if(fieldVal === chars.nilChar ){//don't add any key
-                        }else if(fieldVal === chars.emptyChar){
-                            obj[key].push({});
-                        }else if(fieldVal !== chars.objStart){
+                this.index++;
+                obj[key] = []
+                do{
+                    if(item.properties){
+                        if(this.dataToDecode[this.index] === chars.nilChar ){//don't add any key
+                            this.index++;
+                        }else if(this.dataToDecode[this.index] === chars.emptyChar){
+                            obj[key].push({}); this.index++;
+                        }else if(this.dataToDecode[this.index] !== chars.objStart){
                             throw Error("Parsing error: Object start char was expcted");
                         }else{
-                            fieldVal = this.readFieldValue();
-                            var result = this._d(item,fieldVal);
+                            this.index++;
+                            var result = this._d(item);
                             if(result !== undefined){
                                 obj[key].push(result);
                             }
                         }
                     }else{
-                        this.processPremitiveValue(obj,key,fieldVal,item,true);
-                    }
-                    fieldVal = this.readFieldValue();
-                    if(fieldVal === chars.arraySepChar){//read next array item
-                        fieldVal = this.readFieldValue();
-                    }else{//next field is not from this array
-                        break;
-                    }
-                }
-                continue;
+                        this.processPremitiveValue(obj,key,item,true);
+                    }   
+                    
+                }while(this.dataToDecode[this.index] === chars.arraySepChar && ++this.index);
             }
         }else if(schemaOfCurrentKey.type.value === dataType.OBJECT.value){
-            var typeOfFirstChild = getKey(schemaOfCurrentKey.properties,0).type;
-            if(fieldVal === chars.nilChar ){//don't add any key
-            }else if(fieldVal === chars.emptyChar){
+            if(this.dataToDecode[this.index] === chars.nilChar){
+                this.index++;
+            }else if(this.dataToDecode[this.index] === chars.emptyChar){
                 obj[key] = {};
-            }else if(fieldVal !== chars.objStart){
+                this.index++;
+            }else if(this.dataToDecode[this.index] !== chars.objStart){
                 throw Error("Parsing error: Object start char was expcted");
             }else{
-                fieldVal = this.readFieldValue();
-                obj[key] = {};
-                var result = this._d(schemaOfCurrentKey,fieldVal);
+                this.index++;
+                var result = this._d(schemaOfCurrentKey);
                 if(result !== undefined){
                     obj[key] = result;
                 }
             }
         }else{
-            if(fieldVal === chars.emptyChar){
-                obj = {};
-                break;
-            }else if(fieldVal === chars.nilChar){
-                obj = undefined;
-                break;
-            }else{
-                this.processPremitiveValue(obj,key,fieldVal,schemaOfCurrentKey);
-            }
+            this.processPremitiveValue(obj,key,schemaOfCurrentKey);
         }
-        if(len === i+1) continue;
-        fieldVal = this.readFieldValue();
     }
     return obj;
 }
 
-function isArrayOrObject(type){
-    return type.value === dataType.OBJECT.value || type.value === dataType.ARRAY.value ;
-}
-
-/**
- * Set key value is it is not null
- * @param {*} obj 
- * @param {string} key 
- * @param {string} val 
- * @param {boolean} isArray 
- */
-decoder.prototype.processPremitiveValue= function(obj,key,val,schemaOfCurrentKey,isArray){
-    /* if(val === ""){
-        val = this.readFieldValue();    
-    }else  */if(val === chars.emptyValue){
+decoder.prototype.processPremitiveValue = function(obj,key,schemaOfCurrentKey,isArray){
+    var val = "";
+    if(schemaOfCurrentKey.readUntil){
+        val = this.readFieldValue(schemaOfCurrentKey.readUntil);
+    }else{
+        val = this.dataToDecode[this.index];
+        this.index += val.length
+    }
+    if(val === chars.emptyValue){
         val = "";
     }
+    if(this.dataToDecode[this.index] === chars.boundryChar) this.index++;
     if(val !== chars.nilPremitive){
         schemaOfCurrentKey.type.parseBack(val,function(result){
             if(isArray){
@@ -113,27 +93,24 @@ decoder.prototype.processPremitiveValue= function(obj,key,val,schemaOfCurrentKey
     }
 }
 /**
- * Read field wise data from the given encoded data
+ * Read characters until app supported char is found
  * @param {string} str 
  * @param {number} i 
- * @returns field value
  */
-decoder.prototype.readFieldValue = function(){
-    if(this.counter === 0){
-        this.lastItem = this.regxResult ;
-        this.regxResult = this.fieldRegx.exec(this.dataToDecode);//reads 2 fields at a time
-        if(this.regxResult === null)//last unread data
-            return this.dataToDecode.substr(this.lastItem.index + this.lastItem[1].length + 1);
-        if(this.regxResult[1] === "") 
-            return this.regxResult[2];
-        this.counter++;
-        return this.regxResult[1];//returns 1st captured field
+decoder.prototype.readFieldValue = function(until){
+    var val = "";
+    var len = this.dataToDecode.length;
+    var start = this.index;
+    if(this.dataToDecode[start] === chars.nilPremitive){
+        this.index++;
+        return chars.nilPremitive;
     }else{
-        this.counter = 0;
-        if(this.regxResult === null) return null;
-        return this.regxResult[2];//returns 2nd captured field
+        for(;this.index < len && until.indexOf(this.dataToDecode[this.index]) === -1;this.index++ );
+        return this.dataToDecode.substr(start, this.index-start);
     }
+    
 }
+
 
 decoder.prototype.decode = function(objStr){
     if(!objStr || typeof objStr !== "string" || objStr.length === 0) throw Error("input should be a valid string");
@@ -145,18 +122,11 @@ decoder.prototype.decode = function(objStr){
         }
     } 
     this.dataToDecode = objStr;
-    return this._d(this.schema,this.readFieldValue());
+    return this._d(this.schema);
 }
 
 function decoder(schema){
-    this.counter = 0;
-    this.fieldRegx = new RegExp("(.*?)(["
-        + chars.arraySepChar + chars.boundryChar 
-        + chars.nilPremitive + chars.nilChar 
-        + chars.yesChar + chars.noChar
-        + chars.emptyChar + chars.emptyValue
-        + chars.objStart + chars.arrStart
-        +"])","g")
     this.schema = schema;
+    this.index= 0;
 }
 module.exports= decoder;
