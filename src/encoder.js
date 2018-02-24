@@ -23,7 +23,6 @@ var encode = function(jObj,e_schema){
                 var itemSchema = getKey(properties[key].properties,0);
                 var itemSchemaType = itemSchema.type;
                 var arr_len = jObj[key].length;
-                str = appendBoundryCharIfNeeded(str,jObj[key][0]);
                 for(var arr_i=0;arr_i < arr_len;arr_i++){
                     //if arraySepChar presents, next item is an array item.
                     if(itemSchemaType.value !== dataType.ARRAY.value && itemSchemaType.value !== dataType.OBJECT.value ){
@@ -47,10 +46,7 @@ var encode = function(jObj,e_schema){
             if(isData === true){
                 str += chars.objStart;
                 var itemType = properties[key];
-                //boundry chars is needed for decoding
-                str = appendBoundryCharIfNeeded(str);
                 var r = encode(jObj[key],itemType)
-                //if( r !== chars.emptyChar) str += chars.objStart;
                 str = processObject(str,r);
             }else{
                 str += isData;
@@ -68,10 +64,10 @@ function processObject(str,r){
 
     var lastChar = str[str.length - 1];
     if(r === chars.emptyChar && chars.boundryChar  === lastChar){
-        //str = str.replace(/.$/,chars.emptyChar);
-        str = str.substring(0,str.length-1) + chars.emptyChar;
+        //str = str.replace(/.$/,chars.emptyChar);//slower
+        str = str.substring(0,str.length-1) + chars.emptyChar;//faster
     }else{
-        if(!isAppChar(r[0]) && !isAppChar(lastChar)){
+        if(!(isAppChar(r[0]) || isAppChar(lastChar))){
             str += chars.boundryChar;
         }
         str += r;
@@ -112,8 +108,7 @@ function appendBoundryCharIfNeeded(str,next){
 
 var nonDataArr = [null, undefined, true, false]
 function isNonDataValue(ch){
-    return nonDataArr.indexOf(ch) !== -1 
-    || ( typeof ch === "object" && ch.length === 0 );
+    return nonDataArr.indexOf(ch) !== -1 || ( typeof ch === "object" && ch.length === 0 );
 }
 
 function isAppChar(ch){
