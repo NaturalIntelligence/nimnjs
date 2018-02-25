@@ -54,7 +54,7 @@ describe("Nimn Encoder", function () {
             name : "amit",
             names1 : { name: "amit"}
         }
-        var expected = "amit" + chars.objStart + "amit";
+        var expected = chars.objStart + "amit" + chars.objStart + "amit";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
         result = nimnEncoder.getDecoder().decode(result);
@@ -64,7 +64,7 @@ describe("Nimn Encoder", function () {
         var jData = {
             names1 : { name: "amit"}
         }
-        var expected =  chars.nilPremitive + chars.objStart + "amit";
+        var expected =  chars.objStart + chars.missingPremitive + chars.objStart + "amit";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
         result = nimnEncoder.getDecoder().decode(result);
@@ -75,7 +75,7 @@ describe("Nimn Encoder", function () {
             name : "amit",
             names1 : {}
         }
-        var expected =  "amit" + chars.emptyChar;
+        var expected =  chars.objStart + "amit" + chars.emptyChar;
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected);
         result = nimnEncoder.getDecoder().decode(result);
@@ -84,7 +84,7 @@ describe("Nimn Encoder", function () {
         var jData = {
             name : "amit",
         }
-        var expected =  "amit" + chars.nilChar;
+        var expected =  chars.objStart + "amit" + chars.missingChar;
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
         result = nimnEncoder.getDecoder().decode(result);
@@ -117,7 +117,7 @@ describe("Nimn Encoder", function () {
             names1 : { name: true},
             names2 : { name: "amit"}
         }
-        var expected = chars.objStart  
+        var expected = chars.objStart  + chars.objStart  
         + chars.yesChar + chars.objStart   + "amit";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
@@ -128,7 +128,7 @@ describe("Nimn Encoder", function () {
         var jData = {
             names2 : { name: "amit"}
         }
-        var expected =  chars.nilChar + chars.objStart + "amit";
+        var expected =  chars.objStart + chars.missingChar + chars.objStart + "amit";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
         result = nimnEncoder.getDecoder().decode(result);
@@ -139,7 +139,7 @@ describe("Nimn Encoder", function () {
             names1 : { name: true},
             names2 : {}
         }
-        var expected = chars.objStart + chars.yesChar + chars.emptyChar;
+        var expected = chars.objStart + chars.objStart + chars.yesChar + chars.emptyChar;
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
         result = nimnEncoder.getDecoder().decode(result);
@@ -149,7 +149,7 @@ describe("Nimn Encoder", function () {
         var jData = {
             names1 : { name: true},
         }
-        var expected =  chars.objStart + chars.yesChar + chars.nilChar;
+        var expected =  chars.objStart + chars.objStart + chars.yesChar + chars.missingChar;
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
         result = nimnEncoder.getDecoder().decode(result);
@@ -178,7 +178,7 @@ describe("Nimn Encoder", function () {
             name : true,
             names1 : { name: "amit"}
         }
-        var expected = chars.yesChar + chars.objStart + "amit";
+        var expected = chars.objStart + chars.yesChar + chars.objStart + "amit";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
         result = nimnEncoder.getDecoder().decode(result);
@@ -188,7 +188,7 @@ describe("Nimn Encoder", function () {
         var jData = {
             names1 : { name: "amit"}
         }
-        var expected =  chars.nilPremitive + chars.objStart + "amit";
+        var expected =  chars.objStart + chars.missingPremitive + chars.objStart + "amit";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
         result = nimnEncoder.getDecoder().decode(result);
@@ -199,7 +199,7 @@ describe("Nimn Encoder", function () {
             name : true,
             names1 : {}
         }
-        var expected =  chars.yesChar + chars.emptyChar;
+        var expected =  chars.objStart  + chars.yesChar + chars.emptyChar;
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
         result = nimnEncoder.getDecoder().decode(result);
@@ -209,7 +209,7 @@ describe("Nimn Encoder", function () {
         var jData = {
             name : true,
         }
-        var expected =  chars.yesChar + chars.nilChar;
+        var expected =  chars.objStart + chars.yesChar + chars.missingChar;
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
         result = nimnEncoder.getDecoder().decode(result);
@@ -243,7 +243,7 @@ describe("Nimn Encoder", function () {
             names1 : { name: "amit"},
             names2 : { name: "amit"}
         }
-        var expected =  chars.objStart +"amit" + chars.objStart + "amit";
+        var expected =  chars.objStart + chars.objStart +"amit" + chars.objStart + "amit";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
         result = nimnEncoder.getDecoder().decode(result);
@@ -253,7 +253,7 @@ describe("Nimn Encoder", function () {
         var jData = {
             names2 : { name: "amit"}
         }
-        var expected =  chars.nilChar + chars.objStart +"amit";
+        var expected =  chars.objStart + chars.missingChar + chars.objStart +"amit";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
         result = nimnEncoder.getDecoder().decode(result);
@@ -264,7 +264,7 @@ describe("Nimn Encoder", function () {
             names1 : { name: "amit"},
             names2 : {}
         }
-        var expected =  chars.objStart + "amit" + chars.emptyChar;
+        var expected =  chars.objStart + chars.objStart + "amit" + chars.emptyChar;
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
         result = nimnEncoder.getDecoder().decode(result);
@@ -299,7 +299,7 @@ describe("Nimn Encoder", function () {
             names1 : { "obj" : {name: "amit"}},
             name : "amit",
         }
-        var expected = chars.objStart + chars.objStart + "amit" + chars.boundryChar + "amit";
+        var expected = chars.objStart + chars.objStart + chars.objStart + "amit" + chars.boundryChar + "amit";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
         result = nimnEncoder.getDecoder().decode(result);
@@ -311,7 +311,7 @@ describe("Nimn Encoder", function () {
             names1 : { "obj" : {}},
             name : "amit",
         }
-        var expected =  chars.objStart + chars.emptyChar + "amit";
+        var expected =  chars.objStart + chars.objStart + chars.emptyChar + "amit";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
         result = nimnEncoder.getDecoder().decode(result);
@@ -322,7 +322,7 @@ describe("Nimn Encoder", function () {
             names1 : {},
             name : "amit",
         }
-        var expected =  chars.emptyChar + "amit";
+        var expected =  chars.objStart + chars.emptyChar + "amit";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected);
         result = nimnEncoder.getDecoder().decode(result);
@@ -332,7 +332,7 @@ describe("Nimn Encoder", function () {
         var jData = {
             name : "amit",
         }
-        var expected =  chars.nilChar + "amit";
+        var expected =  chars.objStart + chars.missingChar + "amit";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
         result = nimnEncoder.getDecoder().decode(result);

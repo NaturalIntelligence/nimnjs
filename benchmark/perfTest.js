@@ -3,44 +3,162 @@ var suite = new Benchmark.Suite("JSON transformation benchmark");
 
 var nimn = require("../src/nimn");
 var schema = {
-    "title": "root",
-    type : "object",
-    properties : {
-        "names1" : {
-            type: "object",
-            properties : {
-                "name" : { type : "boolean" },
-                "names1" : {
-                    type: "object",
-                    properties : {
-                        "name" : { type : "string" }
-                    }
+    "type" : "object",
+    "properties" : {
+        "persons" : {
+            "type" : "array",
+                "properties" : {
+                    "person" : {
+                        "type" : "object",
+                        "properties" : {
+                            "name" : { "type" : "string" },
+                            "age" : { "type" : "number" },
+                            "registered" : { "type" : "boolean" },
+                            "calldetails" : {
+                                "type": "array",
+                                "properties" : {
+                                    "calldetail" : {
+                                        "type": "object",
+                                        "properties" : {
+                                            "from" : { "type" : "string" },
+                                            "to" : { "type" : "string" },
+                                            "when" : { "type" : "date" }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                 }
             }
-        },
-        "names2" : {
-            type: "object",
-            properties : {
-                "name" : { type : "string" }
-            }
         }
     }
-}
+};
 
 var nimnEncoder = new nimn(schema);
-//console.log(schema);
 
-var data = {
-    names1 : {
-        name: true,
-        names1 : {
-            name: "amit"
+var data = { 
+    persons : [
+        {
+            "name" : "somename",
+            "age": 30,
+            "registered" : true,
+            "calldetails" : [
+                {
+                    "from" : "123456789",
+                    "to" : "123456789",
+                    "when" : "2018-02-23T10:12:30.041Z"
+                },
+                {
+                    "from" : "123456789",
+                    "to" : "123456789",
+                    "when" : "2018-02-23T10:12:30.041Z"
+                }
+            ]
+        },
+        {
+            "name" : "somename",
+            "age": 30,
+            //"registered" : true,
+            "calldetails" : [
+                {
+                    "from" : "123456789",
+                    "to" : "123456789",
+                    "when" : "2018-02-23T10:12:30.041Z"
+                },
+                {
+                    "from" : "123456789",
+                    "to" : "123456789",
+                    "when" : "2018-02-23T10:12:30.041Z"
+                }
+            ]
+        },
+        {
+            "name" : "somename",
+            "age": 30,
+            //"registered" : true,
+            "calldetails" : [
+                {
+                    "from" : "123456789",
+                    "to" : "123456789",
+                    "when" : "2018-02-23T10:12:30.041Z"
+                },
+                {
+                    "from" : "123456789",
+                    "to" : "123456789",
+                    "when" : "2018-02-23T10:12:30.041Z"
+                }
+            ]
+        },
+        {
+            "name" : "somename",
+            "age": 30,
+            //"registered" : true,
+            "calldetails" : [
+                {
+                    "from" : "123456789",
+                    "to" : "123456789",
+                    "when" : "2018-02-23T10:12:30.041Z"
+                },
+                {
+                    "from" : "123456789",
+                    "to" : "123456789",
+                    "when" : "2018-02-23T10:12:30.041Z"
+                }
+            ]
+        },
+        {
+            "name" : "somename",
+            "age": 30,
+            //"registered" : true,
+            "calldetails" : [
+                {
+                    "from" : "123456789",
+                    "to" : "123456789",
+                    "when" : "2018-02-23T10:12:30.041Z"
+                },
+                {
+                    "from" : "123456789",
+                    "to" : "123456789",
+                    "when" : "2018-02-23T10:12:30.041Z"
+                }
+            ]
+        },
+        {
+            "name" : "somename",
+            "age": 30,
+            //"registered" : true,
+            "calldetails" : [
+                {
+                    "from" : "123456789",
+                    "to" : "123456789",
+                    "when" : "2018-02-23T10:12:30.041Z"
+                },
+                {
+                    "from" : "123456789",
+                    "to" : "123456789",
+                    "when" : "2018-02-23T10:12:30.041Z"
+                }
+            ]
+        },
+        {
+            "name" : "somename",
+            "age": 30,
+            //"registered" : true,
+            "calldetails" : [
+                {
+                    "from" : "123456789",
+                    "to" : "123456789",
+                    "when" : "2018-02-23T10:12:30.041Z"
+                },
+                {
+                    "from" : "123456789",
+                    "to" : "123456789",
+                    "when" : "2018-02-23T10:12:30.041Z"
+                }
+            ]
         }
-    },
-    names2 : {
-        name: "gupta",
-    }
-}
+    ]
+};
 
 const fastJson = require('fast-json-stringify')
 //const stringify = fastJson(schema);
@@ -79,9 +197,9 @@ suite
 .add('nimn Encode', function() {
   nimnEncoder.encode(data); 
 })
-.add('notepack messagepack encode', function() {
+/* .add('notepack messagepack encode', function() {
     notepack.encode(data);
-})
+}) */
 /* .add('cbore encode', function() {
     cbor.encode(data);
 })
@@ -94,13 +212,13 @@ suite
 }) */
 .add('nimn Decode', function() {
   nimnEncoder.getDecoder().decode(nimnStr); 
-})
+}) 
 .add('JSON.parse', function() {
     JSON.parse(jsonStr); 
 })
-.add('notepack messagepack decode', function() {
+/* .add('notepack messagepack decode', function() {
     notepack.decode(pack); 
-})
+}) */
 /* .add('cbore decode', function() {
     cbor.decode(cborArr);
 })

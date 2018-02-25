@@ -68,13 +68,13 @@ function setReadUntil(current,next,isArrayFlag){
         //do nothing
     }else{
         if(next.type === "boolean" || next.type === dataType.BOOLEAN){
-            (current.readUntil = current.readUntil || []).push(chars.yesChar, chars.noChar, chars.nilPremitive);
+            (current.readUntil = current.readUntil || []).push(chars.yesChar, chars.noChar, chars.nilPremitive, chars.missingPremitive);
         }else if(isObject(next)){
-            (current.readUntil = current.readUntil || []).push(chars.nilChar, chars.emptyChar, chars.objStart);
+            (current.readUntil = current.readUntil || []).push(chars.nilChar, chars.missingChar, chars.emptyChar, chars.objStart);
         }else if(isArray(next)){
-            (current.readUntil = current.readUntil || []).push(chars.nilChar, chars.emptyChar, chars.arrStart);
+            (current.readUntil = current.readUntil || []).push(chars.nilChar, chars.missingChar, chars.emptyChar, chars.arrStart);
         }else{
-            (current.readUntil = current.readUntil || []).push(chars.boundryChar, chars.nilPremitive, chars.arraySepChar);
+            (current.readUntil = current.readUntil || []).push(chars.boundryChar, chars.nilPremitive, chars.missingPremitive, chars.arraySepChar);
         }
         if(isArrayFlag) current.readUntil.push (chars.arraySepChar);
     }

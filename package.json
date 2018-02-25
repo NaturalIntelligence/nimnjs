@@ -4,8 +4,9 @@
   "description": "Schema awared compression of JSON data",
   "main": "nimn.js",
   "scripts": {
-    "test": "jasmine test/*test.js",
-    "coverage": "node ./benchmark/perfTest.js; istanbul cover -x \"test/*test.js\" jasmine test/*test.js;",
+    "test": "jasmine tests/*test.js",
+    "bundle": "browserify src/nimn.js -s nimn -o dist/nimn.js",
+    "coverage": "istanbul cover -x \"tests/*test.js\" jasmine tests/*test.js;",
     "coverage:check": "istanbul check-coverage --branch 90 --statement 90"
   },
   "keywords": [

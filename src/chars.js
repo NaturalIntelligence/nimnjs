@@ -8,10 +8,10 @@ var char = require("./util").char;
  */
 
 const chars= {
-    nilChar : char(0),
-    missingChar : char(0),
+    nilChar : char(254),
+    missingChar : char(200),
     nilPremitive : char(176),
-    missingPremitive : char(176),
+    missingPremitive : char(201),
     emptyChar : char(177),
     emptyValue:  char(178),
     yesChar : char(217),
@@ -25,6 +25,8 @@ const chars= {
 const charsArr = [
     chars.nilChar ,
     chars.nilPremitive,
+    chars.missingChar,
+    chars.missingPremitive,
     chars.boundryChar ,
     chars.emptyChar,
     chars.yesChar,
