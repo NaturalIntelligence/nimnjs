@@ -1,6 +1,14 @@
 # nimnjs-node
 JS implementation of nimn specification
 
+[![Code Climate](https://codeclimate.com/github/nimndata/nimnjs-node//badges/gpa.svg)](https://codeclimate.com/github/nimndata/nimnjs-node/) 
+[![Known Vulnerabilities](https://snyk.io/test/github/nimndata/nimnjs-node//badge.svg)](https://snyk.io/test/github/nimndata/nimnjs-node/) 
+[![Travis ci Build Status](https://travis-ci.org/nimndata/nimnjs-node/.svg?branch=master)](https://travis-ci.org/nimndata/nimnjs-node/) 
+[![Coverage Status](https://coveralls.io/repos/github/nimndata/nimnjs-node//badge.svg?branch=master)](https://coveralls.io/github/nimndata/nimnjs-node/?branch=master)
+
+
+<img align="right" src="static/img/nimnjs-logo.png" /> 
+
 ## Introduction
 See Nimn [specification](https://github.com/nimndata/spec) for more detail.
 
