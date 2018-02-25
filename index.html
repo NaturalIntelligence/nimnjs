@@ -1,0 +1,104 @@
+<html>
+    <head>
+        <title>निम्न | NIMN</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css">
+        <link rel="stylesheet" href="static/css/jquery-confirm.min.css">
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+
+        <script src="dist/nimn.js"></script>
+        <script src="static/js/jquery-confirm.min.js"></script>
+        <script src="static/js/nimn-schema-builder.js"></script>
+    </head>
+    <body>
+            <div class="container-fluid">
+
+                    <a href="https://github.com/nimndata/nimnjs-node"><img class="bring-up" style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/121cd7cbdc3e4855075ea8b558508b91ac463ac2/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png"></a>
+            
+                    <div class="row">
+                        <div class="col-md-12" style="text-align: center">
+                                <img src="static/img/nimnjs-logo.png" >
+                        </div>
+                    </div>
+                    <div class="row">
+                            <div class="col-md-4">
+                                    <textarea id="txtJson" name="json" rows="30" class="form-control" placeholder="Paste JSON here"></textarea>
+                            </div>
+                            <div class="col-md-4">
+                                <br>
+                                <br>
+                                <br>    
+                                <button id="j2n" style="width: 100%" class="btn btn-primary" type="button">&gt;&gt; NIMN  data</button>
+                                <br>
+                                <br>
+                                <br>
+                                <button id="n2j" style="width: 100%" class="btn btn-primary" type="button">&lt;&lt; JSON</button>
+                                <br>
+                                <br>
+                                <textarea id="txtNimnSchema" name="nimn" rows="20" class="form-control" placeholder="Paste NIMN schema here"></textarea>
+                            </div>
+                            <div class="col-md-4">
+                                    <textarea id="txtNimn" name="nimn" rows="30" class="form-control" placeholder="Paste NIMN data here"></textarea>
+                            </div>
+            </div>
+
+            <script>
+                $( document ).ready(function() {
+                    setTimeout(function(){
+                        $.dialog({
+                            title: '',
+                            content: '<p>Give a '
+                                    + '<a href="https://github.com/nimndata/nimnjs-node">start</a> to appreciate the work'
+                                    + '.</p>'
+                        });
+                    }, 5000);
+
+                    $("#j2n").click(function(){
+                        try{
+                            var jObj = JSON.parse($('#txtJson').val());
+                            var schema = nimnSchemaBuilder.build(jObj);
+                            $('#txtNimnSchema').text(JSON.stringify(schema,null,4));
+                            var nimnEncoder = new nimn(schema);
+                            var result = nimnEncoder.encode(jObj);
+                            $('#txtNimn').text(result);
+                        }catch(e){
+                            $('#txtNimn').text(e);
+                        }
+                    });
+
+                    $("#n2j").click(function(){
+                        try{
+                            var schemaStr = $('#txtNimnSchema').val();
+                            var nimnData = $('#txtNimn').val()
+                            if(schemaStr === ""){
+                                $.dialog({
+                                    title: 'Schema is not given',
+                                    content: '<p>NIMN data parsing depends on the JSON schema. <br> It can\'t be empty.</p>'
+                                });
+                            }else if(nimnData === "" ){
+                                $.dialog({
+                                    title: 'Nimn Data is not given',
+                                    content: '<p>OOPS!! You have missed to feed NIMN data</p>'
+                                });
+                            } else{
+                                var schema = JSON.parse(schemaStr);
+                                var nimnDecoder = new nimn(schema);
+                                var result = nimnDecoder.getDecoder().decode(nimnData);
+                                $('#txtJson').val(
+                                    JSON.stringify(result,null,4)
+                                );
+                            }
+                            
+                        }catch(e){
+                            $('#txtJson').val(e);
+                        }
+                    });
+                });
+            </script>
+
+    </body>
+</html>
