@@ -181,15 +181,7 @@ console.log("MSGPACK arr: ", msgPackArr.length);
 var notepack = require('notepack.io');
 var pack = notepack.encode(data);
 console.log("notepack message: ", pack.length);
-/* 
-var toArr = function(obj){
-    Object.keys(obj).map(function (key) { 
-        if(typeof key === "object" ) return toArr(key); 
-        return obj[key]; 
-    });
-}
-console.log("flat object: " + Object.values(data));
- */
+
 suite
 .add('JSON.stringify', function() {
     JSON.stringify(data); 
