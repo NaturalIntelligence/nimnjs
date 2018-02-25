@@ -1,20 +1,68 @@
 # nimnjs-node
 JS implementation of nimn specification
 
+## Introduction
+See Nimn [specification](https://github.com/nimndata/spec) for more detail.
 
-## Benchmark
+## Usages
+First install or add to your npm package
+```
+$npm install nimn_schema_builder
+```
 
-### Data size
-NIMN string : 13
-JSON string : 75
-CBOR arr : 52
-MSGPACK arr : 52
+```js
+var nimn = require("nimnjs");
 
-### Processing time
-JSON.stringify : 1169794.6919116746 requests/second
-nimn Encode : 1091362.3258166446 requests/second
-notepack messagepack encode : 691799.2320991316 requests/second
+var schema = {
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string"
+        },
+        "age": {
+            "type": "number"
+        },
+        "male": {
+            "type": "boolean"
+        },
+        "projects": {
+            "type": "array",
+            "properties": {
+                "item": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string"
+                        },
+                        "decription": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 
-JSON.parse : 700679.4015321195 requests/second
-nimn Decode : 932112.281887193 requests/second
-notepack messagepack decode : 400395.87049678445 requests/second
+var nimnObj = new nimn(schema);
+
+var data = {
+    "name" : "amit",
+    "age" : 32,
+    "male" : true,
+    "projects" : [
+        {
+            "name": "some",
+            "decription" : "some long description"
+        }
+    ]
+}
+
+var result = nimnObj.encode(data);//Æamitº32ÙÇÆsomeºsome long description
+result = nimnObj.getDecoder().decode(result);
+expect(result).toEqual(data); 
+```
+You can also use it in browser from [dist](dist/nimn.js) folder.
+
+
+Check the [demo](https://nimndata.github.io/nimnjs-node/) for instant use. It generates schema automatically with the help of [schema builder](https://github.com/nimndata/nimnjs-schema-builder) when sample json is provided.
