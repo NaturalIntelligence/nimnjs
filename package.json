@@ -10,12 +10,18 @@
     "coverage:check": "istanbul check-coverage --branch 90 --statement 90"
   },
   "keywords": [
-    "nimn"
+    "nimn",
+    "nimnjs",
+    "json",
+    "compress",
+    "parse",
+    "format"
   ],
-  "author": "Amit Gupta",
-  "license": "ISC",
+  "author": "Amit Gupta (https://github.com/amitguptagwl)",
+  "license": "MIT",
   "dependencies": {
-    
+    "nimn-date-parser": "^1.0.0",
+    "nimn_schema_builder": "^1.0.0"
   },
   "devDependencies": {
     "benchmark": "^2.1.4",
