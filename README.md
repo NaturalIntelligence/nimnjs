@@ -15,7 +15,7 @@ See Nimn [specification](https://github.com/nimndata/spec) for more detail.
 ## Usages
 First install or add to your npm package
 ```
-$npm install nimn_schema_builder
+$npm install nimnjs
 ```
 
 ```js
