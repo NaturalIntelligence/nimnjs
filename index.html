@@ -10,9 +10,10 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.js"></script>
         <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
 
-        <script src="dist/nimn.js"></script>
         <script src="static/js/jquery-confirm.min.js"></script>
+        <script src="dist/nimn.js"></script>
         <script src="static/js/nimn-schema-builder.js"></script>
+        <script src="static/js/nimn-dateparser.js"></script>
     </head>
     <body>
             <div class="container-fluid">
@@ -35,6 +36,7 @@
                                 <button id="j2n" style="width: 100%" class="btn btn-primary" type="button">&gt;&gt; NIMN  data</button>
                                 <br>
                                 <br>
+                                <input id="nimnDt" class="" type="checkbox">Compress dates
                                 <br>
                                 <button id="n2j" style="width: 100%" class="btn btn-primary" type="button">&lt;&lt; JSON</button>
                                 <br>
@@ -60,9 +62,24 @@
                     $("#j2n").click(function(){
                         try{
                             var jObj = JSON.parse($('#txtJson').val());
-                            var schema = nimnSchemaBuilder.build(jObj);
-                            $('#txtNimnSchema').text(JSON.stringify(schema,null,4));
+                            var schema = {};
+                            if($('#txtNimnSchema').val()){
+                                schema =  JSON.parse($('#txtNimnSchema').val()
+                                );
+                            }else{
+                                schema = nimnSchemaBuilder.build(jObj);
+                                $('#txtNimnSchema').text(JSON.stringify(schema,null,4));
+                            }
+
                             var nimnEncoder = new nimn(schema);
+
+                            if($("#nimnDt").prop("checked")){
+                                nimnEncoder.configDataType("date",function(val){
+                                    return nimnDateparser.parse(val,true,true,true)
+                                },function(val){
+                                     return nimnDateparser.parseBack(val,true,true,true)
+                                });
+                            }
                             var result = nimnEncoder.encode(jObj);
                             $('#txtNimn').text(result);
                         }catch(e){
@@ -87,6 +104,13 @@
                             } else{
                                 var schema = JSON.parse(schemaStr);
                                 var nimnDecoder = new nimn(schema);
+                                if($("#nimnDt").prop("checked")){
+                                    nimnEncoder.configDataType("date",function(val){
+                                        return nimnDateparser.parse(val,true,true,true)
+                                    },function(val){
+                                         return nimnDateparser.parseBack(val,true,true,true)
+                                    });
+                                }
                                 var result = nimnDecoder.getDecoder().decode(nimnData);
                                 $('#txtJson').val(
                                     JSON.stringify(result,null,4)
