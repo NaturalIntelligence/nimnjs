@@ -3,3 +3,6 @@ static
 index.html
 coverage
 benchmark
+dist
+.codeclimate.yml
+.travis.yml
