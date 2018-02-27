@@ -1,7 +1,7 @@
 var nimn = require("../src/nimn");
 var chars = require("../src/chars").chars;
 
-describe("Nimn Encoder", function () {
+describe("Nimn ", function () {
     it("should error when invalid start of object ", function () {
         var schema = {
             type : "object",
@@ -76,6 +76,26 @@ describe("Nimn Encoder", function () {
         
         expect(function(){
             var nimnEncoder = new nimn(schema);
+        }).toThrow(); 
+    });
+
+    it("should error when empty etring is provided to decode ", function () {
+        var schema = {
+            type : "object",
+            properties : {
+                "age" : { type : "number"},
+                "names" : {
+                    type: "array",
+                    properties : {
+                        "name" : { type : "string" }
+                    }
+                }
+            }
+        }
+        
+        var nimnEncoder = new nimn(schema);
+        expect(function(){
+            nimnEncoder.getDecoder().decode("");
         }).toThrow(); 
     });
 });
