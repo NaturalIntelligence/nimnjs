@@ -30,7 +30,6 @@ decoder.prototype._d = function(schema){
                     }while(this.dataToDecode[this.index] === chars.arraySepChar && ++this.index);
                     return obj;
                 }
-            break;
             case dataType.OBJECT.value:
                 if(this.currentChar() === chars.emptyChar){
                     this.index++;
@@ -50,39 +49,12 @@ decoder.prototype._d = function(schema){
                     }
                     return obj;
                 }
-            break;
             default://premitive
                 return this.readPremitiveValue(schema);
         }
     
     }
 
-}
-
-
-decoder.prototype.processObject = function(obj,key,item,isArr){
-    if(this.dataToDecode[this.index] === chars.nilChar){
-        this.index++;
-    }else if(this.dataToDecode[this.index] === chars.emptyChar){
-        if(isArr){
-            obj[key].push({});
-        }else{
-            obj[key] = {};
-        }
-        this.index++;
-    }else if(this.dataToDecode[this.index] !== chars.objStart){
-        throw Error("Parsing error: Object start char was expcted");
-    }else{
-        this.index++;
-        var result = this._d(item);
-        if(result !== undefined){
-            if(isArr){
-                obj[key].push(result);
-            }else{
-                obj[key] = result;
-            }
-        }
-    }
 }
 
 /**
@@ -108,28 +80,6 @@ decoder.prototype.readPremitiveValue = function(schemaOfCurrentKey){
     return schemaOfCurrentKey.type.parseBack(val);
 }
 
-
-decoder.prototype.processPremitiveValue = function(obj,key,schemaOfCurrentKey,isArr){
-    var val = "";
-    if(schemaOfCurrentKey.readUntil){
-        val = this.readFieldValue(schemaOfCurrentKey.readUntil);
-    }else{
-        val = this.dataToDecode[this.index];
-        this.index += val.length
-    }
-    if(val === chars.emptyValue){
-        val = "";
-    }
-    if(this.dataToDecode[this.index] === chars.boundryChar) this.index++;
-    if(val !== chars.nilPremitive){
-        var result = schemaOfCurrentKey.type.parseBack(val);
-        if(isArr){
-            obj[key].push(result);
-        }else{
-            obj[key] = result;
-        }
-    }
-}
 /**
  * Read characters until app supported char is found
  * @param {string} str 
