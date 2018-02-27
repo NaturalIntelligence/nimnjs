@@ -52,7 +52,7 @@ describe("Nimn Encoder", function () {
             type : "object",
             properties : {
                 "name" : { type : "string"},
-                "age" : { type : "number"}
+                "marks" : { type : "number"}
             }
         }
 
@@ -60,9 +60,9 @@ describe("Nimn Encoder", function () {
 
         var jData = {
             name : "gupta",
-            age : 32
+            marks : 87.9
         }
-        var expected = chars.objStart + "gupta" + chars.boundryChar + "32";
+        var expected = chars.objStart + "gupta" + chars.boundryChar + "87.9";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected);
         result = nimnEncoder.getDecoder().decode(result);
