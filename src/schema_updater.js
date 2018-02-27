@@ -8,45 +8,39 @@ var dataType = require("./schema").dataType;
  * @param {*} schema 
  * @param {*} lastfieldSchema 
  */
-function updateDataType(schema,lastfieldSchema){
-    schema.type = dataType.getType(schema.type);
-    var properties = schema.properties;
-    var keys = Object.keys(properties);
-    var lastFieldSchemaToSet;
-    var len = keys.length;
-    for(var i=0; i< len; i++){
-        var key = keys[i];
-        var nextKey = keys[i+1];
-        var schemaOfLastKey = properties[keys[i-1]];
-        var schemaOfCurrentKey = properties[key];
-        var schemaOfNextKey = properties[nextKey];
-        if(isArrayOrObject(schemaOfCurrentKey)){
-            var Ks = Object.keys(schemaOfCurrentKey.properties);
-            if(isArray(schemaOfCurrentKey) && Ks.length > 1) {
-                throw Error("Schema Error: Multiple objects are not allowed inside array");
-            }
-            schemaOfCurrentKey.name = Ks[0];
-            if(schemaOfLastKey && isArrayOrObject(schemaOfLastKey) && lastFieldSchemaToSet){
-                lastFieldSchemaToSet = updateDataType(schemaOfCurrentKey,lastFieldSchemaToSet);
-            }else{
-                lastFieldSchemaToSet = updateDataType(schemaOfCurrentKey,schemaOfLastKey);
-            }
-            if(schemaOfNextKey === undefined){
-                return lastFieldSchemaToSet;
-            }else{
-                setReadUntil(lastFieldSchemaToSet,schemaOfNextKey,isArray(schemaOfCurrentKey));
-            }
-        }else{
-            if( i===0 && lastfieldSchema){
-                setReadUntil(lastfieldSchema,schemaOfCurrentKey);
-            }
-            schemaOfCurrentKey.type = dataType.getType(schemaOfCurrentKey.type);
-            if(schemaOfNextKey === undefined){
-                return schemaOfCurrentKey;//in the hope someone down the floor will set it up
-            }else{
-                setReadUntil(schemaOfCurrentKey,schemaOfNextKey);
-            }
+function updateDataType(schema){
+    if(isArray(schema)){
+        var lastFieldSchemaToSet = updateDataType(schema[0]);
+        if(typeof lastFieldSchemaToSet === "string"){
+            lastFieldSchemaToSet = {};
         }
+        if(typeof schema[0] === "string"){
+            schema[0] = lastFieldSchemaToSet;
+        }
+        lastFieldSchemaToSet.readUntil = lastFieldSchemaToSet.readUntil || [];
+        pushIfNotExist(lastFieldSchemaToSet.readUntil,chars.arraySepChar);
+        return lastFieldSchemaToSet;
+    }else if(isObject(schema)){
+        var keys = Object.keys(schema);
+        var len = keys.length;
+        var lastFieldSchemaToSet;
+        for(var i=0; i< len; i++){
+            var key = keys[i];
+            var nextKey = keys[i+1];
+
+            lastFieldSchemaToSet = updateDataType(schema[key]);
+            if(typeof schema[key] !== "object"){
+                schema[key] = lastFieldSchemaToSet;
+            }
+            if(len > i+1){
+                setReadUntil(lastFieldSchemaToSet,schema[nextKey]);
+            }
+
+        }
+        return lastFieldSchemaToSet;//return last key to somone upstair can set it.
+
+    }else{
+        return dataType.getInstance(schema);
     }
 }
 
@@ -55,33 +49,43 @@ function isArrayOrObject(schema){
 }
 
 function isArray(schema){
-    return schema.type === "array"  || schema.type === dataType.ARRAY;
+    return Array.isArray(schema);
 }
 
 function isObject(schema){
-    return schema.type === "object"  || schema.type === dataType.OBJECT;
+    return typeof schema === "object";
 }
 
 
-function setReadUntil(current,next,isArrayFlag){
-    if(current.type === "boolean" || current.type === dataType.BOOLEAN){
+function setReadUntil(current,next){
+   /*  if(current === "boolean" || current.value === dataType.BOOLEAN.value){
         //do nothing
-    }else{
-        if(next.type === "boolean" || next.type === dataType.BOOLEAN){
-            (current.readUntil = current.readUntil || []).push(chars.yesChar, chars.noChar, chars.nilPremitive, chars.missingPremitive);
-        }else if(isObject(next)){
-            (current.readUntil = current.readUntil || []).push(chars.nilChar, chars.missingChar, chars.emptyChar, chars.objStart);
+    }else{ */
+        current.readUntil = current.readUntil || [];
+        if(next === "boolean" || next.value === dataType.BOOLEAN.value){
+            pushIfNotExist(current.readUntil,chars.yesChar, chars.noChar, chars.nilPremitive, chars.missingPremitive);
         }else if(isArray(next)){
-            (current.readUntil = current.readUntil || []).push(chars.nilChar, chars.missingChar, chars.emptyChar, chars.arrStart);
+            pushIfNotExist(current.readUntil,chars.nilChar, chars.missingChar, chars.emptyChar, chars.arrStart);
+        }else if(isObject(next)){
+            pushIfNotExist(current.readUntil,chars.nilChar, chars.missingChar, chars.emptyChar, chars.objStart);
         }else{
-            (current.readUntil = current.readUntil || []).push(chars.boundryChar, chars.nilPremitive, chars.missingPremitive, chars.arraySepChar);
+            pushIfNotExist(current.readUntil,chars.boundryChar, chars.nilPremitive, chars.missingPremitive, chars.arraySepChar);
         }
-        if(isArrayFlag) current.readUntil.push (chars.arraySepChar);
+    //}
+}
+
+function pushIfNotExist(){
+    for(var arg_i = 1; arg_i < arguments.length; arg_i++){
+        if(arguments[0].indexOf(arguments[arg_i]) !== -1 ) continue;
+        else arguments[0].push(arguments[arg_i]);
     }
 }
 
 function updateSchema(schema){
-    var lastFieldSchemaToSet = updateDataType(schema);
-    setReadUntil(lastFieldSchemaToSet,{});
+    var lastFieldToSet = updateDataType(schema);
+    if(!lastFieldToSet.readUntil){
+        lastFieldToSet.readUntil = [chars.nilChar];
+    }
+    //setReadUntil(lastFieldSchemaToSet,{});
 }
 exports.updateSchema = updateSchema;

@@ -1,52 +1,41 @@
 var chars = require("./chars").chars;
 var getKey = require("./util").getKey;
 var dataType = require("./schema").dataType;
+var DataType = require("./schema").DataType;
 var charsArr = require("./chars").charsArr;
 
 var encode = function(jObj,e_schema){
-    if(e_schema.type.value > 4){
-        //case dataType.ARRAY.value:
-        //case dataType.OBJECT.value:
-
-            var hasValidData = hasData(jObj);
-            if(hasValidData === true){
-                var str = "";
-                if(e_schema.type.value === 6){
-                    str += chars.arrStart;
-                    var itemSchema = getKey(e_schema.properties,0);
-                    //var itemSchemaType = itemSchema.type;
-                    var arr_len = jObj.length;
-                    for(var arr_i=0;arr_i < arr_len;){
-                        var r;
-                        /* if(itemSchema.type.value < 5 ){//comment to avoid recursion
-                            r =  getValue(jObj[arr_i],itemSchema.type);
-                        }else{ */
-                            r =  encode(jObj[arr_i],itemSchema) ;
-                        //}
-                        str = processValue(str,r);
-                        if(arr_len > ++arr_i){
-                            str += chars.arraySepChar;
-                        }
-                    }
-                }else{//object
-                    str += chars.objStart;
-                    var keys = Object.keys(e_schema.properties);
-                    for(var i in keys){
-                        var r;
-                        /* if(e_schema.properties[keys[i]].type.value < 5 ){//comment to avoid recursion
-                            r =  getValue(jObj[keys[i]],e_schema.properties[keys[i]].type);
-                        }else { */
-                            r =  encode(jObj[keys[i]],e_schema.properties[keys[i]]) ;
-                        //}
-                        str = processValue(str,r);
+    if(typeof e_schema.parse === "function"){//premitive
+        return getValue(jObj,e_schema);
+    }else{
+        var hasValidData = hasData(jObj);
+        if(hasValidData === true){
+            var str = "";
+            if(Array.isArray(e_schema)){
+                str += chars.arrStart;
+                var itemSchema = e_schema[0];
+                //var itemSchemaType = itemSchema;
+                var arr_len = jObj.length;
+                for(var arr_i=0;arr_i < arr_len;){
+                    var r =  encode(jObj[arr_i],itemSchema) ;
+                    str = processValue(str,r);
+                    if(arr_len > ++arr_i){
+                        str += chars.arraySepChar;
                     }
                 }
-                return str;
-            }else{
-                return hasValidData;
+            }else{//object
+                str += chars.objStart;
+                var keys = Object.keys(e_schema);
+                for(var i in keys){
+                    var key = keys[i];
+                    var r =  encode(jObj[key],e_schema[key]) ;
+                    str = processValue(str,r);
+                }
             }
-    }else{//premitive
-        return getValue(jObj,e_schema.type);
+            return str;
+        }else{
+            return hasValidData;
+        }
     }
 }
 

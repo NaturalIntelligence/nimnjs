@@ -10,8 +10,10 @@ decoder.prototype._d = function(schema){
         this.index++;
         return undefined;
     }else{
-        switch(schema.type.value){
-            case dataType.ARRAY.value:
+        if(typeof schema.parse === "function"){//premitive
+            return this.readPremitiveValue(schema);
+        }else{
+            if(Array.isArray(schema)){
                 if(this.currentChar() === chars.emptyChar){
                     this.index++;
                     return [];
@@ -19,8 +21,7 @@ decoder.prototype._d = function(schema){
                     throw Error("Parsing error: Array start char was expcted");
                 }else{
                     this.index++;//skip array start char
-                    var itemSchema = schema.properties; //schema of array item
-                    var item = getKey(itemSchema,0);
+                    var item = schema[0];
                     var obj = []
                     do{
                         var r =  this._d(item) ;
@@ -30,7 +31,7 @@ decoder.prototype._d = function(schema){
                     }while(this.dataToDecode[this.index] === chars.arraySepChar && ++this.index);
                     return obj;
                 }
-            case dataType.OBJECT.value:
+            }else{//object
                 if(this.currentChar() === chars.emptyChar){
                     this.index++;
                     return {};
@@ -38,21 +39,19 @@ decoder.prototype._d = function(schema){
                     throw Error("Parsing error: Object start char was expcted");
                 }else{
                     this.index++;//skip object start char
-                    var keys = Object.keys(schema.properties);
+                    var keys = Object.keys(schema);
                     var obj = {};
                     //var item = getKey(schema,0);
                     for(var i in keys){
-                        var r =  this._d(schema.properties[keys[i]]) ;
+                        var r =  this._d(schema[keys[i]]) ;
                         if(r !== undefined){
                             obj[keys[i]] = r;
                         }
                     }
                     return obj;
                 }
-            default://premitive
-                return this.readPremitiveValue(schema);
+            }
         }
-    
     }
 
 }
@@ -77,7 +76,7 @@ decoder.prototype.readPremitiveValue = function(schemaOfCurrentKey){
     }
     if(this.currentChar() === chars.boundryChar) this.index++;
     
-    return schemaOfCurrentKey.type.parseBack(val);
+    return schemaOfCurrentKey.parseBack(val);
 }
 
 /**

@@ -10,10 +10,9 @@ function nimn(schema) {
     this.configDataType("string",returnBack,returnBack);
     this.configDataType("number",numParser.parse,numParser.parseBack);
     this.configDataType("date",returnBack,returnBack);
-    this.configDataType("object",returnBack,returnBack);
-    this.configDataType("array",returnBack,returnBack);
 
-    this.e_schema = Object.assign({},schema);
+    //this.e_schema = Object.assign({},schema);
+    this.e_schema = JSON.parse(JSON.stringify(schema));
     updateSchema(this.e_schema);
 }
 

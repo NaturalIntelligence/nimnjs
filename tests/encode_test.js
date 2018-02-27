@@ -3,58 +3,13 @@ var chars = require("../src/chars").chars;
 
 describe("Nimn Encoder", function () {
 
-    var project = {
-        "name" : {
-            type : "string"
-        },
-        "description" : {
-            type : "string"
-        }
-    }
-    
-    var sampleSchema = {
-        "name" : {
-            type: "object",
-            properties : {
-                "first" : {
-                    type : "string"
-                },
-                "middle" : {
-                    type : "string"
-                },
-                "last" : {
-                    type : "string"
-                }
-            }
-        },
-        
-        "projects" : {
-            type: "array",
-            properties : {
-                "project" : {
-                    type : "object",
-                    properties : project
-                }
-            }
-        },
-        "age" : {
-            type: "number"
-        },
-    }
-    
-    var schema = {
-        type: "object",
-        properties : sampleSchema
-    }
+   
 
     it("should append boundry char if last field can have dynamic value", function () {
         var schema = {
-            type : "object",
-            properties : {
-                "name" : { type : "string"},
-                "marks" : { type : "number"}
-            }
-        }
+                "name" : "string",
+                "marks" : "number"
+        };
 
         var nimnEncoder = new nimn(schema);
 
@@ -72,12 +27,9 @@ describe("Nimn Encoder", function () {
 
     it("should append undefined or null char without boundry char if last field undefined or null", function () {
         var schema = {
-            type : "object",
-            properties : {
-                "name" : { type : "string"},
-                "age" : { type : "number"}
-            }
-        }
+            "name" : "string",
+            "age" : "number"
+        };
 
         var nimnEncoder = new nimn(schema);
 
@@ -107,19 +59,13 @@ describe("Nimn Encoder", function () {
 
     it("should append boundry char if last field can have dynamic value and not undefined or null", function () {
         var schema = {
-            type : "object",
-            properties : {
-                "name" : {
-                    type: "object",
-                    properties : {
-                        "first" : { type : "string" },
-                        "middle" : { type : "string" },
-                        "last" : { type : "string" }
-                    }
-                },
-                "age" : { type : "number"}
-            }
-        }
+            "name" : {
+                "first" : "string" ,
+                "middle" : "string" ,
+                "last" : "string"
+            },
+            "age" : "number"
+        };
 
         var nimnEncoder = new nimn(schema);
 
@@ -139,19 +85,13 @@ describe("Nimn Encoder", function () {
 
     it("should not append boundry char if last field can have dynamic value but it is undefined or null", function () {
         var schema = {
-            type : "object",
-            properties : {
-                "name" : {
-                    type: "object",
-                    properties : {
-                        "first" : { type : "string" },
-                        "middle" : { type : "string" },
-                        "last" : { type : "string" }
-                    }
-                },
-                "age" : { type : "number"}
-            }
-        }
+            "name" : {
+                "first" : "string" ,
+                "middle" : "string" ,
+                "last" : "string"
+            },
+            "age" : "number"
+        };
 
         var nimnEncoder = new nimn(schema);
         
@@ -205,19 +145,13 @@ describe("Nimn Encoder", function () {
 
     it("should not append boundry char if last field is empty object", function () {
         var schema = {
-            type : "object",
-            properties : {
-                "name" : {
-                    type: "object",
-                    properties : {
-                        "first" : { type : "string" },
-                        "middle" : { type : "string" },
-                        "last" : { type : "string" }
-                    }
-                },
-                "age" : { type : "number"}
-            }
-        }
+            "name" : {
+                "first" : "string" ,
+                "middle" : "string" ,
+                "last" : "string"
+            },
+            "age" : "number"
+        };
 
         var nimnEncoder = new nimn(schema);
 
@@ -234,6 +168,22 @@ describe("Nimn Encoder", function () {
     });
 
     it("should encode data in the order it defines in schema", function () {
+
+        var project = {
+            "name" :  "string",
+            "description" : "string"
+        }
+        
+        var schema = {
+            "name" : {
+                    "first" : "string",
+                    "middle" : "string",
+                    "last" : "string"
+            },
+            "projects" : [ project ],
+            "age" : "number"
+        }
+        
         var jData = {
             age : 32,
             name : { first : null , middle: "kumar", last: "gupta"} ,
@@ -265,5 +215,4 @@ describe("Nimn Encoder", function () {
         //console.log(JSON.stringify(result));
         expect(result).toEqual(jData); 
     });
-
 });

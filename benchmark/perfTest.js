@@ -3,36 +3,17 @@ var suite = new Benchmark.Suite("JSON transformation benchmark");
 
 var nimn = require("../src/nimn");
 var schema = {
-    "type" : "object",
-    "properties" : {
-        "persons" : {
-            "type" : "array",
-                "properties" : {
-                    "person" : {
-                        "type" : "object",
-                        "properties" : {
-                            "name" : { "type" : "string" },
-                            "age" : { "type" : "number" },
-                            "registered" : { "type" : "boolean" },
-                            "calldetails" : {
-                                "type": "array",
-                                "properties" : {
-                                    "calldetail" : {
-                                        "type": "object",
-                                        "properties" : {
-                                            "from" : { "type" : "string" },
-                                            "to" : { "type" : "string" },
-                                            "when" : { "type" : "date" }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                }
-            }
-        }
-    }
-};
+        "persons" : [{
+            "name" : "string" ,
+            "age" : "number" ,
+            "registered" : "boolean" ,
+            "calldetails" : [ {
+                "from" : "string" ,
+                "to" : "string" ,
+                "when" : "date"
+            }]
+        }]
+    };
 
 var nimnEncoder = new nimn(schema);
 

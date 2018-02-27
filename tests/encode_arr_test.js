@@ -48,30 +48,12 @@ array
 describe("Nimn Encoder", function () {
      it("1. , 1a. , 1b. & 2 should append boundry char only if surronuding field can have dynamic data", function () {
         var schema = {
-            type : "object",
-            properties : {
-                "age" : { type : "number"},
-                "names" : {
-                    type: "array",
-                    properties : {
-                        "name" : { type : "string" }
-                    }
-                },
-                "str" : { type : "string"},
-                "names2" : {
-                    type: "array",
-                    properties : {
-                        "name" : { type : "string" }
-                    }
-                },
-                "bool" : { type : "boolean"},
-                "names3" : {
-                    type: "array",
-                    properties : {
-                        "name" : { type : "string" }
-                    }
-                }
-            }
+            "age": "number",
+            "names" : ["string" ],
+            "str": "string",
+            "names2" : ["string" ],
+            "bool": "boolean",
+            "names3" : ["string" ]
         }
 
         var nimnEncoder = new nimn(schema);
@@ -128,29 +110,11 @@ describe("Nimn Encoder", function () {
 
     it("1. , 1a. , 1b. & 2 should append boundry char only if surronuding field can have dynamic data", function () {
         var schema = {
-            type : "object",
-            properties : {
-                "age" : { type : "number"},
-                "names" : {
-                    type: "array",
-                    properties : {
-                        "name" : { type : "string" }
-                    }
-                },
-                "str" : { type : "string"},
-                "names2" : {
-                    type: "array",
-                    properties : {
-                        "name" : { type : "string" }
-                    }
-                },
-                "names3" : {
-                    type: "array",
-                    properties : {
-                        "name" : { type : "string" }
-                    }
-                }
-            }
+            "age": "number",
+            "names" : ["string" ],
+            "str": "string",
+            "names2" : ["string" ],
+            "names3" : ["string" ]
         }
 
         var nimnEncoder = new nimn(schema);
@@ -176,45 +140,13 @@ describe("Nimn Encoder", function () {
     });
 
      it("3., 4., 5., 5a., & 5b. should append boundry char only if two consecutive fields can have dynamic data", function () {
+        
         var schema = {
-            type : "object",
-            properties : {
-                "names" : {
-                    type: "array",
-                    properties : {
-                        "name" : { type : "string" }
-                    }
-                },
-                "names0" : {
-                    type: "array",
-                    properties : {
-                        "name" : { type : "string" }
-                    }
-                },
-                "names2" : {
-                    type: "array",
-                    properties : {
-                        "name" : { type : "boolean" }
-                    }
-                },
-                "names3" : {
-                    type: "array",
-                    properties : {
-                        "name" : { type : "boolean" }
-                    }
-                },
-                "names4" : {
-                    type: "array",
-                    properties : {
-                        "obj": {
-                            type : "object",
-                            properties : {
-                                "name" : { type : "string" }
-                            }
-                        }
-                    }
-                }
-            }
+            "names" : ["string" ],
+            "names0" : ["string" ],
+            "names2" : ["boolean" ],
+            "names3" : ["boolean" ],
+            "names4" : [ {"name" : "string"} ]
         }
 
         var nimnEncoder = new nimn(schema);
@@ -241,27 +173,9 @@ describe("Nimn Encoder", function () {
 
     it(" 6., 7. should not append boundry char if surrounding field is empty array/object", function () {
         var schema = {
-            type : "object",
-            properties : {
-                "names" : {
-                    type: "array",
-                    properties : {
-                        "name" : { type : "string" }
-                    }
-                },
-                "names1" : {
-                    type: "array",
-                    properties : {
-                        "name" : { type : "boolean" }
-                    }
-                },
-                "names2" : {
-                    type: "object",
-                    properties : {
-                        "name" : { type : "string" }
-                    }
-                }
-            }
+            "names" : ["string" ],
+            "names1" : ["boolean" ],
+            "names2" : {"name" : "string"}
         }
 
         var nimnEncoder = new nimn(schema);
@@ -283,38 +197,9 @@ describe("Nimn Encoder", function () {
 
     it("8. should not append boundry char when nearby field of surrounding array of object is app handle char", function () {
         var schema = {
-            type : "object",
-            properties : {
-                "names" : {
-                    type: "array",
-                    properties : {
-                        "obj": {
-                            type : "object",
-                            properties : {
-                                "name" : { type : "string" }
-                            }
-                        }
-                    }
-                },
-                "names1" : {
-                    type: "array",
-                    properties : {
-                        "name" : { type : "string" }
-                    }
-                },
-                "names2" : {
-                    type: "array",
-                    properties : {
-                        "obj": {
-                            type : "object",
-                            properties : {
-                                "name" : { type : "string" }
-                            }
-                        }
-                    }
-                }
-                
-            }
+            "names" : [ {"name" : "string"} ],
+            "names1" : ["string" ],
+            "names2" : [ {"name" : "string"} ]
         }
 
         var nimnEncoder = new nimn(schema);
@@ -339,23 +224,11 @@ describe("Nimn Encoder", function () {
 
     it(" 9., 10. should not append boundry char if surrounding field can have dynamic value while the array itself is empty", function () {
         var schema = {
-            type : "object",
-            properties : {
-                "name" : { type : "string" },
-                "names1" : {
-                    type: "array",
-                    properties : {
-                        "name" : { type : "boolean" }
-                    }
-                },
-                "names2" : {
-                    type: "object",
-                    properties : {
-                        "name" : { type : "string" }
-                    }
-                }
-            }
+            "name" : "string",
+            "names1" : [ "boolean" ],
+            "names2" : {"name" : "string"}
         }
+        
 
         var nimnEncoder = new nimn(schema);
 
@@ -373,37 +246,19 @@ describe("Nimn Encoder", function () {
     }); 
 
     it(" custom", function () {
+
         var schema = {
-            "type" : "object",
-            "properties" : {
-                "persons" : {
-                    "type" : "array",
-                        "properties" : {
-                            "person" : {
-                                "type" : "object",
-                                "properties" : {
-                                    "name" : { "type" : "string" },
-                                    "age" : { "type" : "number" },
-                                    "registered" : { "type" : "boolean" },
-                                    "calldetails" : {
-                                        "type": "array",
-                                        "properties" : {
-                                            "calldetail" : {
-                                                "type": "object",
-                                                "properties" : {
-                                                    "from" : { "type" : "string" },
-                                                    "to" : { "type" : "string" },
-                                                    "when" : { "type" : "date" }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                        }
-                    }
-                }
+            persons : [{
+                "name" : "string" ,
+                "age" : "number" ,
+                "registered" : "boolean" ,
+                "calldetails" : [{
+                    "from" : "string" ,
+                    "to" : "string" ,
+                    "when" : "date" 
+                }]
             }
-        };
+        ]};
 
         var nimnEncoder = new nimn(schema);
 
@@ -446,32 +301,17 @@ describe("Nimn Encoder", function () {
     });  
 
     it(" only array", function () {
-        var schema = {
-            "type" : "array",
-            "properties" : {
-                "person" : {
-                    "type" : "object",
-                    "properties" : {
-                        "name" : { "type" : "string" },
-                        "age" : { "type" : "number" },
-                        "registered" : { "type" : "boolean" },
-                        "calldetails" : {
-                            "type": "array",
-                            "properties" : {
-                                "calldetail" : {
-                                    "type": "object",
-                                    "properties" : {
-                                        "from" : { "type" : "string" },
-                                        "to" : { "type" : "string" },
-                                        "when" : { "type" : "date" }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+        var schema = [{
+                "name" : "string" ,
+                "age" : "number" ,
+                "registered" : "boolean" ,
+                "calldetails" : [{
+                    "from" : "string" ,
+                    "to" : "string" ,
+                    "when" : "date" 
+                }]
             }
-        };
+        ];
 
         var nimnEncoder = new nimn(schema);
 

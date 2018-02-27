@@ -3,11 +3,8 @@ var chars = require("../src/chars").chars;
 
 describe("Nimn Decoder", function () {
     var schema = {
-        type : "object",
-        properties : {
-            "name" : { type : "string"},
-            "marks" : { type : "number"}
-        }
+            "name" : "string",
+            "marks" : "number"
     }
     
     it("should return null ", function () {

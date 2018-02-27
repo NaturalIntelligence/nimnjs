@@ -4,16 +4,8 @@ var chars = require("../src/chars").chars;
 describe("Nimn ", function () {
     it("should error when invalid start of object ", function () {
         var schema = {
-            type : "object",
-            properties : {
-                "age" : { type : "number"},
-                "names" : {
-                    type: "array",
-                    properties : {
-                        "name" : { type : "string" }
-                    }
-                }
-            }
+                "age": "number",
+                "names" : ["string"]
         }
 
         var nimnEncoder = new nimn(schema);
@@ -32,16 +24,8 @@ describe("Nimn ", function () {
 
     it("should error when invalid start of array ", function () {
         var schema = {
-            type : "object",
-            properties : {
-                "age" : { type : "number"},
-                "names" : {
-                    type: "array",
-                    properties : {
-                        "name" : { type : "string" }
-                    }
-                }
-            }
+            "age": "number",
+            "names" : ["string"]
         }
 
         var nimnEncoder = new nimn(schema);
@@ -59,38 +43,10 @@ describe("Nimn ", function () {
     });
 
 
-    it("should error when multiple objects in an array ", function () {
-        var schema = {
-            type : "object",
-            properties : {
-                "age" : { type : "number"},
-                "names" : {
-                    type: "array",
-                    properties : {
-                        "name" : { type : "string" },
-                        "name2" : { type : "string" }
-                    }
-                }
-            }
-        }
-        
-        expect(function(){
-            var nimnEncoder = new nimn(schema);
-        }).toThrow(); 
-    });
-
     it("should error when empty etring is provided to decode ", function () {
         var schema = {
-            type : "object",
-            properties : {
-                "age" : { type : "number"},
-                "names" : {
-                    type: "array",
-                    properties : {
-                        "name" : { type : "string" }
-                    }
-                }
-            }
+            "age": "number",
+            "names" : ["string"]
         }
         
         var nimnEncoder = new nimn(schema);

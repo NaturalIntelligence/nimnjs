@@ -36,17 +36,11 @@ describe("Nimn Encoder", function () {
 
     it(" 1., 1a., 1b.  should not append boundry char if conseucative fields can have dynamic value", function () {
         var schema = {
-            type : "object",
-            properties : {
-                "name" : { type : "string" },
+                "name" : "string" ,
                 "names1" : {
-                    type: "object",
-                    properties : {
-                        "name" : { type : "string" }
+                        "name" : "string"
                     }
-                }
-            }
-        }
+        };
 
         var nimnEncoder = new nimn(schema);
 
@@ -94,22 +88,13 @@ describe("Nimn Encoder", function () {
 
     it(" 3. ", function () {
         var schema = {
-            type : "object",
-            properties : {
                 "names1" : {
-                    type: "object",
-                    properties : {
-                        "name" : { type : "boolean" }
-                    }
+                        "name":  "boolean" 
                 },
                 "names2" : {
-                    type: "object",
-                    properties : {
-                        "name" : { type : "string" }
-                    }
+                        "name" : "string"
                 }
-            }
-        }
+        };
 
         var nimnEncoder = new nimn(schema);
 
@@ -160,16 +145,10 @@ describe("Nimn Encoder", function () {
 
     it(" 2. for boolean value;  should not append boundry char if conseucative fields can have dynamic value", function () {
         var schema = {
-            type : "object",
-            properties : {
-                "name" : { type : "boolean" },
+                "name" : "boolean" ,
                 "names1" : {
-                    type: "object",
-                    properties : {
-                        "name" : { type : "string" }
-                    }
+                        "name" : "string" 
                 }
-            }
         }
 
         var nimnEncoder = new nimn(schema);
@@ -220,21 +199,12 @@ describe("Nimn Encoder", function () {
 
     it(" 3b. ", function () {
         var schema = {
-            type : "object",
-            properties : {
                 "names1" : {
-                    type: "object",
-                    properties : {
-                        "name" : { type : "string" }
-                    }
+                        "name" : "string" 
                 },
                 "names2" : {
-                    type: "object",
-                    properties : {
-                        "name" : { type : "string" }
-                    }
+                        "name" : "string" 
                 }
-            }
         }
 
         var nimnEncoder = new nimn(schema);
@@ -275,22 +245,12 @@ describe("Nimn Encoder", function () {
 
     it(" 4.", function () {
         var schema = {
-            type : "object",
-            properties : {
                 "names1" : {
-                    type: "object",
-                    properties : {
-                        "obj" : {
-                            type : "object",
-                            properties : {
-                                "name" : { type : "string" }
-                            }
-                        }
+                    "obj" : {
+                            "name" : "string" 
                     }
                 },
-                "name" : { type : "string" },
-                
-            }
+                "name" : "string"
         }
 
         var nimnEncoder = new nimn(schema);

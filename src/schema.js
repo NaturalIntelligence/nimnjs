@@ -3,18 +3,24 @@ var dataType = {
     NUMBER : { value: 2},
     DATE : { value: 3},
     BOOLEAN : { value: 4},
-    OBJECT : { value: 5},
-    ARRAY : { value: 6},
     getType(str){
         switch(str){
             case "string": return dataType.STRING;
             case "number": return dataType.NUMBER;
             case "date": return dataType.DATE;
             case "boolean": return dataType.BOOLEAN;
-            case "object": return dataType.OBJECT;
-            case "array": return dataType.ARRAY;
         }
+    },
+    getInstance(str){
+        return new DataType(dataType.getType(str));
     }
 }
 
+function DataType(type){
+    this.value = type.value;
+    this.parse = type.parse;
+    this.parseBack = type.parseBack;
+}
+
 exports.dataType = dataType;
+
