@@ -1,7 +1,7 @@
 {
   "name": "nimnjs",
-  "version": "1.0.0",
-  "description": "Schema awared compression of JSON data",
+  "version": "1.1.0",
+  "description": "Schema aware compression of JSON data",
   "main": "nimn.js",
   "scripts": {
     "test": "jasmine tests/*test.js",
