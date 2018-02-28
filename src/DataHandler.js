@@ -11,7 +11,7 @@ function DataHandler(dataType, /* parse, parseBack, */ charset,treatAsUnique){
     //parse || (this.parse = parse);
     //parseBack || (this.parseBack = parseBack);
     if(charset){
-        this.hasFixedInstances = true;
+        //this.hasFixedInstances = true;
         this.char2val = charset;
         this.val2char = {};
         var keys = Object.keys(charset);
@@ -20,24 +20,10 @@ function DataHandler(dataType, /* parse, parseBack, */ charset,treatAsUnique){
             this.val2char[val] = keys[i];
         }
     }
-
-    /* if(!parse){
-        if(this.char2val){
-            this.parse = function(a){ return  this.getCharCodeFor(a);}
-        }else{
-            this.parse = function(a){ return  a;}
-        }
+    if(treatAsUnique){
+        this.hasFixedInstances = true;
     }
-
-    if(!parseBack){
-        if(this.char2val){
-            this.parseBack = function(a){ return    this.getValueOf(a)};
-        }else{
-            this.parseBack = function(a){ return  a;}
-        }
-    } */
-
-    this.treatAsUnique = treatAsUnique;
+    //this.treatAsUnique = treatAsUnique;
 }
 
 DataHandler.prototype.parse = function(a){
