@@ -66,6 +66,7 @@ schemaUpdater.prototype.setReadUntil = function(current,next){
     }else if(isObject(next)){
         pushIfNotExist(current.readUntil,chars.nilChar, chars.missingChar, chars.emptyChar, chars.objStart);
     }else{
+        if(!this.datahandlers[next]) throw Error("You've forgot to add data handler for " + next);
         pushIfNotExist(current.readUntil,chars.boundryChar, chars.nilPremitive, chars.missingPremitive, chars.arraySepChar);
     }
 }
