@@ -22,34 +22,13 @@ $npm install nimnjs
 var nimn = require("nimnjs");
 
 var schema = {
-    "type": "object",
-    "properties": {
-        "name": {
-            "type": "string"
-        },
-        "age": {
-            "type": "number"
-        },
-        "male": {
-            "type": "boolean"
-        },
-        "projects": {
-            "type": "array",
-            "properties": {
-                "item": {
-                    "type": "object",
-                    "properties": {
-                        "name": {
-                            "type": "string"
-                        },
-                        "decription": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        }
-    }
+    "name": "string",
+    "age": "number",
+    "human": "boolean",
+    "projects": [{
+        "name": "string",
+        "decription": "string"
+    }]
 }
 
 var nimnObj = new nimn(schema);
@@ -57,7 +36,7 @@ var nimnObj = new nimn(schema);
 var data = {
     "name" : "amit",
     "age" : 32,
-    "male" : true,
+    "human" : true,
     "projects" : [
         {
             "name": "some",
