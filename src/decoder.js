@@ -18,7 +18,7 @@ decoder.prototype._d = function(schema){
                     this.index++;
                     return [];
                 }else if(this.currentChar() !== chars.arrStart){
-                    throw Error("Parsing error: Array start char was expcted");
+                    throw Error("Parsing error: Array start char was expected");
                 }else{
                     this.index++;//skip array start char
                     var item = schema[0];
@@ -36,7 +36,7 @@ decoder.prototype._d = function(schema){
                     this.index++;
                     return {};
                 }else if(this.currentChar() !== chars.objStart){
-                    throw Error("Parsing error: Object start char was expcted");
+                    throw Error("Parsing error: Object start char was expected");
                 }else{
                     this.index++;//skip object start char
                     var keys = Object.keys(schema);
