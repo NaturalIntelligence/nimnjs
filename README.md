@@ -31,7 +31,8 @@ var schema = {
     }]
 }
 
-var nimnObj = new nimn(schema);
+var nimnInstance = new nimn();
+nimnInstance.updateSchema(schema);
 
 var data = {
     "name" : "amit",
@@ -45,8 +46,8 @@ var data = {
     ]
 }
 
-var result = nimnObj.encode(data);//Æamitº32ÙÇÆsomeºsome long description
-result = nimnObj.getDecoder().decode(result);
+var result = nimnInstance.encode(data);//Æamitº32ÙÇÆsomeºsome long description
+result = nimnInstance.decode(result);
 expect(result).toEqual(data); 
 ```
 
@@ -54,15 +55,35 @@ For date compression
 ```js
 var nimnDateparser = require("nimn-date-parser");
 //generate schema and data
-var nimnInstance = new nimn(schema);
-nimnInstance.configDataType("date",function(val){
+var nimnInstance = new nimn();
+nimnInstance.addDataHandler("date",function(val){
     return nimnDateparser.parse(val,true,true,true)
 },function(val){
-     return nimnDateparser.parseBack(val,true,true,true)
+    return nimnDateparser.parseBack(val,true,true,true)
 });
+nimnInstance.updateSchema(schema); //add after adding data handler
 
 var nimndata = nimnInstance.encode(data);
 ```
+
+
+Handle enum type
+```js
+var nimnInstance = new nimn();
+nimnInstance.addDataHandler("status",null,null,{
+    "M" : "Married",
+    "S" : "Single"
+});
+nimnInstance.updateSchema(schema); //add after adding data handler
+```
+
+Just mark a data type
+```js
+var nimnInstance = new nimn();
+nimnInstance.addDataHandler("image");
+nimnInstance.updateSchema(schema); //add after adding data handler
+```
+
 
 Include [dist](dist/nimn.js) in your HTML to use it in browser.
 
