@@ -11,16 +11,18 @@ describe("Nimn Encoder", function () {
                 "marks" : "number"
         };
 
-        var nimnEncoder = new nimn(schema);
+        var nimnEncoder = new nimn();
 
         var jData = {
             name : "gupta",
             marks : 87.9
         }
         var expected = chars.objStart + "gupta" + chars.boundryChar + "87.9";
+
+        nimnEncoder.updateSchema(schema);
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected);
-        result = nimnEncoder.getDecoder().decode(result);
+        result = nimnEncoder.decode(result);
         //console.log(JSON.stringify(result));
         expect(result).toEqual(jData); 
     });
@@ -31,16 +33,19 @@ describe("Nimn Encoder", function () {
             "age" : "number"
         };
 
-        var nimnEncoder = new nimn(schema);
+        var nimnEncoder = new nimn();
+        nimnEncoder.updateSchema(schema);
 
         var jData = {
             age : 32
         }
         //var expected = chars.objStart + chars.missingPremitive + "32";
         var expected = chars.objStart + chars.missingPremitive + "32";
+
+        
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected);
-        result = nimnEncoder.getDecoder().decode(result);
+        result = nimnEncoder.decode(result);
         //console.log(JSON.stringify(result));
         expect(result).toEqual(jData); 
 
@@ -51,7 +56,7 @@ describe("Nimn Encoder", function () {
         var expected = chars.objStart + chars.nilPremitive + "32";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected);
-        result = nimnEncoder.getDecoder().decode(result);
+        result = nimnEncoder.decode(result);
         //console.log(JSON.stringify(result));
         expect(result).toEqual(jData); 
 
@@ -67,7 +72,8 @@ describe("Nimn Encoder", function () {
             "age" : "number"
         };
 
-        var nimnEncoder = new nimn(schema);
+        var nimnEncoder = new nimn();
+        nimnEncoder.updateSchema(schema);
 
         var jData = {
             name : { first : null , middle: "kumar", last: "gupta"} ,
@@ -78,7 +84,7 @@ describe("Nimn Encoder", function () {
             + "32";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected);
-        result = nimnEncoder.getDecoder().decode(result);
+        result = nimnEncoder.decode(result);
         //console.log(JSON.stringify(result));
         expect(result).toEqual(jData); 
     });
@@ -93,7 +99,8 @@ describe("Nimn Encoder", function () {
             "age" : "number"
         };
 
-        var nimnEncoder = new nimn(schema);
+        var nimnEncoder = new nimn();
+        nimnEncoder.updateSchema(schema);
         
         var jData = {
             name : { first : null , middle: "kumar", last: null} ,
@@ -103,7 +110,7 @@ describe("Nimn Encoder", function () {
             + "32";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected);
-        result = nimnEncoder.getDecoder().decode(result);
+        result = nimnEncoder.decode(result);
         //console.log(JSON.stringify(result));
         expect(result).toEqual(jData); 
 
@@ -115,7 +122,7 @@ describe("Nimn Encoder", function () {
             + "32";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected);
-        result = nimnEncoder.getDecoder().decode(result);
+        result = nimnEncoder.decode(result);
         //console.log(JSON.stringify(result));
         expect(result).toEqual(jData); 
 
@@ -126,7 +133,7 @@ describe("Nimn Encoder", function () {
         var expected = chars.objStart + chars.nilChar + "32";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected);
-        result = nimnEncoder.getDecoder().decode(result);
+        result = nimnEncoder.decode(result);
         //console.log(JSON.stringify(result));
         expect(result).toEqual(jData); 
 
@@ -137,7 +144,7 @@ describe("Nimn Encoder", function () {
         var expected = chars.objStart + chars.missingChar + "32";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected);
-        result = nimnEncoder.getDecoder().decode(result);
+        result = nimnEncoder.decode(result);
         //console.log(JSON.stringify(result));
         expect(result).toEqual(jData); 
 
@@ -153,7 +160,8 @@ describe("Nimn Encoder", function () {
             "age" : "number"
         };
 
-        var nimnEncoder = new nimn(schema);
+        var nimnEncoder = new nimn();
+        nimnEncoder.updateSchema(schema);
 
         var jData = {
             name : {},
@@ -162,7 +170,7 @@ describe("Nimn Encoder", function () {
         var expected = chars.objStart + chars.emptyChar + "32";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
-        result = nimnEncoder.getDecoder().decode(result);
+        result = nimnEncoder.decode(result);
         //console.log(JSON.stringify(result));
         expect(result).toEqual(jData); 
     });
@@ -206,12 +214,13 @@ describe("Nimn Encoder", function () {
             + chars.boundryChar 
             + "32";
 
-        var nimnEncoder = new nimn(schema);
+        var nimnEncoder = new nimn();
+        nimnEncoder.updateSchema(schema);
         var result = nimnEncoder.encode(jData);
         //console.log(result.length);
         //console.log(result);
         expect(result).toEqual(expected);
-        result = nimnEncoder.getDecoder().decode(result);
+        result = nimnEncoder.decode(result);
         //console.log(JSON.stringify(result));
         expect(result).toEqual(jData); 
     });

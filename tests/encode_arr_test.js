@@ -1,6 +1,6 @@
 var nimn = require("../src/nimn");
 var chars = require("../src/chars").chars;
-
+var char = require("../src/util").char;
 
 /*
 A: arraySepChar
@@ -56,7 +56,8 @@ describe("Nimn Encoder", function () {
             "names3" : ["string" ]
         }
 
-        var nimnEncoder = new nimn(schema);
+        var nimnEncoder = new nimn();
+        nimnEncoder.updateSchema(schema);
 
         var jData = {
             age : 32,
@@ -72,7 +73,7 @@ describe("Nimn Encoder", function () {
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
         //console.log(result);
-        result = nimnEncoder.getDecoder().decode(result);
+        result = nimnEncoder.decode(result);
         //console.log(JSON.stringify(result));
         expect(result).toEqual(jData); 
 
@@ -88,11 +89,11 @@ describe("Nimn Encoder", function () {
             + chars.missingPremitive
             + chars.arrStart 
             + "amit2" + chars.arraySepChar + "kumar2"
-            + chars.noChar + chars.missingChar;
+            + char(218) + chars.missingChar;
 
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
-        result = nimnEncoder.getDecoder().decode(result);
+        result = nimnEncoder.decode(result);
         //console.log(JSON.stringify(result));
         expect(result).toEqual(jData); 
 
@@ -103,7 +104,7 @@ describe("Nimn Encoder", function () {
         var expected = chars.emptyChar;
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
-        result = nimnEncoder.getDecoder().decode(result);
+        result = nimnEncoder.decode(result);
         //console.log(JSON.stringify(result));
         expect(result).toEqual(jData);   
     }); 
@@ -117,7 +118,8 @@ describe("Nimn Encoder", function () {
             "names3" : ["string" ]
         }
 
-        var nimnEncoder = new nimn(schema);
+        var nimnEncoder = new nimn();
+        nimnEncoder.updateSchema(schema);
 
         var jData = {
             age : 32,
@@ -134,7 +136,7 @@ describe("Nimn Encoder", function () {
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
         //console.log(result);
-        result = nimnEncoder.getDecoder().decode(result);
+        result = nimnEncoder.decode(result);
         //console.log(JSON.stringify(result));
         expect(result).toEqual(jData); 
     });
@@ -149,7 +151,8 @@ describe("Nimn Encoder", function () {
             "names4" : [ {"name" : "string"} ]
         }
 
-        var nimnEncoder = new nimn(schema);
+        var nimnEncoder = new nimn();
+        nimnEncoder.updateSchema(schema);
 
         var jData = {
             names : ["true", "false"],
@@ -160,12 +163,12 @@ describe("Nimn Encoder", function () {
         }
         var expected = chars.objStart + chars.arrStart  + "true" + chars.arraySepChar + "false" 
             + chars.arrStart  + "true" + chars.arraySepChar + "false" 
-            + chars.arrStart + chars.yesChar + chars.arraySepChar +  chars.noChar
-            + chars.arrStart  + chars.yesChar + chars.arraySepChar +  chars.noChar
+            + chars.arrStart + char(217) + chars.arraySepChar +  char(218)
+            + chars.arrStart  + char(217) + chars.arraySepChar +  char(218)
             + chars.arrStart + chars.objStart + "somename";
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
-        result = nimnEncoder.getDecoder().decode(result);
+        result = nimnEncoder.decode(result);
         //console.log(JSON.stringify(result));
         expect(result).toEqual(jData); 
 
@@ -178,7 +181,8 @@ describe("Nimn Encoder", function () {
             "names2" : {"name" : "string"}
         }
 
-        var nimnEncoder = new nimn(schema);
+        var nimnEncoder = new nimn();
+        nimnEncoder.updateSchema(schema);
 
         var jData = {
             names : [],
@@ -186,11 +190,11 @@ describe("Nimn Encoder", function () {
             names2 : {}
         }
         var expected =  chars.objStart + chars.emptyChar 
-            + chars.arrStart  + chars.yesChar + chars.arraySepChar + chars.noChar
+            + chars.arrStart  + char(217) + chars.arraySepChar + char(218)
             + chars.emptyChar;
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
-        result = nimnEncoder.getDecoder().decode(result);
+        result = nimnEncoder.decode(result);
         //console.log(JSON.stringify(result));
         expect(result).toEqual(jData); 
     }); 
@@ -202,7 +206,8 @@ describe("Nimn Encoder", function () {
             "names2" : [ {"name" : "string"} ]
         }
 
-        var nimnEncoder = new nimn(schema);
+        var nimnEncoder = new nimn();
+        nimnEncoder.updateSchema(schema);
 
         var jData = {
             names : [{ name : "someone"}, {}],
@@ -217,7 +222,7 @@ describe("Nimn Encoder", function () {
         //console.log(chars);
         //console.log(result);
         expect(result).toEqual(expected); 
-        result = nimnEncoder.getDecoder().decode(result);
+        result = nimnEncoder.decode(result);
         //console.log(JSON.stringify(result));
         expect(result).toEqual(jData); 
     });
@@ -230,7 +235,8 @@ describe("Nimn Encoder", function () {
         }
         
 
-        var nimnEncoder = new nimn(schema);
+        var nimnEncoder = new nimn();
+        nimnEncoder.updateSchema(schema);
 
         var jData = {
             name : "amit",
@@ -240,7 +246,7 @@ describe("Nimn Encoder", function () {
         var expected = chars.objStart + "amit" + chars.emptyChar + chars.emptyChar;
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
-        result = nimnEncoder.getDecoder().decode(result);
+        result = nimnEncoder.decode(result);
         //console.log(JSON.stringify(result));
         expect(result).toEqual(jData); 
     }); 
@@ -260,7 +266,8 @@ describe("Nimn Encoder", function () {
             }
         ]};
 
-        var nimnEncoder = new nimn(schema);
+        var nimnEncoder = new nimn();
+        nimnEncoder.updateSchema(schema);
 
         var data = { 
             persons : [
@@ -285,7 +292,7 @@ describe("Nimn Encoder", function () {
         };
 
         var expected = chars.objStart + chars.arrStart + chars.objStart
-        + "somename" + chars.boundryChar + "30" + chars.yesChar
+        + "somename" + chars.boundryChar + "30" + char(217)
         + chars.arrStart + chars.objStart
         + "123456789" + chars.boundryChar + "123456789" + chars.boundryChar + "2018-02-23T10:12:30.041Z"
         + chars.arraySepChar + chars.objStart
@@ -294,7 +301,7 @@ describe("Nimn Encoder", function () {
         var result = nimnEncoder.encode(data);
         //console.log(result);
         expect(result).toEqual(expected); 
-        result = nimnEncoder.getDecoder().decode(result);
+        result = nimnEncoder.decode(result);
         //console.log(JSON.stringify(result));
         expect(result).toEqual(data); 
 
@@ -313,7 +320,8 @@ describe("Nimn Encoder", function () {
             }
         ];
 
-        var nimnEncoder = new nimn(schema);
+        var nimnEncoder = new nimn();
+        nimnEncoder.updateSchema(schema);
 
         var data = [
                 {
@@ -336,7 +344,7 @@ describe("Nimn Encoder", function () {
             ];
 
         var expected = chars.arrStart + chars.objStart
-        + "somename" + chars.boundryChar + "30" + chars.yesChar
+        + "somename" + chars.boundryChar + "30" + char(217)
         + chars.arrStart + chars.objStart
         + "123456789" + chars.boundryChar + "123456789" + chars.boundryChar + "2018-02-23T10:12:30.041Z"
         + chars.arraySepChar + chars.objStart
@@ -345,7 +353,7 @@ describe("Nimn Encoder", function () {
         var result = nimnEncoder.encode(data);
         //console.log(result);
         expect(result).toEqual(expected); 
-        result = nimnEncoder.getDecoder().decode(result);
+        result = nimnEncoder.decode(result);
         //console.log(JSON.stringify(result));
         expect(result).toEqual(data); 
 

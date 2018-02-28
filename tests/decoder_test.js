@@ -9,17 +9,19 @@ describe("Nimn Decoder", function () {
     
     it("should return null ", function () {
        
-        var nimnEncoder = new nimn(schema);
+        var nimnEncoder = new nimn();
+        nimnEncoder.updateSchema(schema);
 
-        var result = nimnEncoder.getDecoder().decode(chars.nilChar);
+        var result = nimnEncoder.decode(chars.nilChar);
         //console.log(JSON.stringify(result));
         expect(result).toEqual(null); 
     });
     it(" should return undefined ", function () {
        
-        var nimnEncoder = new nimn(schema);
+        var nimnEncoder = new nimn();
+        nimnEncoder.updateSchema(schema);
 
-        var result = nimnEncoder.getDecoder().decode(chars.missingChar);
+        var result = nimnEncoder.decode(chars.missingChar);
         //console.log(JSON.stringify(result));
         expect(result).toEqual(undefined); 
     });

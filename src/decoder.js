@@ -10,7 +10,7 @@ decoder.prototype._d = function(schema){
         this.index++;
         return undefined;
     }else{
-        if(typeof schema.parse === "function"){//premitive
+        if(typeof schema.value === "string"){//premitive
             return this.readPremitiveValue(schema);
         }else{
             if(Array.isArray(schema)){
@@ -75,8 +75,8 @@ decoder.prototype.readPremitiveValue = function(schemaOfCurrentKey){
         val = "";
     }
     if(this.currentChar() === chars.boundryChar) this.index++;
-    
-    return schemaOfCurrentKey.parseBack(val);
+    var dh = this.dataHandlers[schemaOfCurrentKey.value];
+    return dh.parseBack(val);
 }
 
 /**
@@ -96,13 +96,16 @@ decoder.prototype.readFieldValue = function(until){
 
 
 decoder.prototype.decode = function(objStr){
+    this.index= 0;
     if(!objStr || typeof objStr !== "string" || objStr.length === 0) throw Error("input should be a valid string");
     this.dataToDecode = objStr;
     return this._d(this.schema);
 }
 
-function decoder(schema){
+function decoder(schema,dataHandlers,charArr){
     this.schema = schema;
-    this.index= 0;
+    this.handledChars = charArr;
+    this.dataHandlers = dataHandlers;
+    
 }
-module.exports= decoder;
+module.exports = decoder;

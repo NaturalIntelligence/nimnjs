@@ -8,7 +8,9 @@ describe("Nimn ", function () {
                 "names" : ["string"]
         }
 
-        var nimnEncoder = new nimn(schema);
+        var nimnEncoder = new nimn();
+        nimnEncoder.updateSchema(schema);
+
 
         var jData = {
             age : 32,
@@ -18,7 +20,7 @@ describe("Nimn ", function () {
         var result = nimnEncoder.encode(jData);
         result = chars.arrStart + result.substr(1);
         expect(function(){
-            nimnEncoder.getDecoder().decode(result);
+            nimnEncoder.decode(result);
         }).toThrow(); 
     });
 
@@ -28,7 +30,9 @@ describe("Nimn ", function () {
             "names" : ["string"]
         }
 
-        var nimnEncoder = new nimn(schema);
+        var nimnEncoder = new nimn();
+        nimnEncoder.updateSchema(schema);
+
 
         var jData = {
             age : 32,
@@ -38,7 +42,7 @@ describe("Nimn ", function () {
         var result = nimnEncoder.encode(jData);
         result =  result.substr(0,3) + chars.objStart + result.substr(5);
         expect(function(){
-            nimnEncoder.getDecoder().decode(result);
+            nimnEncoder.decode(result);
         }).toThrow(); 
     });
 
@@ -49,9 +53,11 @@ describe("Nimn ", function () {
             "names" : ["string"]
         }
         
-        var nimnEncoder = new nimn(schema);
+        var nimnEncoder = new nimn();
+        nimnEncoder.updateSchema(schema);
+
         expect(function(){
-            nimnEncoder.getDecoder().decode("");
+            nimnEncoder.decode("");
         }).toThrow(); 
     });
 });

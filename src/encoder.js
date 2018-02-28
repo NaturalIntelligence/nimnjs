@@ -4,9 +4,9 @@ var dataType = require("./schema").dataType;
 var DataType = require("./schema").DataType;
 var charsArr = require("./chars").charsArr;
 
-var encode = function(jObj,e_schema){
-    if(typeof e_schema.parse === "function"){//premitive
-        return getValue(jObj,e_schema);
+Encoder.prototype._e = function(jObj,e_schema){
+    if(typeof e_schema.value === "string"){//premitive
+        return this.getValue(jObj,e_schema.value);
     }else{
         var hasValidData = hasData(jObj);
         if(hasValidData === true){
@@ -17,8 +17,8 @@ var encode = function(jObj,e_schema){
                 //var itemSchemaType = itemSchema;
                 var arr_len = jObj.length;
                 for(var arr_i=0;arr_i < arr_len;){
-                    var r =  encode(jObj[arr_i],itemSchema) ;
-                    str = processValue(str,r);
+                    var r = this._e(jObj[arr_i],itemSchema) ;
+                    str = this.processValue(str,r);
                     if(arr_len > ++arr_i){
                         str += chars.arraySepChar;
                     }
@@ -28,8 +28,8 @@ var encode = function(jObj,e_schema){
                 var keys = Object.keys(e_schema);
                 for(var i in keys){
                     var key = keys[i];
-                    var r =  encode(jObj[key],e_schema[key]) ;
-                    str = processValue(str,r);
+                    var r =  this._e(jObj[key],e_schema[key]) ;
+                    str = this.processValue(str,r);
                 }
             }
             return str;
@@ -39,18 +39,25 @@ var encode = function(jObj,e_schema){
     }
 }
 
-function processValue(str,r){
-    if(!isAppChar(r[0]) && !isAppChar(str[str.length -1])){
+Encoder.prototype.processValue= function(str,r){
+    if(!this.isAppChar(r[0]) && !this.isAppChar(str[str.length -1])){
         str += chars.boundryChar;
     }
     return str + r;
 }
 
-var getValue= function(a,type){
+/**
+ * 
+ * @param {*} a 
+ * @param {*} type 
+ * @return {string} return either the parsed value or a special char representing the value
+ */
+Encoder.prototype.getValue= function(a,type){
     if(a === undefined) return chars.missingPremitive;
     else if(a === null) return chars.nilPremitive;
     else if( a === "") return chars.emptyValue;
-    else return type.parse(a);
+    else return this.dataHandlers[type].parse(a);
+    //else return type.parse(a);
 }
 
 /**
@@ -67,8 +74,18 @@ function hasData(jObj){
     }
 }
 
-function isAppChar(ch){
-    return charsArr.indexOf(ch) !== -1;
+Encoder.prototype.isAppChar = function(ch){
+    return this.handledChars.indexOf(ch) !== -1;
 }
 
-exports.encode= encode;
+Encoder.prototype.encode = function(jObj){
+    return this._e(jObj,this.schema);
+}
+
+function Encoder(schema,dHandlers, charArr){
+    this.dataHandlers = dHandlers;
+    this.handledChars = charArr;
+    this.schema = schema;
+}
+
+module.exports = Encoder;

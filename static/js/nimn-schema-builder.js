@@ -8,27 +8,28 @@ function buildSchema(jsObj){
     var type = typeOf(jsObj);
     switch(type){
         case "array":
-            var schema = {
-                type: "array",
-                properties : {}
-            }
-            schema.properties["item"] = buildSchema(jsObj[0]);
-            return schema;
+            return [buildSchema(jsObj[0])];
         case "object":
-            var schema = {
-                type: "object",
-                properties : {}
-            }
+            var schema = {  };
             var keys = Object.keys(jsObj);
             for(var i in keys){
-                schema.properties[keys[i]] = buildSchema(jsObj[keys[i]]);
+                var key = keys[i];
+                /* if(key === null || typeof key === "undefined"){//in case of null or undefined, take sibling's type
+                    if(keys[i+1] ){
+                        schema[key] = buildSchema(jsObj[keys[i+1]]);        
+                    }else if(keys[i-1]){
+                        schema[key] = buildSchema(jsObj[keys[i-1]]);        
+                    }
+                    continue;
+                } */
+                schema[key] = buildSchema(jsObj[key]);
             }
             return schema;
         case "string":
         case "number":
         case "date":
         case "boolean":
-            return {type : type};
+            return type;
         default:
             throw Error("Unacceptable type : " + type);
     }
