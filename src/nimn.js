@@ -59,15 +59,15 @@ nimn.prototype.updateSchema= function(schema){
  * @param {function} parseWith - will be used by encoder to encode given type's value
  * @param {function} parseBackWith - will be used by decoder to decode given type's value
  * @param {Object} charset - map of charset and fixed values
- * @param {boolean} [treatAsUnique=false]  - if true encoder will not separate given type's value with boundary char
+ * @param {boolean} [dontSeparateWIthBoundaryChar=false]  - if true encoder will not separate given type's value with boundary char
  */
-nimn.prototype.addDataHandler = function(type,parseWith,parseBackWith,charset,treatAsUnique){
-    var dataHandler = new DataHandler(type,/* parseWith,parseBackWith, */charset,treatAsUnique);
+nimn.prototype.addDataHandler = function(type,parseWith,parseBackWith,charset,dontSeparateWIthBoundaryChar){
+    var dataHandler = new DataHandler(type,/* parseWith,parseBackWith, */charset,dontSeparateWIthBoundaryChar);
     if(parseWith)  dataHandler.parse = parseWith;
     if(parseBackWith) dataHandler.parseBack = parseBackWith;
 
-    //unque charset don't require boundary char. Hence checl them is they are already added
-    if(treatAsUnique){
+    //unque charset don't require boundary char. Hence check them is they are already added
+    if(dontSeparateWIthBoundaryChar && charset){
         var keys = Object.keys(charset);
 
         for(var k in keys){
