@@ -44,7 +44,7 @@ describe("Nimn Encoder", function () {
         };
 
         var nimnEncoder = new nimn();
-        nimnEncoder.updateSchema(schema);
+        nimnEncoder.addSchema(schema);
 
         var jData = {
             name : "amit",
@@ -99,7 +99,7 @@ describe("Nimn Encoder", function () {
         };
 
         var nimnEncoder = new nimn();
-        nimnEncoder.updateSchema(schema);
+        nimnEncoder.addSchema(schema);
 
         var jData = {
             names1 : { name: true},
@@ -156,7 +156,7 @@ describe("Nimn Encoder", function () {
         }
 
         var nimnEncoder = new nimn();
-        nimnEncoder.updateSchema(schema);
+        nimnEncoder.addSchema(schema);
 
         var jData = {
             name : true,
@@ -214,7 +214,7 @@ describe("Nimn Encoder", function () {
     }
 
         var nimnEncoder = new nimn();
-        nimnEncoder.updateSchema(schema);
+        nimnEncoder.addSchema(schema);
 
         var jData = {
             names1 : { name: "amit"},
@@ -261,7 +261,7 @@ describe("Nimn Encoder", function () {
         }
 
         var nimnEncoder = new nimn();
-        nimnEncoder.updateSchema(schema);
+        nimnEncoder.addSchema(schema);
 
         var jData = {
             names1 : { "obj" : {name: "amit"}},

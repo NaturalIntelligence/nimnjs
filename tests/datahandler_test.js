@@ -20,7 +20,7 @@ describe("Nimn ", function () {
             , null 
             , { "R" : "running", "S" : "stop"}
             , false);
-        nimnInstance.updateSchema(schema);
+        nimnInstance.addSchema(schema);
         var expected = chars.objStart + "amit gupta" + chars.boundryChar + "89.3" + chars.boundryChar + "S";
         
         var nimndata = nimnInstance.encode(data);
@@ -44,7 +44,7 @@ describe("Nimn ", function () {
             , null 
             , { "R" : "running", "S" : "stop"}
             , true);
-        nimnInstance.updateSchema(schema);
+        nimnInstance.addSchema(schema);
         var expected = chars.objStart + "amit gupta" + chars.boundryChar + "89.3" + "S";
         
         var nimndata = nimnInstance.encode(data);
@@ -65,7 +65,7 @@ describe("Nimn ", function () {
         var nimnInstance = new nimn();
         nimnInstance.addDataHandler("number");
         nimnInstance.addDataHandler("statustype");
-        nimnInstance.updateSchema(schema);
+        nimnInstance.addSchema(schema);
         var expected = chars.objStart + "amit gupta" + chars.boundryChar + "89.3" + chars.boundryChar + "stop";
         
         var nimndata = nimnInstance.encode(data);
@@ -93,7 +93,7 @@ describe("Nimn ", function () {
         nimnInstance.addDataHandler("number");
         
         expect(function(){
-            nimnInstance.updateSchema(schema);
+            nimnInstance.addSchema(schema);
         }).toThrowError("You've forgot to add data handler for statustype");
         
     });

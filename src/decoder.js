@@ -10,7 +10,7 @@ decoder.prototype._d = function(schema){
         this.index++;
         return undefined;
     }else{
-        if(typeof schema.value === "string"){//premitive
+        if(typeof schema === "string"){//premitive
             return this.readPremitiveValue(schema);
         }else{
             if(Array.isArray(schema)){
@@ -75,7 +75,7 @@ decoder.prototype.readPremitiveValue = function(schemaOfCurrentKey){
         val = "";
     }
     if(this.currentChar() === chars.boundryChar) this.index++;
-    var dh = this.dataHandlers[schemaOfCurrentKey.value];
+    var dh = this.dataHandlers[schemaOfCurrentKey];
     return dh.parseBack(val);
 }
 

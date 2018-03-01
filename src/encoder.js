@@ -5,8 +5,8 @@ var DataType = require("./schema").DataType;
 var charsArr = require("./chars").charsArr;
 
 Encoder.prototype._e = function(jObj,e_schema){
-    if(typeof e_schema.value === "string"){//premitive
-        return this.getValue(jObj,e_schema.value);
+    if(typeof e_schema === "string"){//premitive
+        return this.getValue(jObj,e_schema);
     }else{
         var hasValidData = hasData(jObj);
         if(hasValidData === true){

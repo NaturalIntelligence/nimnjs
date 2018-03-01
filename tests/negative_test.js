@@ -9,7 +9,7 @@ describe("Nimn ", function () {
         }
 
         var nimnEncoder = new nimn();
-        nimnEncoder.updateSchema(schema);
+        nimnEncoder.addSchema(schema);
 
 
         var jData = {
@@ -31,7 +31,7 @@ describe("Nimn ", function () {
         }
 
         var nimnEncoder = new nimn();
-        nimnEncoder.updateSchema(schema);
+        nimnEncoder.addSchema(schema);
 
 
         var jData = {
@@ -54,7 +54,7 @@ describe("Nimn ", function () {
         }
         
         var nimnEncoder = new nimn();
-        nimnEncoder.updateSchema(schema);
+        nimnEncoder.addSchema(schema);
 
         expect(function(){
             nimnEncoder.decode("");

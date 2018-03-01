@@ -15,7 +15,8 @@ var schema = {
         }]
     };
 
-var nimnEncoder = new nimn(schema);
+var nimnEncoder = new nimn();
+nimnEncoder.addSchema(schema);
 
 var data = { 
     persons : [
@@ -184,7 +185,7 @@ suite
     stringify(data); 
 }) */
 .add('nimn Decode', function() {
-  nimnEncoder.getDecoder().decode(nimnStr); 
+  nimnEncoder.decode(nimnStr); 
 }) 
 .add('JSON.parse', function() {
     JSON.parse(jsonStr); 

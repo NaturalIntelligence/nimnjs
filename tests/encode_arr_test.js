@@ -57,7 +57,7 @@ describe("Nimn Encoder", function () {
         }
 
         var nimnEncoder = new nimn();
-        nimnEncoder.updateSchema(schema);
+        nimnEncoder.addSchema(schema);
 
         var jData = {
             age : 32,
@@ -119,7 +119,7 @@ describe("Nimn Encoder", function () {
         }
 
         var nimnEncoder = new nimn();
-        nimnEncoder.updateSchema(schema);
+        nimnEncoder.addSchema(schema);
 
         var jData = {
             age : 32,
@@ -152,7 +152,7 @@ describe("Nimn Encoder", function () {
         }
 
         var nimnEncoder = new nimn();
-        nimnEncoder.updateSchema(schema);
+        nimnEncoder.addSchema(schema);
 
         var jData = {
             names : ["true", "false"],
@@ -182,7 +182,7 @@ describe("Nimn Encoder", function () {
         }
 
         var nimnEncoder = new nimn();
-        nimnEncoder.updateSchema(schema);
+        nimnEncoder.addSchema(schema);
 
         var jData = {
             names : [],
@@ -207,7 +207,7 @@ describe("Nimn Encoder", function () {
         }
 
         var nimnEncoder = new nimn();
-        nimnEncoder.updateSchema(schema);
+        nimnEncoder.addSchema(schema);
 
         var jData = {
             names : [{ name : "someone"}, {}],
@@ -236,7 +236,7 @@ describe("Nimn Encoder", function () {
         
 
         var nimnEncoder = new nimn();
-        nimnEncoder.updateSchema(schema);
+        nimnEncoder.addSchema(schema);
 
         var jData = {
             name : "amit",
@@ -267,7 +267,7 @@ describe("Nimn Encoder", function () {
         ]};
 
         var nimnEncoder = new nimn();
-        nimnEncoder.updateSchema(schema);
+        nimnEncoder.addSchema(schema);
 
         var data = { 
             persons : [
@@ -322,7 +322,7 @@ describe("Nimn Encoder", function () {
         ];
 
         var nimnEncoder = new nimn();
-        nimnEncoder.updateSchema(schema);
+        nimnEncoder.addSchema(schema);
 
         var data = [
                 {

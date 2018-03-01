@@ -3,7 +3,7 @@ var numParser = require("./parsers/number");
 var dataType = require("./schema").dataType;
 var chars = require("./chars").chars;
 var appCharsArr = require("./chars").charsArr;
-var schemaUpdater = require("./schema_updater");
+var helper = require("./helper");
 var Decoder = require("./decoder");
 var Encoder = require("./encoder");
 var DataHandler = require("./DataHandler");
@@ -35,9 +35,9 @@ function nimn() {
  * @param {*} schema 
  * @returns {void}
  */
-nimn.prototype.updateSchema= function(schema){
+nimn.prototype.addSchema= function(schema){
     this.schema = JSON.parse(JSON.stringify(schema));
-    new schemaUpdater(this.dataHandlers).update(this.schema);
+    helper.validateSchema(schema,this.dataHandlers);
     this.encoder = new Encoder(this.schema,this.dataHandlers,this.handledChars);
 }
 

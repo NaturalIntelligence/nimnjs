@@ -10,7 +10,7 @@ describe("Nimn Decoder", function () {
     it("should return null ", function () {
        
         var nimnEncoder = new nimn();
-        nimnEncoder.updateSchema(schema);
+        nimnEncoder.addSchema(schema);
 
         var result = nimnEncoder.decode(chars.nilChar);
         //console.log(JSON.stringify(result));
@@ -19,7 +19,7 @@ describe("Nimn Decoder", function () {
     it(" should return undefined ", function () {
        
         var nimnEncoder = new nimn();
-        nimnEncoder.updateSchema(schema);
+        nimnEncoder.addSchema(schema);
 
         var result = nimnEncoder.decode(chars.missingChar);
         //console.log(JSON.stringify(result));

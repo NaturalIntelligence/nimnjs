@@ -19,7 +19,7 @@ describe("Nimn Encoder", function () {
         }
         var expected = chars.objStart + "gupta" + chars.boundryChar + "87.9";
 
-        nimnEncoder.updateSchema(schema);
+        nimnEncoder.addSchema(schema);
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected);
         result = nimnEncoder.decode(result);
@@ -34,7 +34,7 @@ describe("Nimn Encoder", function () {
         };
 
         var nimnEncoder = new nimn();
-        nimnEncoder.updateSchema(schema);
+        nimnEncoder.addSchema(schema);
 
         var jData = {
             age : 32
@@ -73,7 +73,7 @@ describe("Nimn Encoder", function () {
         };
 
         var nimnEncoder = new nimn();
-        nimnEncoder.updateSchema(schema);
+        nimnEncoder.addSchema(schema);
 
         var jData = {
             name : { first : null , middle: "kumar", last: "gupta"} ,
@@ -100,7 +100,7 @@ describe("Nimn Encoder", function () {
         };
 
         var nimnEncoder = new nimn();
-        nimnEncoder.updateSchema(schema);
+        nimnEncoder.addSchema(schema);
         
         var jData = {
             name : { first : null , middle: "kumar", last: null} ,
@@ -161,7 +161,7 @@ describe("Nimn Encoder", function () {
         };
 
         var nimnEncoder = new nimn();
-        nimnEncoder.updateSchema(schema);
+        nimnEncoder.addSchema(schema);
 
         var jData = {
             name : {},
@@ -214,7 +214,7 @@ describe("Nimn Encoder", function () {
             + "32";
 
         var nimnEncoder = new nimn();
-        nimnEncoder.updateSchema(schema);
+        nimnEncoder.addSchema(schema);
         var result = nimnEncoder.encode(jData);
         //console.log(result.length);
         //console.log(result);
