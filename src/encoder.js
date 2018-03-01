@@ -15,9 +15,6 @@ Encoder.prototype._e = function(jObj,e_schema){
                 for(var arr_i=0;arr_i < arr_len;arr_i++){
                     var r = this._e(jObj[arr_i],itemSchema) ;
                     str = this.processValue(str,r);
-                    /* if(arr_len > ++arr_i){
-                        str += chars.arraySepChar;
-                    } */
                 }
                 str += chars.arrayEnd;//indicates that next item is not array item
             }else{//object
@@ -50,11 +47,12 @@ Encoder.prototype.processValue= function(str,r){
  * @return {string} return either the parsed value or a special char representing the value
  */
 Encoder.prototype.getValue= function(a,type){
-    if(a === undefined) return chars.missingPremitive;
-    else if(a === null) return chars.nilPremitive;
-    else if( a === "") return chars.emptyValue;
-    else return this.dataHandlers[type].parse(a);
-    //else return type.parse(a);
+    switch(a){
+        case undefined: return chars.missingPremitive;
+        case null: return chars.nilPremitive;
+        case "": return chars.emptyValue;
+        default: return this.dataHandlers[type].parse(a);
+    }
 }
 
 /**

@@ -1,60 +1,66 @@
 var chars = require("./chars").chars;
 var getKey = require("./util").getKey;
-
+/*
+Performance improvement note:
+    parse schema in advance and guess what is the possible char can come in the sequence.
+    it'll decrease number of comparision to half.
+*/
 decoder.prototype._d = function(schema){
-    if(this.currentChar() === chars.nilChar || this.currentChar() === chars.nilPremitive){
+    if(ifNil(this.currentChar())){
         this.index++;
         return null;
-    }else if(this.currentChar() === chars.missingChar || this.currentChar() === chars.missingPremitive){
+    }else if(ifMissing(this.currentChar())){
         this.index++;
         return undefined;
-    }else{
-        if(typeof schema === "string"){//premitive
-            return this.readPremitiveValue(schema);
+    }else if(typeof schema === "string"){//premitive
+        return this.readPremitiveValue(schema);
+    }else if(Array.isArray(schema)){
+        if(this.currentChar() === chars.emptyChar){
+            this.index++;
+            return [];
+        }else if(this.currentChar() !== chars.arrStart){
+            throw Error("Parsing error: Array start char was expected");
         }else{
-            if(Array.isArray(schema)){
-                if(this.currentChar() === chars.emptyChar){
-                    this.index++;
-                    return [];
-                }else if(this.currentChar() !== chars.arrStart){
-                    throw Error("Parsing error: Array start char was expected");
-                }else{
-                    this.index++;//skip array start char
-                    var item = schema[0];
-                    var obj = []
-                    do{
-                        var r =  this._d(item) ;
-                        if(r !== undefined){
-                            obj.push(r);
-                        }
-                    }while(this.dataToDecode[this.index] !== chars.arrayEnd);
-                    ++this.index;
-                    return obj;
+            this.index++;//skip array start char
+            var item = schema[0];
+            var obj = []
+            do{
+                var r =  this._d(item) ;
+                if(r !== undefined){
+                    obj.push(r);
                 }
-            }else{//object
-                if(this.currentChar() === chars.emptyChar){
-                    this.index++;
-                    return {};
-                }else if(this.currentChar() !== chars.objStart){
-                    throw Error("Parsing error: Object start char was expected : " + this.currentChar());
-                }else{
-                    this.index++;//skip object start char
-                    var keys = Object.keys(schema);
-                    var obj = {};
-                    for(var i in keys){
-                        var r =  this._d(schema[keys[i]]) ;
-                        if(r !== undefined){
-                            obj[keys[i]] = r;
-                        }
-                    }
-                    return obj;
+            }while(this.dataToDecode[this.index] !== chars.arrayEnd);
+            ++this.index;
+            return obj;
+        }
+    }else{//object
+        if(this.currentChar() === chars.emptyChar){
+            this.index++;
+            return {};
+        }else if(this.currentChar() !== chars.objStart){
+            throw Error("Parsing error: Object start char was expected : " + this.currentChar());
+        }else{
+            this.index++;//skip object start char
+            var keys = Object.keys(schema);
+            var obj = {};
+            for(var i in keys){
+                var r =  this._d(schema[keys[i]]) ;
+                if(r !== undefined){
+                    obj[keys[i]] = r;
                 }
             }
+            return obj;
         }
     }
-
 }
 
+function ifNil(ch){
+    return ch === chars.nilChar || ch === chars.nilPremitive;
+}
+
+function ifMissing(ch){
+    return ch === chars.missingChar || ch === chars.missingPremitive;
+}
 /**
  * returns character index pointing to
  */
@@ -63,13 +69,7 @@ decoder.prototype.currentChar = function(){
 }
 
 decoder.prototype.readPremitiveValue = function(schemaOfCurrentKey){
-    var val = "";
-    //if(schemaOfCurrentKey.readUntil){
-        val = this.readFieldValue(schemaOfCurrentKey.readUntil);
-    /* }else{
-        val = this.currentChar();
-        this.index += val.length;
-    } */
+    var val = this.readFieldValue();
     if(val === chars.emptyValue){
         val = "";
     }
@@ -80,21 +80,17 @@ decoder.prototype.readPremitiveValue = function(schemaOfCurrentKey){
 
 /**
  * Read characters until app supported char is found
- * @param {string} str 
- * @param {number} i 
  */
-decoder.prototype.readFieldValue = function(until){
-    until = this.handledChars;
-    if(until.indexOf(this.dataToDecode[this.index]) !== -1 ){
+decoder.prototype.readFieldValue = function(){
+    if(indexOfthis.handledChars.indexOf(this.currentChar()) !== -1 ){
         return this.dataToDecode[this.index++];
     }else{
-
-    var val = "";
-    var len = this.dataToDecode.length;
-    var start = this.index;
-    
-    for(;this.index < len && until.indexOf(this.dataToDecode[this.index]) === -1;this.index++);
-    return this.dataToDecode.substr(start, this.index-start);
+        var val = "";
+        var len = this.dataToDecode.length;
+        var start = this.index;
+        
+        for(;this.index < len && this.handledChars.indexOf(this.currentChar()) === -1;this.index++);
+        return this.dataToDecode.substr(start, this.index-start);
     }    
 }
 
