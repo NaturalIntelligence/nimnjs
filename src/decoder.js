@@ -28,7 +28,8 @@ decoder.prototype._d = function(schema){
                         if(r !== undefined){
                             obj.push(r);
                         }
-                    }while(this.dataToDecode[this.index] === chars.arraySepChar && ++this.index);
+                    }while(this.dataToDecode[this.index] !== chars.arraySepChar);
+                    ++this.index;
                     return obj;
                 }
             }else{//object
@@ -36,12 +37,11 @@ decoder.prototype._d = function(schema){
                     this.index++;
                     return {};
                 }else if(this.currentChar() !== chars.objStart){
-                    throw Error("Parsing error: Object start char was expected");
+                    throw Error("Parsing error: Object start char was expected : " + this.currentChar());
                 }else{
                     this.index++;//skip object start char
                     var keys = Object.keys(schema);
                     var obj = {};
-                    //var item = getKey(schema,0);
                     for(var i in keys){
                         var r =  this._d(schema[keys[i]]) ;
                         if(r !== undefined){
@@ -65,12 +65,12 @@ decoder.prototype.currentChar = function(){
 
 decoder.prototype.readPremitiveValue = function(schemaOfCurrentKey){
     var val = "";
-    if(schemaOfCurrentKey.readUntil){
+    //if(schemaOfCurrentKey.readUntil){
         val = this.readFieldValue(schemaOfCurrentKey.readUntil);
-    }else{
+    /* }else{
         val = this.currentChar();
         this.index += val.length;
-    }
+    } */
     if(val === chars.emptyValue){
         val = "";
     }
@@ -85,13 +85,18 @@ decoder.prototype.readPremitiveValue = function(schemaOfCurrentKey){
  * @param {number} i 
  */
 decoder.prototype.readFieldValue = function(until){
+    until = this.handledChars;
+    if(until.indexOf(this.dataToDecode[this.index]) !== -1 ){
+        return this.dataToDecode[this.index++];
+    }else{
+
     var val = "";
     var len = this.dataToDecode.length;
     var start = this.index;
     
-    for(;this.index < len && until.indexOf(this.dataToDecode[this.index]) === -1;this.index++ );
+    for(;this.index < len && until.indexOf(this.dataToDecode[this.index]) === -1;this.index++);
     return this.dataToDecode.substr(start, this.index-start);
-    
+    }    
 }
 
 

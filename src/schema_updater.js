@@ -11,12 +11,17 @@ var dataType = require("./schema").dataType;
 schemaUpdater.prototype. _u = function(schema){
     if(isArray(schema)){
         var lastFieldSchemaToSet = this._u(schema[0]);
+        
         if(typeof lastFieldSchemaToSet === "string"){
             lastFieldSchemaToSet = {};
         }
+        //next char can either be end of array or character for start of array
+        
+        this.setReadUntil(lastFieldSchemaToSet,schema[0]);
         if(typeof schema[0] === "string"){
             schema[0] = lastFieldSchemaToSet;
         }
+        
         lastFieldSchemaToSet.readUntil = lastFieldSchemaToSet.readUntil || [];
         pushIfNotExist(lastFieldSchemaToSet.readUntil,chars.arraySepChar);
         return lastFieldSchemaToSet;
@@ -57,10 +62,17 @@ function isObject(schema){
 }
 
 
+/**
+ * 
+ * @param {*} current 
+ * @param {*} next 
+ */
 schemaUpdater.prototype.setReadUntil = function(current,next){
+    //Don't set "read until" if current char has fixed 
+    
     current.readUntil = current.readUntil || [];
     if(isArray(next)){
-        pushIfNotExist(current.readUntil,chars.nilChar, chars.missingChar, chars.emptyChar, chars.arrStart);
+        pushIfNotExist(current.readUntil,chars.nilChar, chars.missingChar, chars.emptyChar, chars.boundryChar, chars.arrStart);
     }else if(this.datahandlers[next] && this.datahandlers[next].hasFixedInstances){
         pushIfNotExist(current.readUntil, chars.nilPremitive, chars.missingPremitive, this.datahandlers[next].getCharCodes());
     }else if(isObject(next)){

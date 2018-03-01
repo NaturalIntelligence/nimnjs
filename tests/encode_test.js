@@ -209,9 +209,8 @@ describe("Nimn Encoder", function () {
         var expected = chars.objStart + chars.objStart + chars.nilPremitive + "kumar" + chars.boundryChar + "gupta"
             + chars.arrStart 
             + chars.objStart + "Stubmatic" + chars.boundryChar + "QA friendly tool to mock HTTP(s) calls"
-            + chars.arraySepChar 
             + chars.objStart + "java aggregator" + chars.boundryChar + "1"
-            + chars.boundryChar 
+            + chars.arraySepChar 
             + "32";
 
         var nimnEncoder = new nimn();

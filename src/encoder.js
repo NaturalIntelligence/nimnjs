@@ -16,13 +16,14 @@ Encoder.prototype._e = function(jObj,e_schema){
                 var itemSchema = e_schema[0];
                 //var itemSchemaType = itemSchema;
                 var arr_len = jObj.length;
-                for(var arr_i=0;arr_i < arr_len;){
+                for(var arr_i=0;arr_i < arr_len;arr_i++){
                     var r = this._e(jObj[arr_i],itemSchema) ;
                     str = this.processValue(str,r);
-                    if(arr_len > ++arr_i){
+                    /* if(arr_len > ++arr_i){
                         str += chars.arraySepChar;
-                    }
+                    } */
                 }
+                str += chars.arraySepChar;//indicates that next item is not array item
             }else{//object
                 str += chars.objStart;
                 var keys = Object.keys(e_schema);

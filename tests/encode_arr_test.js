@@ -66,7 +66,7 @@ describe("Nimn Encoder", function () {
         var expected = chars.objStart
             + "32" 
             + chars.arrStart 
-            + "amit" + chars.arraySepChar + "kumar"
+            + "amit" + chars.boundryChar  + "kumar" + chars.arraySepChar
             + chars.missingPremitive + chars.missingChar
             + chars.missingPremitive + chars.missingChar;
 
@@ -85,10 +85,10 @@ describe("Nimn Encoder", function () {
         }
         var expected = chars.objStart + "32" 
             + chars.arrStart  
-            + "amit" + chars.arraySepChar + "kumar"
+            + "amit" + chars.boundryChar + "kumar" + chars.arraySepChar 
             + chars.missingPremitive
             + chars.arrStart 
-            + "amit2" + chars.arraySepChar + "kumar2"
+            + "amit2" + chars.boundryChar + "kumar2" + chars.arraySepChar 
             + char(218) + chars.missingChar;
 
         var result = nimnEncoder.encode(jData);
@@ -128,10 +128,10 @@ describe("Nimn Encoder", function () {
         }
         var expected = chars.objStart + "32" 
             + chars.arrStart 
-            + "amit" + chars.arraySepChar + "kumar"
+            + "amit" + chars.boundryChar + "kumar" + chars.arraySepChar 
             + chars.missingPremitive 
-            + chars.arrStart + chars.emptyValue
-            + chars.missingChar;
+            + chars.arrStart + chars.emptyValue + chars.arraySepChar
+            + chars.missingChar  ;
 
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
@@ -161,18 +161,18 @@ describe("Nimn Encoder", function () {
             names3 : [true, false],
             names4 : [{ name: "somename"}]  ,
         }
-        var expected = chars.objStart + chars.arrStart  + "true" + chars.arraySepChar + "false" 
-            + chars.arrStart  + "true" + chars.arraySepChar + "false" 
-            + chars.arrStart + char(217) + chars.arraySepChar +  char(218)
-            + chars.arrStart  + char(217) + chars.arraySepChar +  char(218)
-            + chars.arrStart + chars.objStart + "somename";
+        var expected = chars.objStart + chars.arrStart  + "true" + chars.boundryChar + "false" + chars.arraySepChar 
+            + chars.arrStart  + "true" + chars.boundryChar + "false" + chars.arraySepChar 
+            + chars.arrStart + char(217)  +  char(218) + chars.arraySepChar
+            + chars.arrStart  + char(217)  +  char(218) + chars.arraySepChar
+            + chars.arrStart + chars.objStart + "somename" + chars.arraySepChar ;
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
         result = nimnEncoder.decode(result);
         //console.log(JSON.stringify(result));
         expect(result).toEqual(jData); 
 
-    });
+    }); 
 
     it(" 6., 7. should not append boundry char if surrounding field is empty array/object", function () {
         var schema = {
@@ -190,14 +190,14 @@ describe("Nimn Encoder", function () {
             names2 : {}
         }
         var expected =  chars.objStart + chars.emptyChar 
-            + chars.arrStart  + char(217) + chars.arraySepChar + char(218)
+            + chars.arrStart  + char(217) + char(218) + chars.arraySepChar 
             + chars.emptyChar;
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
         result = nimnEncoder.decode(result);
         //console.log(JSON.stringify(result));
         expect(result).toEqual(jData); 
-    }); 
+    });
 
     it("8. should not append boundry char when nearby field of surrounding array of object is app handle char", function () {
         var schema = {
@@ -214,9 +214,9 @@ describe("Nimn Encoder", function () {
             names1 : ["somename2","somename4"],
             names2 : [{}, { name : "someone3"}],
         }
-        var expected = chars.objStart + chars.arrStart + chars.objStart + "someone" + chars.arraySepChar + chars.emptyChar
-        + chars.arrStart + "somename2" + chars.arraySepChar + "somename4"
-        + chars.arrStart + chars.emptyChar + chars.arraySepChar  + chars.objStart + "someone3";
+        var expected = chars.objStart + chars.arrStart + chars.objStart + "someone" + chars.emptyChar + chars.arraySepChar
+        + chars.arrStart + "somename2" + chars.boundryChar + "somename4" + chars.arraySepChar
+        + chars.arrStart + chars.emptyChar  + chars.objStart + "someone3" + chars.arraySepChar;
         
         var result = nimnEncoder.encode(jData);
         //console.log(chars);
@@ -295,14 +295,15 @@ describe("Nimn Encoder", function () {
         + "somename" + chars.boundryChar + "30" + char(217)
         + chars.arrStart + chars.objStart
         + "123456789" + chars.boundryChar + "123456789" + chars.boundryChar + "2018-02-23T10:12:30.041Z"
-        + chars.arraySepChar + chars.objStart
+        + chars.objStart
         + "123456789" + chars.boundryChar + "123456789" + chars.boundryChar + "2018-02-23T10:12:30.041Z"
+        + chars.arraySepChar + chars.arraySepChar
         ;
         var result = nimnEncoder.encode(data);
         //console.log(result);
         expect(result).toEqual(expected); 
         result = nimnEncoder.decode(result);
-        //console.log(JSON.stringify(result));
+        //console.log(JSON.stringify(result,null,4));
         expect(result).toEqual(data); 
 
     });  
@@ -347,9 +348,10 @@ describe("Nimn Encoder", function () {
         + "somename" + chars.boundryChar + "30" + char(217)
         + chars.arrStart + chars.objStart
         + "123456789" + chars.boundryChar + "123456789" + chars.boundryChar + "2018-02-23T10:12:30.041Z"
-        + chars.arraySepChar + chars.objStart
+        + chars.objStart
         + "123456789" + chars.boundryChar + "123456789" + chars.boundryChar + "2018-02-23T10:12:30.041Z"
-        ;
+        + chars.arraySepChar + chars.arraySepChar;
+
         var result = nimnEncoder.encode(data);
         //console.log(result);
         expect(result).toEqual(expected); 
