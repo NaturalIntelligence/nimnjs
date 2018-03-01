@@ -83,7 +83,7 @@ const chars= {
     //yesChar : char(217),
     //noChar : char(218),
     boundryChar : char(186),
-    arraySepChar: char(197),
+    arrayEnd: char(197),
     objStart: char(198),
     arrStart: char(199)
 }
@@ -97,7 +97,7 @@ const charsArr = [
     chars.emptyChar,
     //chars.yesChar,
     //chars.noChar,
-    chars.arraySepChar,
+    chars.arrayEnd,
     chars.objStart,
     chars.arrStart
 ]
@@ -117,7 +117,7 @@ decoder.prototype._d = function(schema){
         this.index++;
         return undefined;
     }else{
-        if(typeof schema.value === "string"){//premitive
+        if(typeof schema === "string"){//premitive
             return this.readPremitiveValue(schema);
         }else{
             if(Array.isArray(schema)){
@@ -135,7 +135,7 @@ decoder.prototype._d = function(schema){
                         if(r !== undefined){
                             obj.push(r);
                         }
-                    }while(this.dataToDecode[this.index] !== chars.arraySepChar);
+                    }while(this.dataToDecode[this.index] !== chars.arrayEnd);
                     ++this.index;
                     return obj;
                 }
@@ -182,7 +182,7 @@ decoder.prototype.readPremitiveValue = function(schemaOfCurrentKey){
         val = "";
     }
     if(this.currentChar() === chars.boundryChar) this.index++;
-    var dh = this.dataHandlers[schemaOfCurrentKey.value];
+    var dh = this.dataHandlers[schemaOfCurrentKey];
     return dh.parseBack(val);
 }
 
@@ -221,7 +221,7 @@ function decoder(schema,dataHandlers,charArr){
     
 }
 module.exports = decoder;
-},{"./chars":2,"./schema":8,"./util":10}],4:[function(require,module,exports){
+},{"./chars":2,"./schema":9,"./util":10}],4:[function(require,module,exports){
 var chars = require("./chars").chars;
 var getKey = require("./util").getKey;
 var dataType = require("./schema").dataType;
@@ -229,8 +229,8 @@ var DataType = require("./schema").DataType;
 var charsArr = require("./chars").charsArr;
 
 Encoder.prototype._e = function(jObj,e_schema){
-    if(typeof e_schema.value === "string"){//premitive
-        return this.getValue(jObj,e_schema.value);
+    if(typeof e_schema === "string"){//premitive
+        return this.getValue(jObj,e_schema);
     }else{
         var hasValidData = hasData(jObj);
         if(hasValidData === true){
@@ -247,7 +247,7 @@ Encoder.prototype._e = function(jObj,e_schema){
                         str += chars.arraySepChar;
                     } */
                 }
-                str += chars.arraySepChar;//indicates that next item is not array item
+                str += chars.arrayEnd;//indicates that next item is not array item
             }else{//object
                 str += chars.objStart;
                 var keys = Object.keys(e_schema);
@@ -314,13 +314,41 @@ function Encoder(schema,dHandlers, charArr){
 }
 
 module.exports = Encoder;
-},{"./chars":2,"./schema":8,"./util":10}],5:[function(require,module,exports){
+},{"./chars":2,"./schema":9,"./util":10}],5:[function(require,module,exports){
+
+/**
+ * Verify if all the datahandlers are added given in schema.
+ * @param {*} schema 
+ * @param {*} datahandlers 
+ */
+var validateSchema = function(schema,datahandlers){
+    if(Array.isArray(schema)){
+        validateSchema(schema[0],datahandlers);
+    }else if(typeof schema === "object"){
+        var keys = Object.keys(schema);
+        var len = keys.length;
+
+        for(var i=0; i< len; i++){
+            var key = keys[i];
+            var nextKey = keys[i+1];
+
+            validateSchema(schema[key],datahandlers);
+        }
+    }else{
+        if(!datahandlers[schema]){
+            throw Error("You've forgot to add data handler for " + schema)
+        }
+    }
+}
+
+exports.validateSchema = validateSchema;
+},{}],6:[function(require,module,exports){
 var boolean = require("./parsers/boolean");
 var numParser = require("./parsers/number");
 var dataType = require("./schema").dataType;
 var chars = require("./chars").chars;
 var appCharsArr = require("./chars").charsArr;
-var schemaUpdater = require("./schema_updater");
+var helper = require("./helper");
 var Decoder = require("./decoder");
 var Encoder = require("./encoder");
 var DataHandler = require("./DataHandler");
@@ -352,9 +380,9 @@ function nimn() {
  * @param {*} schema 
  * @returns {void}
  */
-nimn.prototype.updateSchema= function(schema){
+nimn.prototype.addSchema= function(schema){
     this.schema = JSON.parse(JSON.stringify(schema));
-    new schemaUpdater(this.dataHandlers).update(this.schema);
+    helper.validateSchema(schema,this.dataHandlers);
     this.encoder = new Encoder(this.schema,this.dataHandlers,this.handledChars);
 }
 
@@ -409,7 +437,7 @@ nimn.prototype.decode= function(encodedVal){
     return decoder.decode(encodedVal);
 }
 module.exports = nimn;
-},{"./DataHandler":1,"./chars":2,"./decoder":3,"./encoder":4,"./parsers/boolean":6,"./parsers/number":7,"./schema":8,"./schema_updater":9}],6:[function(require,module,exports){
+},{"./DataHandler":1,"./chars":2,"./decoder":3,"./encoder":4,"./helper":5,"./parsers/boolean":7,"./parsers/number":8,"./schema":9}],7:[function(require,module,exports){
 var chars = require("../chars").chars;
 var char = require("../util").char;
 
@@ -432,7 +460,7 @@ exports.parse = parse;
 exports.parseBack = parseBack;
 exports.charset = booleanCharset;
 
-},{"../chars":2,"../util":10}],7:[function(require,module,exports){
+},{"../chars":2,"../util":10}],8:[function(require,module,exports){
 var chars = require("../chars").chars;
 
 function parse(val){
@@ -452,7 +480,7 @@ function parseBack(val){
 exports.parse = parse;
 exports.parseBack = parseBack;
 
-},{"../chars":2}],8:[function(require,module,exports){
+},{"../chars":2}],9:[function(require,module,exports){
 var dataType = {
     STRING : { value: 1},
     NUMBER : { value: 2},
@@ -480,122 +508,7 @@ function DataType(type){
 exports.dataType = dataType;
 
 
-},{}],9:[function(require,module,exports){
-var chars = require("./chars").chars;
-var charsArr = require("./chars").charsArr;
-var dataType = require("./schema").dataType;
-
-/**
- * Update schema type with equivalent dataType key for for fast processing. 
- * Update each field in schema to be aware with next field for fast and easy decoding.
- * @param {*} schema 
- * @param {*} lastfieldSchema 
- */
-schemaUpdater.prototype. _u = function(schema){
-    if(isArray(schema)){
-        var lastFieldSchemaToSet = this._u(schema[0]);
-        
-        if(typeof lastFieldSchemaToSet === "string"){
-            lastFieldSchemaToSet = {};
-        }
-        //next char can either be end of array or character for start of array
-        
-        this.setReadUntil(lastFieldSchemaToSet,schema[0]);
-        if(typeof schema[0] === "string"){
-            schema[0] = lastFieldSchemaToSet;
-        }
-        
-        lastFieldSchemaToSet.readUntil = lastFieldSchemaToSet.readUntil || [];
-        pushIfNotExist(lastFieldSchemaToSet.readUntil,chars.arraySepChar);
-        return lastFieldSchemaToSet;
-    }else if(isObject(schema)){
-        var keys = Object.keys(schema);
-        var len = keys.length;
-        var lastFieldSchemaToSet;
-        for(var i=0; i< len; i++){
-            var key = keys[i];
-            var nextKey = keys[i+1];
-
-            lastFieldSchemaToSet = this._u(schema[key]);
-            if(typeof schema[key] !== "object"){
-                schema[key] = lastFieldSchemaToSet;
-            }
-            if(len > i+1){
-                this.setReadUntil(lastFieldSchemaToSet,schema[nextKey]);
-            }
-
-        }
-        return lastFieldSchemaToSet;//return last key to somone upstair can set it.
-
-    }else{
-        return { value: schema};
-    }
-}
-
-function isArrayOrObject(schema){
-    return isArray(schema) || isObject(schema);
-}
-
-function isArray(schema){
-    return Array.isArray(schema);
-}
-
-function isObject(schema){
-    return typeof schema === "object";
-}
-
-
-/**
- * 
- * @param {*} current 
- * @param {*} next 
- */
-schemaUpdater.prototype.setReadUntil = function(current,next){
-    //Don't set "read until" if current char has fixed 
-    
-    current.readUntil = current.readUntil || [];
-    if(isArray(next)){
-        pushIfNotExist(current.readUntil,chars.nilChar, chars.missingChar, chars.emptyChar, chars.boundryChar, chars.arrStart);
-    }else if(this.datahandlers[next] && this.datahandlers[next].hasFixedInstances){
-        pushIfNotExist(current.readUntil, chars.nilPremitive, chars.missingPremitive, this.datahandlers[next].getCharCodes());
-    }else if(isObject(next)){
-        pushIfNotExist(current.readUntil,chars.nilChar, chars.missingChar, chars.emptyChar, chars.objStart);
-    }else{
-        if(!this.datahandlers[next]) throw Error("You've forgot to add data handler for " + next);
-        pushIfNotExist(current.readUntil,chars.boundryChar, chars.nilPremitive, chars.missingPremitive, chars.arraySepChar);
-    }
-}
-
-/**
- * First parameter is an array. Other are either premitives or array of premitives
- */
-function pushIfNotExist(){
-    var arr = arguments[0];
-    for(var arg_i = 1; arg_i < arguments.length; arg_i++){
-        var arg = arguments[arg_i];
-        if(Array.isArray(arg)){
-            for(var i=0; i < arg.length; i++){
-                if(arr.indexOf(arg[i]) === -1 ) arr.push(arg[i]);    
-            }
-        }else{
-            if(arr.indexOf(arg) === -1 ) arr.push(arg)
-        }
-    }
-}
-
-function schemaUpdater(datahandlers){
-    this.datahandlers = datahandlers;
-}
-
-schemaUpdater.prototype.update= function(schema){
-    var lastFieldToSet = this._u(schema);
-    if(!lastFieldToSet.readUntil){
-        lastFieldToSet.readUntil = [chars.nilChar];
-    }
-    //setReadUntil(lastFieldSchemaToSet,{});
-}
-module.exports = schemaUpdater;
-},{"./chars":2,"./schema":8}],10:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 /**
  *  converts a ASCII number into equivalant ASCII char
  * @param {number} a 
@@ -616,5 +529,5 @@ function getKey(obj,i){
 
 exports.char = char;
 exports.getKey = getKey;
-},{}]},{},[5])(5)
+},{}]},{},[6])(6)
 });
