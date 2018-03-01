@@ -72,7 +72,7 @@ nimn.prototype.addDataHandler = function(type,parseWith,parseBackWith,charset,do
         for(var k in keys){
             var ch = keys[k];
             if(this.handledChars.indexOf(ch) !== -1){
-                throw Error("Charset Error: "+ ch +" is not allowed. Either it is reserved or being used by another data handler");
+                throw Error("DataHandler Error: "+ ch +" is not allowed. Either it is reserved or being used by another data handler");
             }else{
                 this.handledChars.push(ch);
             }

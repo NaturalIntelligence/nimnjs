@@ -97,4 +97,29 @@ describe("Nimn ", function () {
         }).toThrowError("You've forgot to add data handler for statustype");
         
     });
+
+    it("should throw error when multiple data handlers are added with some common charsets", function () {
+        var data = {
+            name : "amit gupta",
+            marks : 89.3,
+            status : "stop"
+        }
+        var nimnInstance = new nimn();
+        nimnInstance.addDataHandler("statustype"
+            , null 
+            , null 
+            , { "R" : "running", "S" : "stop"}
+            , true);
+        
+        
+
+        expect(function(){
+            nimnInstance.addDataHandler("statustype2"
+                , null 
+                , null 
+                , { "R" : "running", "S" : "stop"}
+                , true);
+        }).toThrowError("DataHandler Error: R is not allowed. Either it is reserved or being used by another data handler");
+        
+    });
 });
