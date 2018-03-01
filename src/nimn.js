@@ -1,6 +1,5 @@
 var boolean = require("./parsers/boolean");
 var numParser = require("./parsers/number");
-var dataType = require("./schema").dataType;
 var chars = require("./chars").chars;
 var appCharsArr = require("./chars").charsArr;
 var helper = require("./helper");

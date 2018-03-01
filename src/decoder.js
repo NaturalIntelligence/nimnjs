@@ -1,6 +1,5 @@
 var chars = require("./chars").chars;
 var getKey = require("./util").getKey;
-var dataType = require("./schema").dataType;
 
 decoder.prototype._d = function(schema){
     if(this.currentChar() === chars.nilChar || this.currentChar() === chars.nilPremitive){

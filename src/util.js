@@ -12,9 +12,9 @@ var char = function (a){
  * @param {*} obj 
  * @param {number} i 
  */
-function getKey(obj,i){
+/* function getKey(obj,i){
     return obj[Object.keys(obj)[i]];
 }
-
+ */
 exports.char = char;
-exports.getKey = getKey;
+//exports.getKey = getKey;

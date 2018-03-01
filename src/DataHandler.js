@@ -42,17 +42,6 @@ DataHandler.prototype.parseBack = function(a){
     }
 }
 
-/**
- * returns an array of supported characters or empty array when it supportes dynamic data
- */
-DataHandler.prototype.getCharCodes =function(){
-    if(this.char2val){
-        return Object.keys(this.char2val);
-    }else{
-        return [];
-    }
-}
-
 DataHandler.prototype.getValueOf =function(chCode){
     return this.char2val[chCode];
 }

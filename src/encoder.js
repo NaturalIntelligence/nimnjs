@@ -1,8 +1,4 @@
 var chars = require("./chars").chars;
-var getKey = require("./util").getKey;
-var dataType = require("./schema").dataType;
-var DataType = require("./schema").DataType;
-var charsArr = require("./chars").charsArr;
 
 Encoder.prototype._e = function(jObj,e_schema){
     if(typeof e_schema === "string"){//premitive
