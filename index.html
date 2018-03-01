@@ -71,19 +71,19 @@
                                 $('#txtNimnSchema').text(JSON.stringify(schema,null,4));
                             }
 
-                            var nimnEncoder = new nimn(schema);
-
+                            var nimnEncoder = new nimn();
+                            nimnEncoder.updateSchema(schema)
                             if($("#nimnDt").prop("checked")){
-                                nimnEncoder.configDataType("date",function(val){
+                                nimnEncoder.addDataHandler("date",function(val){
                                     return nimnDateparser.parse(val,true,true,true)
                                 },function(val){
                                      return nimnDateparser.parseBack(val,true,true,true)
                                 });
                             }
                             var result = nimnEncoder.encode(jObj);
-                            $('#txtNimn').text(result);
+                            $('#txtNimn').val(result);
                         }catch(e){
-                            $('#txtNimn').text(e);
+                            $('#txtNimn').val(e);
                         }
                     });
 
@@ -103,15 +103,16 @@
                                 });
                             } else{
                                 var schema = JSON.parse(schemaStr);
-                                var nimnDecoder = new nimn(schema);
+                                var nimnDecoder = new nimn();
+                                nimnDecoder.updateSchema(schema)
                                 if($("#nimnDt").prop("checked")){
-                                    nimnEncoder.configDataType("date",function(val){
+                                    nimnDecoder.addDataHandler("date",function(val){
                                         return nimnDateparser.parse(val,true,true,true)
                                     },function(val){
                                          return nimnDateparser.parseBack(val,true,true,true)
                                     });
                                 }
-                                var result = nimnDecoder.getDecoder().decode(nimnData);
+                                var result = nimnDecoder.decode(nimnData);
                                 $('#txtJson').val(
                                     JSON.stringify(result,null,4)
                                 );
