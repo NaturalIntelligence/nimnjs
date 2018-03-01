@@ -1,8 +1,8 @@
 {
   "name": "nimnjs",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Schema aware compression of JSON data",
-  "main": "nimn.js",
+  "main": "src/nimn.js",
   "scripts": {
     "test": "jasmine tests/*test.js",
     "bundle": "browserify src/nimn.js -s nimn -o dist/nimn.js",
