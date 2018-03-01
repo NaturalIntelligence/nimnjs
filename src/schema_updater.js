@@ -23,7 +23,7 @@ schemaUpdater.prototype. _u = function(schema){
         }
         
         lastFieldSchemaToSet.readUntil = lastFieldSchemaToSet.readUntil || [];
-        pushIfNotExist(lastFieldSchemaToSet.readUntil,chars.arraySepChar);
+        pushIfNotExist(lastFieldSchemaToSet.readUntil,chars.arrayEnd);
         return lastFieldSchemaToSet;
     }else if(isObject(schema)){
         var keys = Object.keys(schema);
@@ -79,7 +79,7 @@ schemaUpdater.prototype.setReadUntil = function(current,next){
         pushIfNotExist(current.readUntil,chars.nilChar, chars.missingChar, chars.emptyChar, chars.objStart);
     }else{
         if(!this.datahandlers[next]) throw Error("You've forgot to add data handler for " + next);
-        pushIfNotExist(current.readUntil,chars.boundryChar, chars.nilPremitive, chars.missingPremitive, chars.arraySepChar);
+        pushIfNotExist(current.readUntil,chars.boundryChar, chars.nilPremitive, chars.missingPremitive, chars.arrayEnd);
     }
 }
 

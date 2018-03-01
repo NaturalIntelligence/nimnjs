@@ -28,7 +28,7 @@ decoder.prototype._d = function(schema){
                         if(r !== undefined){
                             obj.push(r);
                         }
-                    }while(this.dataToDecode[this.index] !== chars.arraySepChar);
+                    }while(this.dataToDecode[this.index] !== chars.arrayEnd);
                     ++this.index;
                     return obj;
                 }

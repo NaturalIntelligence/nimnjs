@@ -210,7 +210,7 @@ describe("Nimn Encoder", function () {
             + chars.arrStart 
             + chars.objStart + "Stubmatic" + chars.boundryChar + "QA friendly tool to mock HTTP(s) calls"
             + chars.objStart + "java aggregator" + chars.boundryChar + "1"
-            + chars.arraySepChar 
+            + chars.arrayEnd
             + "32";
 
         var nimnEncoder = new nimn();

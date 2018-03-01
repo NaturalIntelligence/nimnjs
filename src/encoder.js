@@ -23,7 +23,7 @@ Encoder.prototype._e = function(jObj,e_schema){
                         str += chars.arraySepChar;
                     } */
                 }
-                str += chars.arraySepChar;//indicates that next item is not array item
+                str += chars.arrayEnd;//indicates that next item is not array item
             }else{//object
                 str += chars.objStart;
                 var keys = Object.keys(e_schema);
