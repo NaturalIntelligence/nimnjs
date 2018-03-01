@@ -32,7 +32,7 @@ var schema = {
 }
 
 var nimnInstance = new nimn();
-nimnInstance.updateSchema(schema);
+nimnInstance.addSchema(schema);
 
 var data = {
     "name" : "amit",
@@ -61,27 +61,27 @@ nimnInstance.addDataHandler("date",function(val){
 },function(val){
     return nimnDateparser.parseBack(val,true,true,true)
 });
-nimnInstance.updateSchema(schema); //add after adding data handler
+nimnInstance.addSchema(schema); //add after adding all data handlers
 
 var nimndata = nimnInstance.encode(data);
 ```
 
 
-Handle enum type
+Encode enum type
 ```js
 var nimnInstance = new nimn();
 nimnInstance.addDataHandler("status",null,null,{
     "M" : "Married",
     "S" : "Single"
 });
-nimnInstance.updateSchema(schema); //add after adding data handler
+nimnInstance.addSchema(schema); //add after adding all data handlers
 ```
 
 Just mark a data type
 ```js
 var nimnInstance = new nimn();
 nimnInstance.addDataHandler("image");
-nimnInstance.updateSchema(schema); //add after adding data handler
+nimnInstance.addSchema(schema); //add after adding all data handlers
 ```
 
 

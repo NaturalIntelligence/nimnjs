@@ -61,74 +61,35 @@ var data = {
 
 //var schema = nimnSchemaBuilder.build(data);
 var schema = {
-    "type": "object",
-    "properties": {
-        "any_name": {
-            "type": "object",
-            "properties": {
-                "person": {
-                    "type": "array",
-                    "properties": {
-                        "item": {
-                            "type": "object",
-                            "properties": {
-                                "phone": {
-                                    "type": "array",
-                                    "properties": {
-                                        "item": {
-                                            "type": "number"
-                                        }
-                                    }
-                                },
-                                "name": {
-                                    "type": "string"
-                                },
-                                "age": {
-                                    "type": "number"
-                                },
-                                "married": {
-                                    "type": "string"
-                                },
-                                "birthday": {
-                                    "type": "date"
-                                },
-                                "address": {
-                                    "type": "array",
-                                    "properties": {
-                                        "item": {
-                                            "type": "object",
-                                            "properties": {
-                                                "city": {
-                                                    "type": "string"
-                                                },
-                                                "street": {
-                                                    "type": "string"
-                                                },
-                                                "buildingNo": {
-                                                    "type": "number"
-                                                },
-                                                "flatNo": {
-                                                    "type": "number"
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
+    "any_name": {
+        "person": [
+            {
+                "phone": [
+                    "number"
+                ],
+                "name": "string",
+                "age": "number",
+                "married": "string",
+                "birthday": "date",
+                "address": [
+                    {
+                        "city": "string",
+                        "street": "string",
+                        "buildingNo": "number",
+                        "flatNo": "number"
                     }
-                }
+                ]
             }
-        }
+        ]
     }
 };
-var nimnInstance = new nimn(schema);
-nimnInstance.configDataType("date",function(val){
+var nimnInstance = new nimn();
+nimnInstance.addDataHandler("date",function(val){
     return nimnDateparser.parse(val,true,true,true)
 },function(val){
      return nimnDateparser.parseBack(val,true,true,true)
 });
-
+nimnInstance.addSchema(schema);
 var nimndata = nimnInstance.encode(data);
 console.log(nimndata);
 var bytes = [];
