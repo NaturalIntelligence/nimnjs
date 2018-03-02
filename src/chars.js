@@ -14,8 +14,6 @@ const chars= {
     missingPremitive : char(201),
     emptyChar : char(177),
     emptyValue:  char(178),
-    //yesChar : char(217),
-    //noChar : char(218),
     boundryChar : char(186),
     arrayEnd: char(197),
     objStart: char(198),
@@ -29,8 +27,6 @@ const charsArr = [
     chars.missingPremitive,
     chars.boundryChar ,
     chars.emptyChar,
-    //chars.yesChar,
-    //chars.noChar,
     chars.arrayEnd,
     chars.objStart,
     chars.arrStart

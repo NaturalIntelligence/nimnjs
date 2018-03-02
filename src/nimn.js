@@ -89,7 +89,7 @@ nimn.prototype.encode = function(jObj){
 }
 
 nimn.prototype.decode= function(encodedVal){
-    var decoder = new Decoder(this.schema,this.dataHandlers,this.handledChars);
+    var decoder = new Decoder(this.schema,this.dataHandlers);
     return decoder.decode(encodedVal);
 }
 module.exports = nimn;

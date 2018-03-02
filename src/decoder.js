@@ -72,9 +72,6 @@ decoder.prototype.currentChar = function(){
 
 decoder.prototype.readPremitiveValue = function(schemaOfCurrentKey,){
     var val = this.readFieldValue(schemaOfCurrentKey);
-    if(val === chars.emptyValue){
-        val = "";
-    }
     if(this.currentChar() === chars.boundryChar) this.index++;
     var dh = this.dataHandlers[schemaOfCurrentKey.type];
     return dh.parseBack(val);
@@ -89,7 +86,7 @@ decoder.prototype.readFieldValue = function(schemaOfCurrentKey){
     }else{
         if(this.currentChar() === chars.emptyValue){
             this.index++;
-            return chars.emptyValue;
+            return "";
         }else{
             var until = schemaOfCurrentKey.readUntil;
             var len = this.dataToDecode.length;
@@ -109,12 +106,8 @@ decoder.prototype.decode = function(objStr){
     return this._d(this.schema);
 }
 
-function decoder(schema,dataHandlers,charArr){
+function decoder(schema,dataHandlers){
     this.schema = schema;
-    this.handledChars = appCharsArr.slice();
-    this.handledChars = this.handledChars.concat(charArr);
-    this.handledChs = charArr.slice();
     this.dataHandlers = dataHandlers;
-    
 }
 module.exports = decoder;

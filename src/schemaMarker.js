@@ -64,33 +64,29 @@ schemaMarker.prototype._m = function(schema){
 
 
 schemaMarker.prototype.setReadUntil = function(current,next){
-    //if(this.dataHandlers[current.type]){//handled
-        //status: R,S
-        if(this.dataHandlers[current.type].hasFixedInstances){
-            //if current char is set by user and need to be separated by boundary char
-            //then don't set readUntil, read current char
-            return ;
+    //status: R,S
+    if(this.dataHandlers[current.type].hasFixedInstances){
+        //if current char is set by user and need to be separated by boundary char
+        //then don't set readUntil, read current char
+        return ;
+    }else{
+        
+        //return [chars.boundryChar, chars.missingPremitive, chars.nilPremitive];
+        if(Array.isArray(next)){
+            current.readUntil =  [ chars.arrStart, chars.missingChar, chars.emptyChar, chars.nilChar];
+        }else if(typeof next === "object"){
+            current.readUntil =  [ chars.objStart, chars.missingChar, chars.emptyChar, chars.nilChar];
         }else{
-            
-            //return [chars.boundryChar, chars.missingPremitive, chars.nilPremitive];
-            if(Array.isArray(next)){
-                current.readUntil =  [ chars.arrStart, chars.missingChar, chars.emptyChar, chars.nilChar];
-            }else if(typeof next === "object"){
-                current.readUntil =  [ chars.objStart, chars.missingChar, chars.emptyChar, chars.nilChar];
+            if(this.dataHandlers[next] && this.dataHandlers[next].hasFixedInstances){//but need to be separated by boundary char
+                //status,boolean
+                current.readUntil = [chars.missingPremitive, chars.nilPremitive];
+                current.readUntil = current.readUntil.concat(this.dataHandlers[next].getCharCodes());
             }else{
-                if(this.dataHandlers[next] && this.dataHandlers[next].hasFixedInstances){//but need to be separated by boundary char
-                    //status,boolean
-                    current.readUntil = [chars.missingPremitive, chars.nilPremitive];
-                    current.readUntil = current.readUntil.concat(this.dataHandlers[next].getCharCodes());
-                }else{
-                    ///status,age
-                    current.readUntil =   [chars.boundryChar, chars.emptyValue, chars.missingPremitive, chars.nilPremitive];
-                }
+                ///status,age
+                current.readUntil =   [chars.boundryChar, chars.emptyValue, chars.missingPremitive, chars.nilPremitive];
             }
         }
-    /* }else{
-        throw Error("You've forgot to add data handler for " + current.type)
-    } */
+    }
 }
 
 /**
