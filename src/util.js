@@ -16,5 +16,15 @@ var char = function (a){
     return obj[Object.keys(obj)[i]];
 }
  */
+
+/* function indexOf(arr,searchedID) {
+    var arrayLen = arr.length;
+    var c = 0;
+    while (c < arrayLen) {
+        if (arr[c] === searchedID) return c;
+        c++;
+    }
+    return -1;
+} */
 exports.char = char;
-//exports.getKey = getKey;
+//exports.indexOf = indexOf;

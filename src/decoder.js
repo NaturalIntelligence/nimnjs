@@ -1,10 +1,5 @@
 var chars = require("./chars").chars;
-var appCharsArr = require("./chars").charsArr;
-/*
-Performance improvement note:
-    parse schema in advance and guess what is the possible char can come in the sequence.
-    it'll decrease number of comparision to half.
-*/
+
 decoder.prototype._d = function(schema){
     if(ifNil(this.currentChar())){
         this.index++;
@@ -70,7 +65,7 @@ decoder.prototype.currentChar = function(){
     return this.dataToDecode[this.index];
 }
 
-decoder.prototype.readPremitiveValue = function(schemaOfCurrentKey,){
+decoder.prototype.readPremitiveValue = function(schemaOfCurrentKey){
     var val = this.readFieldValue(schemaOfCurrentKey);
     if(this.currentChar() === chars.boundryChar) this.index++;
     var dh = this.dataHandlers[schemaOfCurrentKey.type];
@@ -81,9 +76,7 @@ decoder.prototype.readPremitiveValue = function(schemaOfCurrentKey,){
  * Read characters until app supported char is found
  */
 decoder.prototype.readFieldValue = function(schemaOfCurrentKey){
-    if(!schemaOfCurrentKey.readUntil){
-        return this.dataToDecode[this.index++];
-    }else{
+    if(schemaOfCurrentKey.readUntil){
         if(this.currentChar() === chars.emptyValue){
             this.index++;
             return "";
@@ -95,6 +88,8 @@ decoder.prototype.readFieldValue = function(schemaOfCurrentKey){
             for(;this.index < len && until.indexOf(this.currentChar()) === -1;this.index++);
             return this.dataToDecode.substr(start, this.index-start);
         }
+    }else{
+        return this.dataToDecode[this.index++];
     }    
 }
 

@@ -5,8 +5,7 @@ schemaMarker.prototype._m = function(schema){
     if(Array.isArray(schema)){
         if(typeof schema[0] === "string"){
             var itemSchema = {
-                type : schema[0],
-
+                type : schema[0]
             }
             this.setReadUntil(itemSchema, schema[0]);
             schema[0] = itemSchema;//make it object so a function cant set it's value
