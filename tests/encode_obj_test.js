@@ -211,7 +211,7 @@ describe("Nimn Encoder", function () {
             "names2" : {
                     "name" : "string" 
             }
-    }
+        }
 
         var nimnEncoder = new nimn();
         nimnEncoder.addSchema(schema);

@@ -3,12 +3,13 @@ var numParser = require("./parsers/number");
 var chars = require("./chars").chars;
 var appCharsArr = require("./chars").charsArr;
 var helper = require("./helper");
+var schemaMarker = require("./schemaMarker");
 var Decoder = require("./decoder");
 var Encoder = require("./encoder");
 var DataHandler = require("./DataHandler");
 
 function nimn() {
-    this.handledChars = appCharsArr.slice();
+    this.handledChars = [];//appCharsArr.slice();
     this.dataHandlers = {};
     this.addDataHandler("boolean",null,null,boolean.charset,true);
     //this.addDataHandler("boolean",boolean.parse,boolean.parseBack,boolean.charset,true);
@@ -36,7 +37,8 @@ function nimn() {
  */
 nimn.prototype.addSchema= function(schema){
     this.schema = JSON.parse(JSON.stringify(schema));
-    helper.validateSchema(schema,this.dataHandlers);
+    new schemaMarker(this.dataHandlers).markNextPossibleChars(this.schema);
+    //helper.validateSchema(schema,this.dataHandlers);
     this.encoder = new Encoder(this.schema,this.dataHandlers,this.handledChars);
 }
 
@@ -58,20 +60,20 @@ nimn.prototype.addSchema= function(schema){
  * @param {function} parseWith - will be used by encoder to encode given type's value
  * @param {function} parseBackWith - will be used by decoder to decode given type's value
  * @param {Object} charset - map of charset and fixed values
- * @param {boolean} [dontSeparateWIthBoundaryChar=false]  - if true encoder will not separate given type's value with boundary char
+ * @param {boolean} [noBoundaryChar=false]  - if true encoder will not separate given type's value with boundary char
  */
-nimn.prototype.addDataHandler = function(type,parseWith,parseBackWith,charset,dontSeparateWIthBoundaryChar){
-    var dataHandler = new DataHandler(type,/* parseWith,parseBackWith, */charset,dontSeparateWIthBoundaryChar);
+nimn.prototype.addDataHandler = function(type,parseWith,parseBackWith,charset,noBoundaryChar){
+    var dataHandler = new DataHandler(type,/* parseWith,parseBackWith, */charset,noBoundaryChar);
     if(parseWith)  dataHandler.parse = parseWith;
     if(parseBackWith) dataHandler.parseBack = parseBackWith;
 
     //unque charset don't require boundary char. Hence check them is they are already added
-    if(dontSeparateWIthBoundaryChar && charset){
+    if(noBoundaryChar && charset){
         var keys = Object.keys(charset);
 
         for(var k in keys){
             var ch = keys[k];
-            if(this.handledChars.indexOf(ch) !== -1){
+            if(this.handledChars.indexOf(ch) !== -1 || appCharsArr.indexOf(ch) !== -1){
                 throw Error("DataHandler Error: "+ ch +" is not allowed. Either it is reserved or being used by another data handler");
             }else{
                 this.handledChars.push(ch);

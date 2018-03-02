@@ -1,8 +1,9 @@
 var chars = require("./chars").chars;
+var appCharsArr = require("./chars").charsArr;
 
 Encoder.prototype._e = function(jObj,e_schema){
-    if(typeof e_schema === "string"){//premitive
-        return this.getValue(jObj,e_schema);
+    if(typeof e_schema.type === "string"){//premitive
+        return this.getValue(jObj,e_schema.type);
     }else{
         var hasValidData = hasData(jObj);
         if(hasValidData === true){
@@ -79,7 +80,9 @@ Encoder.prototype.encode = function(jObj){
 
 function Encoder(schema,dHandlers, charArr){
     this.dataHandlers = dHandlers;
-    this.handledChars = charArr;
+    this.handledChars = appCharsArr.slice();
+    this.handledChars = this.handledChars.concat(charArr);
+
     this.schema = schema;
 }
 

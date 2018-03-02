@@ -59,7 +59,7 @@ describe("Nimn Encoder", function () {
         var nimnEncoder = new nimn();
         nimnEncoder.addSchema(schema);
 
-        var jData = {
+         var jData = {
             age : 32,
             names : ["amit", "kumar"],
         }
@@ -141,7 +141,7 @@ describe("Nimn Encoder", function () {
         expect(result).toEqual(jData); 
     });
 
-     it("3., 4., 5., 5a., & 5b. should append boundry char only if two consecutive fields can have dynamic data", function () {
+      it("3., 4., 5., 5a., & 5b. should append boundry char only if two consecutive fields can have dynamic data", function () {
         
         var schema = {
             "names" : ["string" ],
@@ -225,7 +225,7 @@ describe("Nimn Encoder", function () {
         result = nimnEncoder.decode(result);
         //console.log(JSON.stringify(result));
         expect(result).toEqual(jData); 
-    });
+    }); 
 
     it(" 9., 10. should not append boundry char if surrounding field can have dynamic value while the array itself is empty", function () {
         var schema = {
@@ -261,7 +261,7 @@ describe("Nimn Encoder", function () {
                 "calldetails" : [{
                     "from" : "string" ,
                     "to" : "string" ,
-                    "when" : "date" 
+                    "when" : "string" 
                 }]
             }
         ]};
@@ -316,7 +316,7 @@ describe("Nimn Encoder", function () {
                 "calldetails" : [{
                     "from" : "string" ,
                     "to" : "string" ,
-                    "when" : "date" 
+                    "when" : "string" 
                 }]
             }
         ];
@@ -359,5 +359,5 @@ describe("Nimn Encoder", function () {
         //console.log(JSON.stringify(result));
         expect(result).toEqual(data); 
 
-    }); 
+    });
 });

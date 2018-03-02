@@ -19,10 +19,13 @@ function DataHandler(dataType, /* parse, parseBack, */ charset,treatAsUnique){
             var val = charset[keys[i]];
             this.val2char[val] = keys[i];
         }
+
+        this.charcodes = Object.keys(charset);
     }
     if(treatAsUnique){
         this.hasFixedInstances = true;
     }
+
     //this.treatAsUnique = treatAsUnique;
 }
 
@@ -40,6 +43,13 @@ DataHandler.prototype.parseBack = function(a){
     }else{
         return a;
     }
+}
+
+/**
+ * returns an array of supported characters or empty array when it supportes dynamic data
+ */
+DataHandler.prototype.getCharCodes =function(){
+    return this.charcodes;
 }
 
 DataHandler.prototype.getValueOf =function(chCode){

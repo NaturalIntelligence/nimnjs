@@ -1,5 +1,5 @@
 var chars = require("./chars").chars;
-var getKey = require("./util").getKey;
+var appCharsArr = require("./chars").charsArr;
 /*
 Performance improvement note:
     parse schema in advance and guess what is the possible char can come in the sequence.
@@ -12,7 +12,7 @@ decoder.prototype._d = function(schema){
     }else if(ifMissing(this.currentChar())){
         this.index++;
         return undefined;
-    }else if(typeof schema === "string"){//premitive
+    }else if(typeof schema.type === "string"){//premitive
         return this.readPremitiveValue(schema);
     }else if(Array.isArray(schema)){
         if(this.currentChar() === chars.emptyChar){
@@ -42,8 +42,10 @@ decoder.prototype._d = function(schema){
         }else{
             this.index++;//skip object start char
             var keys = Object.keys(schema);
+            var len = keys.length;
             var obj = {};
-            for(var i in keys){
+            for(var i=0; i< len; i++){
+                
                 var r =  this._d(schema[keys[i]]) ;
                 if(r !== undefined){
                     obj[keys[i]] = r;
@@ -68,29 +70,34 @@ decoder.prototype.currentChar = function(){
     return this.dataToDecode[this.index];
 }
 
-decoder.prototype.readPremitiveValue = function(schemaOfCurrentKey){
-    var val = this.readFieldValue();
+decoder.prototype.readPremitiveValue = function(schemaOfCurrentKey,){
+    var val = this.readFieldValue(schemaOfCurrentKey);
     if(val === chars.emptyValue){
         val = "";
     }
     if(this.currentChar() === chars.boundryChar) this.index++;
-    var dh = this.dataHandlers[schemaOfCurrentKey];
+    var dh = this.dataHandlers[schemaOfCurrentKey.type];
     return dh.parseBack(val);
 }
 
 /**
  * Read characters until app supported char is found
  */
-decoder.prototype.readFieldValue = function(){
-    if(indexOfthis.handledChars.indexOf(this.currentChar()) !== -1 ){
+decoder.prototype.readFieldValue = function(schemaOfCurrentKey){
+    if(!schemaOfCurrentKey.readUntil){
         return this.dataToDecode[this.index++];
     }else{
-        var val = "";
-        var len = this.dataToDecode.length;
-        var start = this.index;
-        
-        for(;this.index < len && this.handledChars.indexOf(this.currentChar()) === -1;this.index++);
-        return this.dataToDecode.substr(start, this.index-start);
+        if(this.currentChar() === chars.emptyValue){
+            this.index++;
+            return chars.emptyValue;
+        }else{
+            var until = schemaOfCurrentKey.readUntil;
+            var len = this.dataToDecode.length;
+            var start = this.index;
+            
+            for(;this.index < len && until.indexOf(this.currentChar()) === -1;this.index++);
+            return this.dataToDecode.substr(start, this.index-start);
+        }
     }    
 }
 
@@ -104,7 +111,9 @@ decoder.prototype.decode = function(objStr){
 
 function decoder(schema,dataHandlers,charArr){
     this.schema = schema;
-    this.handledChars = charArr;
+    this.handledChars = appCharsArr.slice();
+    this.handledChars = this.handledChars.concat(charArr);
+    this.handledChs = charArr.slice();
     this.dataHandlers = dataHandlers;
     
 }
