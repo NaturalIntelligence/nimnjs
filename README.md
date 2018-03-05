@@ -7,6 +7,9 @@ JS implementation of nimn specification. Highly Compressed JS object/JSON.
 [![Coverage Status](https://coveralls.io/repos/github/nimndata/nimnjs-node/badge.svg?branch=master)](https://coveralls.io/github/nimndata/nimnjs-node/?branch=master)
 [<img src="https://img.shields.io/badge/Try-me-blue.svg?colorA=FFA500&colorB=0000FF" alt="Try me"/>](https://nimndata.github.io/nimnjs-node/)
 
+<a href="https://www.patreon.com/bePatron?u=9531404" data-patreon-widget-type="become-patron-button"><img src="https://c5.patreon.com/external/logo/become_a_patron_button.png" alt="Become a Patron!" width="200" /></a>
+<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=KQJAX48SPUKNC"> <img src="https://www.paypalobjects.com/webstatic/en_US/btn/btn_donate_92x26.png" alt="Stubmatic donate button"/></a>
+
 <img align="right" src="static/img/nimnjs-logo.png" /> 
 
 ## Introduction
