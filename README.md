@@ -1,5 +1,5 @@
 # nimnjs-node
-JS implementation of nimn specification. Highly Compressed JS object/JSON.
+JS implementation of nimn specification. Highly Compressed JS object/JSON. 60% or more compressed than JSON, 40% or more compressed than msgpack
 
 [![Known Vulnerabilities](https://snyk.io/test/github/nimndata/nimnjs-node//badge.svg)](https://snyk.io/test/github/nimndata/nimnjs-node/) 
 [![Travis ci Build Status](https://travis-ci.org/nimndata/nimnjs-node.svg?branch=master)](https://travis-ci.org/nimndata/nimnjs-node/) 
@@ -98,6 +98,9 @@ I need your expert advice, and contribution to grow nimn (निम्न) so th
 
 
 ### Worth to mention
+
+- **[imglab](https://github.com/NaturalIntelligence/imglab)** : Web based tool to label images for object. So that they can be used to train dlib or other object detectors. You can integrate 3rd party libraries for fast labeling.
+- **[अनुमार्गक (anumargak)](https://github.com/NaturalIntelligence/anumargak)** : The fastest router for node web servers.
 
  - [Stubmatic](https://github.com/NaturalIntelligence/Stubmatic) : A stub server to mock behaviour of HTTP(s) / REST / SOAP services.
  - **[fastify-xml-body-parser](https://github.com/NaturalIntelligence/fastify-xml-body-parser/)** : Fastify plugin / module to parse XML payload / body into JS object using fast-xml-parser.

@@ -20,10 +20,13 @@ function DataHandler(dataType, /* parse, parseBack, */ charset,treatAsUnique){
             var val = charset[keys[i]];
             this.val2char[val] = keys[i];
         }
+
+        this.charcodes = Object.keys(charset);
     }
     if(treatAsUnique){
         this.hasFixedInstances = true;
     }
+
     //this.treatAsUnique = treatAsUnique;
 }
 
@@ -47,11 +50,7 @@ DataHandler.prototype.parseBack = function(a){
  * returns an array of supported characters or empty array when it supportes dynamic data
  */
 DataHandler.prototype.getCharCodes =function(){
-    if(this.char2val){
-        return Object.keys(this.char2val);
-    }else{
-        return [];
-    }
+    return this.charcodes;
 }
 
 DataHandler.prototype.getValueOf =function(chCode){
@@ -74,18 +73,19 @@ var char = require("./util").char;
  */
 
 const chars= {
-    nilChar : char(254),
-    missingChar : char(200),
-    nilPremitive : char(176),
-    missingPremitive : char(201),
-    emptyChar : char(177),
-    emptyValue:  char(178),
-    //yesChar : char(217),
-    //noChar : char(218),
-    boundryChar : char(186),
-    arrayEnd: char(197),
+    nilChar : char(176),
+    missingChar : char(201),
+    nilPremitive : char(175),
+    missingPremitive : char(200),
+
+    emptyChar : char(178),
+    emptyValue:  char(177),//empty Premitive
+    
+    boundryChar : char(179),
+    
     objStart: char(198),
-    arrStart: char(199)
+    arrStart: char(204),
+    arrayEnd: char(185),
 }
 
 const charsArr = [
@@ -95,8 +95,6 @@ const charsArr = [
     chars.missingPremitive,
     chars.boundryChar ,
     chars.emptyChar,
-    //chars.yesChar,
-    //chars.noChar,
     chars.arrayEnd,
     chars.objStart,
     chars.arrStart
@@ -106,63 +104,65 @@ exports.chars = chars;
 exports.charsArr = charsArr; 
 },{"./util":10}],3:[function(require,module,exports){
 var chars = require("./chars").chars;
-var getKey = require("./util").getKey;
-var dataType = require("./schema").dataType;
 
 decoder.prototype._d = function(schema){
-    if(this.currentChar() === chars.nilChar || this.currentChar() === chars.nilPremitive){
+    if(ifNil(this.currentChar())){
         this.index++;
         return null;
-    }else if(this.currentChar() === chars.missingChar || this.currentChar() === chars.missingPremitive){
+    }else if(ifMissing(this.currentChar())){
         this.index++;
         return undefined;
-    }else{
-        if(typeof schema === "string"){//premitive
-            return this.readPremitiveValue(schema);
+    }else if(typeof schema.type === "string"){//premitive
+        return this.readPremitiveValue(schema);
+    }else if(Array.isArray(schema)){
+        if(this.currentChar() === chars.emptyChar){
+            this.index++;
+            return [];
+        }else if(this.currentChar() !== chars.arrStart){
+            throw Error("Parsing error: Array start char was expected");
         }else{
-            if(Array.isArray(schema)){
-                if(this.currentChar() === chars.emptyChar){
-                    this.index++;
-                    return [];
-                }else if(this.currentChar() !== chars.arrStart){
-                    throw Error("Parsing error: Array start char was expected");
-                }else{
-                    this.index++;//skip array start char
-                    var item = schema[0];
-                    var obj = []
-                    do{
-                        var r =  this._d(item) ;
-                        if(r !== undefined){
-                            obj.push(r);
-                        }
-                    }while(this.dataToDecode[this.index] !== chars.arrayEnd);
-                    ++this.index;
-                    return obj;
+            this.index++;//skip array start char
+            var item = schema[0];
+            var obj = []
+            do{
+                var r =  this._d(item) ;
+                if(r !== undefined){
+                    obj.push(r);
                 }
-            }else{//object
-                if(this.currentChar() === chars.emptyChar){
-                    this.index++;
-                    return {};
-                }else if(this.currentChar() !== chars.objStart){
-                    throw Error("Parsing error: Object start char was expected : " + this.currentChar());
-                }else{
-                    this.index++;//skip object start char
-                    var keys = Object.keys(schema);
-                    var obj = {};
-                    for(var i in keys){
-                        var r =  this._d(schema[keys[i]]) ;
-                        if(r !== undefined){
-                            obj[keys[i]] = r;
-                        }
-                    }
-                    return obj;
+            }while(this.dataToDecode[this.index] !== chars.arrayEnd);
+            ++this.index;
+            return obj;
+        }
+    }else{//object
+        if(this.currentChar() === chars.emptyChar){
+            this.index++;
+            return {};
+        }else if(this.currentChar() !== chars.objStart){
+            throw Error("Parsing error: Object start char was expected : " + this.currentChar());
+        }else{
+            this.index++;//skip object start char
+            var keys = Object.keys(schema);
+            var len = keys.length;
+            var obj = {};
+            for(var i=0; i< len; i++){
+                
+                var r =  this._d(schema[keys[i]]) ;
+                if(r !== undefined){
+                    obj[keys[i]] = r;
                 }
             }
+            return obj;
         }
     }
-
 }
 
+function ifNil(ch){
+    return ch === chars.nilChar || ch === chars.nilPremitive;
+}
+
+function ifMissing(ch){
+    return ch === chars.missingChar || ch === chars.missingPremitive;
+}
 /**
  * returns character index pointing to
  */
@@ -171,38 +171,30 @@ decoder.prototype.currentChar = function(){
 }
 
 decoder.prototype.readPremitiveValue = function(schemaOfCurrentKey){
-    var val = "";
-    //if(schemaOfCurrentKey.readUntil){
-        val = this.readFieldValue(schemaOfCurrentKey.readUntil);
-    /* }else{
-        val = this.currentChar();
-        this.index += val.length;
-    } */
-    if(val === chars.emptyValue){
-        val = "";
-    }
+    var val = this.readFieldValue(schemaOfCurrentKey);
     if(this.currentChar() === chars.boundryChar) this.index++;
-    var dh = this.dataHandlers[schemaOfCurrentKey];
+    var dh = this.dataHandlers[schemaOfCurrentKey.type];
     return dh.parseBack(val);
 }
 
 /**
  * Read characters until app supported char is found
- * @param {string} str 
- * @param {number} i 
  */
-decoder.prototype.readFieldValue = function(until){
-    until = this.handledChars;
-    if(until.indexOf(this.dataToDecode[this.index]) !== -1 ){
-        return this.dataToDecode[this.index++];
+decoder.prototype.readFieldValue = function(schemaOfCurrentKey){
+    if(schemaOfCurrentKey.readUntil){
+        if(this.currentChar() === chars.emptyValue){
+            this.index++;
+            return "";
+        }else{
+            var until = schemaOfCurrentKey.readUntil;
+            var len = this.dataToDecode.length;
+            var start = this.index;
+            
+            for(;this.index < len && until.indexOf(this.currentChar()) === -1;this.index++);
+            return this.dataToDecode.substr(start, this.index-start);
+        }
     }else{
-
-    var val = "";
-    var len = this.dataToDecode.length;
-    var start = this.index;
-    
-    for(;this.index < len && until.indexOf(this.dataToDecode[this.index]) === -1;this.index++);
-    return this.dataToDecode.substr(start, this.index-start);
+        return this.dataToDecode[this.index++];
     }    
 }
 
@@ -214,23 +206,18 @@ decoder.prototype.decode = function(objStr){
     return this._d(this.schema);
 }
 
-function decoder(schema,dataHandlers,charArr){
+function decoder(schema,dataHandlers){
     this.schema = schema;
-    this.handledChars = charArr;
     this.dataHandlers = dataHandlers;
-    
 }
 module.exports = decoder;
-},{"./chars":2,"./schema":9,"./util":10}],4:[function(require,module,exports){
+},{"./chars":2}],4:[function(require,module,exports){
 var chars = require("./chars").chars;
-var getKey = require("./util").getKey;
-var dataType = require("./schema").dataType;
-var DataType = require("./schema").DataType;
-var charsArr = require("./chars").charsArr;
+var appCharsArr = require("./chars").charsArr;
 
 Encoder.prototype._e = function(jObj,e_schema){
-    if(typeof e_schema === "string"){//premitive
-        return this.getValue(jObj,e_schema);
+    if(typeof e_schema.type === "string"){//premitive
+        return this.getValue(jObj,e_schema.type);
     }else{
         var hasValidData = hasData(jObj);
         if(hasValidData === true){
@@ -243,9 +230,6 @@ Encoder.prototype._e = function(jObj,e_schema){
                 for(var arr_i=0;arr_i < arr_len;arr_i++){
                     var r = this._e(jObj[arr_i],itemSchema) ;
                     str = this.processValue(str,r);
-                    /* if(arr_len > ++arr_i){
-                        str += chars.arraySepChar;
-                    } */
                 }
                 str += chars.arrayEnd;//indicates that next item is not array item
             }else{//object
@@ -278,11 +262,12 @@ Encoder.prototype.processValue= function(str,r){
  * @return {string} return either the parsed value or a special char representing the value
  */
 Encoder.prototype.getValue= function(a,type){
-    if(a === undefined) return chars.missingPremitive;
-    else if(a === null) return chars.nilPremitive;
-    else if( a === "") return chars.emptyValue;
-    else return this.dataHandlers[type].parse(a);
-    //else return type.parse(a);
+    switch(a){
+        case undefined: return chars.missingPremitive;
+        case null: return chars.nilPremitive;
+        case "": return chars.emptyValue;
+        default: return this.dataHandlers[type].parse(a);
+    }
 }
 
 /**
@@ -309,12 +294,14 @@ Encoder.prototype.encode = function(jObj){
 
 function Encoder(schema,dHandlers, charArr){
     this.dataHandlers = dHandlers;
-    this.handledChars = charArr;
+    this.handledChars = appCharsArr.slice();
+    this.handledChars = this.handledChars.concat(charArr);
+
     this.schema = schema;
 }
 
 module.exports = Encoder;
-},{"./chars":2,"./schema":9,"./util":10}],5:[function(require,module,exports){
+},{"./chars":2}],5:[function(require,module,exports){
 
 /**
  * Verify if all the datahandlers are added given in schema.
@@ -345,16 +332,16 @@ exports.validateSchema = validateSchema;
 },{}],6:[function(require,module,exports){
 var boolean = require("./parsers/boolean");
 var numParser = require("./parsers/number");
-var dataType = require("./schema").dataType;
 var chars = require("./chars").chars;
 var appCharsArr = require("./chars").charsArr;
 var helper = require("./helper");
+var schemaMarker = require("./schemaMarker");
 var Decoder = require("./decoder");
 var Encoder = require("./encoder");
 var DataHandler = require("./DataHandler");
 
 function nimn() {
-    this.handledChars = appCharsArr.slice();
+    this.handledChars = [];//appCharsArr.slice();
     this.dataHandlers = {};
     this.addDataHandler("boolean",null,null,boolean.charset,true);
     //this.addDataHandler("boolean",boolean.parse,boolean.parseBack,boolean.charset,true);
@@ -382,7 +369,8 @@ function nimn() {
  */
 nimn.prototype.addSchema= function(schema){
     this.schema = JSON.parse(JSON.stringify(schema));
-    helper.validateSchema(schema,this.dataHandlers);
+    new schemaMarker(this.dataHandlers).markNextPossibleChars(this.schema);
+    //helper.validateSchema(schema,this.dataHandlers);
     this.encoder = new Encoder(this.schema,this.dataHandlers,this.handledChars);
 }
 
@@ -404,21 +392,21 @@ nimn.prototype.addSchema= function(schema){
  * @param {function} parseWith - will be used by encoder to encode given type's value
  * @param {function} parseBackWith - will be used by decoder to decode given type's value
  * @param {Object} charset - map of charset and fixed values
- * @param {boolean} [dontSeparateWIthBoundaryChar=false]  - if true encoder will not separate given type's value with boundary char
+ * @param {boolean} [noBoundaryChar=false]  - if true encoder will not separate given type's value with boundary char
  */
-nimn.prototype.addDataHandler = function(type,parseWith,parseBackWith,charset,dontSeparateWIthBoundaryChar){
-    var dataHandler = new DataHandler(type,/* parseWith,parseBackWith, */charset,dontSeparateWIthBoundaryChar);
+nimn.prototype.addDataHandler = function(type,parseWith,parseBackWith,charset,noBoundaryChar){
+    var dataHandler = new DataHandler(type,/* parseWith,parseBackWith, */charset,noBoundaryChar);
     if(parseWith)  dataHandler.parse = parseWith;
     if(parseBackWith) dataHandler.parseBack = parseBackWith;
 
     //unque charset don't require boundary char. Hence check them is they are already added
-    if(dontSeparateWIthBoundaryChar && charset){
+    if(noBoundaryChar && charset){
         var keys = Object.keys(charset);
 
         for(var k in keys){
             var ch = keys[k];
-            if(this.handledChars.indexOf(ch) !== -1){
-                throw Error("Charset Error: "+ ch +" is not allowed. Either it is reserved or being used by another data handler");
+            if(this.handledChars.indexOf(ch) !== -1 || appCharsArr.indexOf(ch) !== -1){
+                throw Error("DataHandler Error: "+ ch +" is not allowed. Either it is reserved or being used by another data handler");
             }else{
                 this.handledChars.push(ch);
             }
@@ -433,21 +421,13 @@ nimn.prototype.encode = function(jObj){
 }
 
 nimn.prototype.decode= function(encodedVal){
-    var decoder = new Decoder(this.schema,this.dataHandlers,this.handledChars);
+    var decoder = new Decoder(this.schema,this.dataHandlers);
     return decoder.decode(encodedVal);
 }
 module.exports = nimn;
-},{"./DataHandler":1,"./chars":2,"./decoder":3,"./encoder":4,"./helper":5,"./parsers/boolean":7,"./parsers/number":8,"./schema":9}],7:[function(require,module,exports){
+},{"./DataHandler":1,"./chars":2,"./decoder":3,"./encoder":4,"./helper":5,"./parsers/boolean":7,"./parsers/number":8,"./schemaMarker":9}],7:[function(require,module,exports){
 var chars = require("../chars").chars;
 var char = require("../util").char;
-
-function parse(val){
-    return val ? yes : no;
-}
-
-function parseBack(val){
-    return val === yes ? true : false;
-}
 
 var yes = char(217);
 var no = char(218);
@@ -456,8 +436,6 @@ booleanCharset = {};
 booleanCharset[yes] = true;
 booleanCharset[no] = false;
 
-exports.parse = parse;
-exports.parseBack = parseBack;
 exports.charset = booleanCharset;
 
 },{"../chars":2,"../util":10}],8:[function(require,module,exports){
@@ -481,34 +459,132 @@ exports.parse = parse;
 exports.parseBack = parseBack;
 
 },{"../chars":2}],9:[function(require,module,exports){
-var dataType = {
-    STRING : { value: 1},
-    NUMBER : { value: 2},
-    DATE : { value: 3},
-    BOOLEAN : { value: 4},
-    getType(str){
-        switch(str){
-            case "string": return dataType.STRING;
-            case "number": return dataType.NUMBER;
-            case "date": return dataType.DATE;
-            case "boolean": return dataType.BOOLEAN;
+var chars = require("./chars").chars;
+var appCharsArr = require("./chars").charsArr;
+
+schemaMarker.prototype._m = function(schema){
+    if(Array.isArray(schema)){
+        if(typeof schema[0] === "string"){
+            var itemSchema = {
+                type : schema[0]
+            }
+            this.setReadUntil(itemSchema, schema[0]);
+            schema[0] = itemSchema;//make it object so a function cant set it's value
+            if(schema[0].readUntil)
+                schema[0].readUntil.push(chars.arrayEnd);
+        }else{
+            this._m(schema[0]);//let's object portion handle it
+            var lastMostKey = getLastMostKey(schema[0]);
+            if(lastMostKey){
+                this.setReadUntil(lastMostKey, schema[0]);
+                if(lastMostKey.readUntil)
+                    lastMostKey.readUntil.push(chars.arrayEnd);
+            }else{
+                //lastmostkey was set as it was under an array
+            }
         }
-    },
-    getInstance(str){
-        return new DataType(dataType.getType(str));
+    }else if(typeof schema === "object"){
+        var keys = Object.keys(schema);
+        var len = keys.length;
+
+        for(var i=0; i< len; i++){
+            var key = keys[i];
+            var nextKey = keys[i+1];
+            
+            this._m(schema[key]);
+            if(Array.isArray(schema[key])) continue;
+            else if(nextKey){
+                if(typeof schema[key] !== "string"){//not an object
+                    var lastMostKey = getLastMostKey(schema[key]);
+                    if(lastMostKey){
+                        this.setReadUntil(lastMostKey,schema[nextKey]);
+                    }else{
+                        //lastmostkey was set as it was under an array
+                    }
+                }else{
+                    var itemSchema = {
+                        type : schema[key]
+                    }
+                    this.setReadUntil(itemSchema,schema[nextKey]);
+                    schema[key] = itemSchema ;
+                }
+            }else{
+                if(typeof schema[key] === "object") continue;
+                schema[key] = {
+                    type : schema[key]
+                }
+            }
+        }
+    }else{
+        if(!this.dataHandlers[schema]){//handled
+            throw Error("You've forgot to add data handler for " + schema)
+        }
     }
 }
 
-function DataType(type){
-    this.value = type.value;
-    this.parse = type.parse;
-    this.parseBack = type.parseBack;
+
+schemaMarker.prototype.setReadUntil = function(current,next){
+    //status: R,S
+    if(this.dataHandlers[current.type].hasFixedInstances){
+        //if current char is set by user and need to be separated by boundary char
+        //then don't set readUntil, read current char
+        return ;
+    }else{
+        
+        //return [chars.boundryChar, chars.missingPremitive, chars.nilPremitive];
+        if(Array.isArray(next)){
+            current.readUntil =  [ chars.arrStart, chars.missingChar, chars.emptyChar, chars.nilChar];
+        }else if(typeof next === "object"){
+            current.readUntil =  [ chars.objStart, chars.missingChar, chars.emptyChar, chars.nilChar];
+        }else{
+            if(this.dataHandlers[next] && this.dataHandlers[next].hasFixedInstances){//but need to be separated by boundary char
+                //status,boolean
+                current.readUntil = [chars.missingPremitive, chars.nilPremitive];
+                current.readUntil = current.readUntil.concat(this.dataHandlers[next].getCharCodes());
+            }else{
+                ///status,age
+                current.readUntil =   [chars.boundryChar, chars.emptyValue, chars.missingPremitive, chars.nilPremitive];
+            }
+        }
+    }
 }
 
-exports.dataType = dataType;
+/**
+ * obj can't be an array
+ * @param {*} obj 
+ */
+function getLastMostKey(obj){
+    var lastProperty;
+    if(Array.isArray(obj)){
+        return;
+    }else{
+        var keys = Object.keys(obj);
+        lastProperty = obj[keys[keys.length-1]];
+    }
+    
+    if(typeof lastProperty === "object" && !(lastProperty.type && typeof lastProperty.type === "string")){
+        return getLastMostKey(lastProperty);
+    }else{
+        return lastProperty;
+    }
+}
 
 
-},{}],10:[function(require,module,exports){
+schemaMarker.prototype.markNextPossibleChars = function(schema){
+    this._m(schema);
+    if(!Array.isArray(schema)){
+        var lastMostKey = getLastMostKey(schema);
+        if(lastMostKey){
+            lastMostKey.readUntil = [chars.nilChar]
+        }
+    }
+}
+function schemaMarker(dataHandlers){
+    this.dataHandlers = dataHandlers;
+}
+
+module.exports = schemaMarker;
+},{"./chars":2}],10:[function(require,module,exports){
 /**
  *  converts a ASCII number into equivalant ASCII char
  * @param {number} a 
@@ -523,11 +599,21 @@ var char = function (a){
  * @param {*} obj 
  * @param {number} i 
  */
-function getKey(obj,i){
+/* function getKey(obj,i){
     return obj[Object.keys(obj)[i]];
 }
+ */
 
+/* function indexOf(arr,searchedID) {
+    var arrayLen = arr.length;
+    var c = 0;
+    while (c < arrayLen) {
+        if (arr[c] === searchedID) return c;
+        c++;
+    }
+    return -1;
+} */
 exports.char = char;
-exports.getKey = getKey;
+//exports.indexOf = indexOf;
 },{}]},{},[6])(6)
 });
