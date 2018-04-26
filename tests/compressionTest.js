@@ -2,7 +2,7 @@ var nimn = require("../src/nimn");
 var chars = require("../src/chars");
 var nimnSchemaBuilder = require("nimn_schema_builder");
 var nimnDateparser = require("nimn-date-parser");
-
+var zlib = require('zlib');
 
 var data = {
     "any_name": {
@@ -91,15 +91,23 @@ nimnInstance.addDataHandler("date",function(val){
 });
 nimnInstance.addSchema(schema);
 var nimndata = nimnInstance.encode(data);
-console.log(nimndata);
+//console.log(nimndata);
 var bytes = [];
 for (var i = 0; i < nimndata.length; ++i) {
     var code = nimndata.charCodeAt(i);
     bytes.push(nimndata.charCodeAt(i));
 }
 
-console.log(bytes.length);
-console.log(Buffer.from(bytes).toString());
+
+console.log("JSON : ", JSON.stringify(data).length);
+console.log("JSON + gzip: ", zlib.gzipSync(JSON.stringify(data)).length);
+console.log("JSON + deflate: ", zlib.deflateSync(JSON.stringify(data)).length);
+
+console.log("Nimn : ",bytes.length);
+console.log("Nimn + gzip: ",zlib.gzipSync(Buffer.from(bytes)).length);
+console.log("Nimn + deflate: ",zlib.deflateSync(Buffer.from(bytes)).length);
+
+//console.log(Buffer.from(bytes).toString());
 //console.log(chars.chars);
 
 var fs = require('fs');
@@ -114,4 +122,8 @@ fs.writeFile("bytes_output", Buffer.from(bytes) , 'utf8',function(err) {
 
 var notepack = require('notepack.io');
 var pack = notepack.encode(data);
-console.log("notepack message: ", pack.toString());
+
+console.log("Msgpack : ",pack.length);
+console.log("Msgpack + gzip: ",zlib.gzipSync(pack).length);
+console.log("Msgpack + deflate: ",zlib.deflateSync(pack).length);
+//console.log("notepack message: ", pack.toString());
