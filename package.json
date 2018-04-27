@@ -35,7 +35,6 @@
   "devDependencies": {
     "benchmark": "^2.1.4",
     "browserify": "^15.1.0",
-    "coveralls": "^3.0.0",
     "istanbul": "^0.4.5",
     "jasmine": "^3.0.0",
     "jasmine-core": "^2.99.1",
