@@ -89,7 +89,7 @@ describe("Nimn Encoder", function () {
             + chars.missingPremitive
             + chars.arrStart 
             + "amit2" + chars.boundryChar + "kumar2" + chars.arrayEnd 
-            + char(218) + chars.missingChar;
+            + char(183) + chars.missingChar;
 
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
@@ -163,8 +163,8 @@ describe("Nimn Encoder", function () {
         }
         var expected = chars.objStart + chars.arrStart  + "true" + chars.boundryChar + "false" + chars.arrayEnd 
             + chars.arrStart  + "true" + chars.boundryChar + "false" + chars.arrayEnd 
-            + chars.arrStart + char(217)  +  char(218) + chars.arrayEnd
-            + chars.arrStart  + char(217)  +  char(218) + chars.arrayEnd
+            + chars.arrStart + char(181)  +  char(183) + chars.arrayEnd
+            + chars.arrStart + char(181)  +  char(183) + chars.arrayEnd
             + chars.arrStart + chars.objStart + "somename" + chars.arrayEnd ;
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
@@ -190,7 +190,7 @@ describe("Nimn Encoder", function () {
             names2 : {}
         }
         var expected =  chars.objStart + chars.emptyChar 
-            + chars.arrStart  + char(217) + char(218) + chars.arrayEnd 
+            + chars.arrStart  + char(181) + char(183) + chars.arrayEnd 
             + chars.emptyChar;
         var result = nimnEncoder.encode(jData);
         expect(result).toEqual(expected); 
@@ -292,7 +292,7 @@ describe("Nimn Encoder", function () {
         };
 
         var expected = chars.objStart + chars.arrStart + chars.objStart
-        + "somename" + chars.boundryChar + "30" + char(217)
+        + "somename" + chars.boundryChar + "30" + char(181)
         + chars.arrStart + chars.objStart
         + "123456789" + chars.boundryChar + "123456789" + chars.boundryChar + "2018-02-23T10:12:30.041Z"
         + chars.objStart
@@ -345,7 +345,7 @@ describe("Nimn Encoder", function () {
             ];
 
         var expected = chars.arrStart + chars.objStart
-        + "somename" + chars.boundryChar + "30" + char(217)
+        + "somename" + chars.boundryChar + "30" + char(181)
         + chars.arrStart + chars.objStart
         + "123456789" + chars.boundryChar + "123456789" + chars.boundryChar + "2018-02-23T10:12:30.041Z"
         + chars.objStart
