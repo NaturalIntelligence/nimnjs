@@ -1,6 +1,6 @@
 {
   "name": "nimnjs",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "description": "Schema aware compression of JS object/JSON data. 60% more compressed than json",
   "main": "src/nimn.js",
   "scripts": {
