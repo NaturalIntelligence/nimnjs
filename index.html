@@ -44,6 +44,7 @@
                                 <textarea id="txtNimnSchema" name="nimn" rows="20" class="form-control" placeholder="Paste NIMN schema here"></textarea>
                             </div>
                             <div class="col-md-4">
+                                    <button id="makeitreadable" style="width: 100%" class="btn btn-primary" type="button">Make it Readable</button>
                                     <textarea id="txtNimn" name="nimn" rows="30" class="form-control" placeholder="Paste NIMN data here"></textarea>
                             </div>
             </div>
@@ -87,6 +88,7 @@
                         }
                     });
 
+                    
                     $("#n2j").click(function(){
                         try{
                             var schemaStr = $('#txtNimnSchema').val();
@@ -122,7 +124,49 @@
                             $('#txtJson').val(e);
                         }
                     });
+                    
+
+                    $("#makeitreadable").click(function(){
+                        var nimnData = $('#txtNimn').val();
+                        nimnData = replaceAll(nimnData, nilchar , '@');
+                        nimnData = replaceAll(nimnData, missingchar , '~');
+                        nimnData = replaceAll(nimnData, nilPremitivechar , '!');
+                        nimnData = replaceAll(nimnData, missingPremitivechar , '*');
+                        nimnData = replaceAll(nimnData, emptychar , '#');
+                        nimnData = replaceAll(nimnData, emptyPremitivechar , '$');
+                        nimnData = replaceAll(nimnData, boundarychar , '|');
+                        nimnData = replaceAll(nimnData, objStartchar , '{');
+                        nimnData = replaceAll(nimnData, arrayStartchar , '[');
+                        nimnData = replaceAll(nimnData, arrayEndchar , ']');
+                        nimnData = replaceAll(nimnData, yeschar , 'Y');
+                        nimnData = replaceAll(nimnData, nochar , 'N');
+
+                        $.dialog({
+                            title: 'Redable data',
+                            content: '<p>' + nimnData + '</p>'
+                        });
+
+                    });
                 });
+
+
+                function replaceAll(str,replaceWhat,replaceTo){
+                    var re = new RegExp(replaceWhat, 'g');
+                    return str.replace(re,replaceTo);
+                }
+
+                var nilchar = String.fromCharCode(176)
+                var missingchar = String.fromCharCode(201)
+                var nilPremitivechar = String.fromCharCode(175)
+                var missingPremitivechar = String.fromCharCode(200)
+                var emptychar = String.fromCharCode(178)
+                var emptyPremitivechar = String.fromCharCode(177)
+                var boundarychar = String.fromCharCode(179)
+                var objStartchar = String.fromCharCode(198)
+                var arrayStartchar = String.fromCharCode(204)
+                var arrayEndchar = String.fromCharCode(185)
+                var yeschar = String.fromCharCode(181)
+                var nochar = String.fromCharCode(183)
             </script>
 
     </body>
