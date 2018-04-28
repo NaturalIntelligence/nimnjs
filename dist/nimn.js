@@ -95,6 +95,7 @@ const charsArr = [
     chars.missingPremitive,
     chars.boundryChar ,
     chars.emptyChar,
+    chars.emptyValue,
     chars.arrayEnd,
     chars.objStart,
     chars.arrStart

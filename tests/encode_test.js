@@ -223,4 +223,31 @@ describe("Nimn Encoder", function () {
         //console.log(JSON.stringify(result));
         expect(result).toEqual(jData); 
     });
+
+    it("should not separate empty values with boundryChar ", function () {
+
+        var project = {
+            "name" :  "string",
+            "summary" : "string",
+            "detail" : "string"
+        }
+        
+        var jData = {
+            "name" :  "",
+            "summary" : "",
+            "detail" : ""
+        }
+
+        var expected = chars.objStart + chars.emptyValue + chars.emptyValue + chars.emptyValue;
+
+        var nimnEncoder = new nimn();
+        nimnEncoder.addSchema(project);
+        var result = nimnEncoder.encode(jData);
+        //console.log(result.length);
+        //console.log(result);
+        expect(result).toEqual(expected);
+        result = nimnEncoder.decode(result);
+        //console.log(JSON.stringify(result));
+        expect(result).toEqual(jData); 
+    });
 });
