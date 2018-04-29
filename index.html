@@ -44,7 +44,7 @@
                                 <textarea id="txtNimnSchema" name="nimn" rows="20" class="form-control" placeholder="Paste NIMN schema here"></textarea>
                             </div>
                             <div class="col-md-4">
-                                    <button id="makeitreadable" style="width: 100%" class="btn btn-primary" type="button">Make it Readable</button>
+                                    <button id="makeitreadable" style="width: 100%;opacity: 0.6; cursor: not-allowed;" class="btn btn-primary" type="button">Make it Readable</button>
                                     <textarea id="txtNimn" name="nimn" rows="30" class="form-control" placeholder="Paste NIMN data here"></textarea>
                             </div>
             </div>
@@ -148,6 +148,21 @@
                         });
 
                     });
+                    
+                    $("#txtJson").on('input', function() {
+                        var inputLength = $("#txtJson").val().length;
+                        if(inputLength == 1){
+                            $("#makeitreadable").css(
+                                {"opacity": "1",
+                                "cursor": "auto"});
+                        }
+                        else if (inputLength == 0) {
+                            $("#makeitreadable").css(
+                                {"opacity": "0.6",
+                                 "cursor": "not-allowed"});
+                        }
+                    });
+                    
                 });
 
 
