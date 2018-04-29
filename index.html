@@ -42,15 +42,11 @@
                                 <br>
                                 <br>
                                 <textarea id="txtNimnSchema" name="nimn" rows="20" class="form-control" placeholder="Paste NIMN schema here"></textarea>
-                            </div>
-                            
-                            
+                            </div>                                         
                             <div class="col-md-4">
                                     <button id="makeitreadable" style="width: 100%;" class="btn btn-primary disabled" type="button">Make it Readable</button>
                                     <textarea id="txtNimn" name="nimn" rows="30" class="form-control" placeholder="Paste NIMN data here"></textarea>
                             </div>
-
-
             </div>
 
             <script>
@@ -87,8 +83,10 @@
                             }
                             var result = nimnEncoder.encode(jObj);
                             $('#txtNimn').val(result);
+                            $("#makeitreadable").removeClass("disabled");
                         }catch(e){
                             $('#txtNimn').val(e);
+                            $("#makeitreadable").addClass("disabled");
                         }
                     });
 
@@ -151,11 +149,6 @@
                             escapeKey: true
                         });
 
-                    });
-                    $("#txtJson").on('input', function() {
-                        if($("#txtJson").val().length > 2){
-                            $("#makeitreadable").removeClass("disabled");
-                        } else $("#makeitreadable").addClass("disabled");
                     });
                     
                 });
