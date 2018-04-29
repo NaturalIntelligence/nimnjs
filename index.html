@@ -149,8 +149,8 @@
 
                     });
                     
-                    $("#txtJson").on('input', function() {
-                        var inputLength = $("#txtJson").val().length;
+                    $("#txtNimn").on('input', function() {
+                        var inputLength = $("#txtNimn").val().length;
                         if(inputLength == 1){
                             $("#makeitreadable").css(
                                 {"opacity": "1",
@@ -162,9 +162,7 @@
                                  "cursor": "not-allowed"});
                         }
                     });
-                    
                 });
-
 
                 function replaceAll(str,replaceWhat,replaceTo){
                     var re = new RegExp(replaceWhat, 'g');
