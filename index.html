@@ -126,6 +126,14 @@
                             $('#txtJson').val(e);
                         }
                     });
+
+                    $("#txtNimn").on('input', function()
+                   {
+                        if( !this.value ) {
+                            $("#makeitreadable").addClass("disabled");
+                        }
+                        else $("#makeitreadable").removeClass("disabled");
+                    });
                     
 
                     $("#makeitreadable").click(function(){
