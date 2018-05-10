@@ -150,7 +150,7 @@
                     
                     $("#txtJson").on('input', function()
                    {
-                       $('#txtJsonBadge')[0].innerText = $('#txtJson')[0].value.length;
+                       $('#txtJsonBadge')[0].innerText = JSON.stringify(JSON.parse($('#txtJson')[0].value)).length;
                    })
                    
                    $("#txtNimnSchema").on('input', function()
