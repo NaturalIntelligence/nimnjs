@@ -27,6 +27,7 @@
                     </div>
                     <div class="row">
                             <div class="col-md-4">
+                                    <span id="txtJsonBadge" class="badge">0</span>
                                     <textarea id="txtJson" name="json" rows="30" class="form-control" placeholder="Paste JSON here"></textarea>
                             </div>
                             <div class="col-md-4">
@@ -41,10 +42,12 @@
                                 <button id="n2j" style="width: 100%" class="btn btn-primary" type="button">&lt;&lt; JSON</button>
                                 <br>
                                 <br>
+                                <span id="txtNimnSchemaBadge" class="badge">0</span>
                                 <textarea id="txtNimnSchema" name="nimn" rows="20" class="form-control" placeholder="Paste NIMN schema here"></textarea>
                             </div>                                         
                             <div class="col-md-4">
-                                    <button id="makeitreadable" style="width: 100%;" class="btn btn-primary disabled" type="button">Make it Readable</button>
+                                    <button id="makeitreadable" style="width: 100%; margin-bottom:5px" class="btn btn-primary disabled" type="button">Make it Readable</button>
+                                    <span id="txtNimnBadge" class="badge">0</span>
                                     <textarea id="txtNimn" name="nimn" rows="30" class="form-control" placeholder="Paste NIMN data here"></textarea>
                             </div>
             </div>
@@ -84,9 +87,15 @@
                             var result = nimnEncoder.encode(jObj);
                             $('#txtNimn').val(result);
                             $("#makeitreadable").removeClass("disabled");
+                            $('#txtNimnBadge')[0].innerText = $('#txtNimn')[0].value.length;
+                            $('#txtNimnSchemaBadge')[0].innerText = JSON.stringify(JSON.parse($('#txtNimnSchema')[0].value)).length;
+                            $('#txtJsonBadge')[0].innerText = JSON.stringify(JSON.parse($('#txtJson')[0].value)).length; 
                         }catch(e){
                             $('#txtNimn').val(e);
                             $("#makeitreadable").addClass("disabled");
+                            $('#txtNimnSchemaBadge')[0].innerText = '*';
+                            $('#txtNimnBadge')[0].innerText = '*';
+                            $('#txtJsonBadge')[0].innerText = '*';                            
                         }
                     });
 
@@ -120,21 +129,36 @@
                                 $('#txtJson').val(
                                     JSON.stringify(result,null,4)
                                 );
+                                $('#txtJsonBadge')[0].innerText = JSON.stringify(JSON.parse($('#txtJson')[0].value)).length;
+                                $('#txtNimnSchemaBadge')[0].innerText = JSON.stringify(JSON.parse($('#txtNimnSchema')[0].value)).length;
                             }
                             
                         }catch(e){
                             $('#txtJson').val(e);
+                            $('#txtJsonBadge')[0].innerText = '*';
+                            $('#txtNimnSchemaBadge')[0].innerText = '*';
+                            $('#txtNimnBadge')[0].innerText = '*';
                         }
                     });
 
                     $("#txtNimn").on('input', function()
-                   {
+                   {   $('#txtNimnBadge')[0].innerText = $('#txtNimn')[0].value.length;
                         if( !this.value ) {
                             $("#makeitreadable").addClass("disabled");
                         }
                         else $("#makeitreadable").removeClass("disabled");
                     });
                     
+                    $("#txtJson").on('input', function()
+                   {
+                       $('#txtJsonBadge')[0].innerText = $('#txtJson')[0].value.length;
+                   })
+                   
+                   $("#txtNimnSchema").on('input', function()
+                   {
+                       $('#txtNimnSchemaBadge')[0].innerText = $('#txtNimnSchema')[0].value.length;
+                   })
+
 
                     $("#makeitreadable").click(function(){
                         var nimnData = $('#txtNimn').val();
