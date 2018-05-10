@@ -88,7 +88,8 @@
                             $('#txtNimn').val(result);
                             $("#makeitreadable").removeClass("disabled");
                             $('#txtNimnBadge')[0].innerText = $('#txtNimn')[0].value.length;
-                            $('#txtNimnSchemaBadge')[0].innerText = $('#txtNimnSchema')[0].value.length;
+                            $('#txtNimnSchemaBadge')[0].innerText = JSON.stringify(JSON.parse($('#txtNimnSchema')[0].value)).length;
+                            $('#txtJsonBadge')[0].innerText = JSON.stringify(JSON.parse($('#txtJson')[0].value)).length; 
                         }catch(e){
                             $('#txtNimn').val(e);
                             $("#makeitreadable").addClass("disabled");
@@ -128,8 +129,8 @@
                                 $('#txtJson').val(
                                     JSON.stringify(result,null,4)
                                 );
-                                $('#txtJsonBadge')[0].innerText = $('#txtNimn')[0].value.length;
-                                $('#txtNimnSchemaBadge')[0].innerText = $('#txtNimnSchema')[0].value.length;
+                                $('#txtJsonBadge')[0].innerText = JSON.stringify(JSON.parse($('#txtJson')[0].value)).length;
+                                $('#txtNimnSchemaBadge')[0].innerText = JSON.stringify(JSON.parse($('#txtNimnSchema')[0].value)).length;
                             }
                             
                         }catch(e){
@@ -150,7 +151,7 @@
                     
                     $("#txtJson").on('input', function()
                    {
-                       $('#txtJsonBadge')[0].innerText = JSON.stringify(JSON.parse($('#txtJson')[0].value)).length;
+                       $('#txtJsonBadge')[0].innerText = $('#txtJson')[0].value.length;
                    })
                    
                    $("#txtNimnSchema").on('input', function()
