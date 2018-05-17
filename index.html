@@ -27,6 +27,7 @@
                     </div>
                     <div class="row">
                             <div class="col-md-4">
+                                    Length:<span id="lengthJson" class="badge" style="margin:5px">0</span>
                                     <textarea id="txtJson" name="json" rows="30" class="form-control" placeholder="Paste JSON here"></textarea>
                             </div>
                             <div class="col-md-4">
@@ -45,6 +46,7 @@
                             </div>                                         
                             <div class="col-md-4">
                                     <button id="makeitreadable" style="width: 100%;" class="btn btn-primary disabled" type="button">Make it Readable</button>
+                                    Length:<span id="lengthNimn" class="badge" style="margin:5px">0</span>
                                     <textarea id="txtNimn" name="nimn" rows="30" class="form-control" placeholder="Paste NIMN data here"></textarea>
                             </div>
             </div>
@@ -83,10 +85,14 @@
                             }
                             var result = nimnEncoder.encode(jObj);
                             $('#txtNimn').val(result);
+                            $("#lengthJson")[0].innerText= JSON.stringify(jObj).length;
+                            $("#lengthNimn")[0].innerText= result.length;
                             $("#makeitreadable").removeClass("disabled");
                         }catch(e){
                             $('#txtNimn').val(e);
                             $("#makeitreadable").addClass("disabled");
+                            $("#lengthNimn")[0].innerText = "#"
+                            $("#lengthJson")[0].innerText = "#"
                         }
                     });
 
@@ -120,15 +126,33 @@
                                 $('#txtJson').val(
                                     JSON.stringify(result,null,4)
                                 );
+                                $("#lengthNimn")[0].innerText= nimnData.length;
+                                $("#lengthJson")[0].innerText= JSON.stringify(result).length;
                             }
                             
                         }catch(e){
                             $('#txtJson').val(e);
+                            $("#lengthNimn")[0].innerText = "#"
+                            $("#lengthJson")[0].innerText = "#"
                         }
                     });
 
-                    $("#txtNimn").on('input', function()
+                    $("#txtJson").on('input', function()
                    {
+                        try{
+                            if(this.value){
+                                $('#lengthJson')[0].innerText = JSON.stringify(JSON.parse(this.value)).length; //This will fail until a proper json is entered
+                            } else {
+                                $('#lengthJson')[0].innerText = 0;
+                            }
+                        }catch(e){
+                            $('#lengthJson')[0].innerText = "Invalid JSON"
+                        }
+                   });
+
+                    $("#txtNimn").on('input', function()
+                   {   
+                        $('#lengthNimn')[0].innerText = this.value.length;
                         if( !this.value ) {
                             $("#makeitreadable").addClass("disabled");
                         }
