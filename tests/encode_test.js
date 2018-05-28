@@ -3,8 +3,6 @@ var chars = require("../src/chars").chars;
 
 describe("Nimn Encoder", function () {
 
-   
-
     it("should append boundry char if last field can have dynamic value", function () {
         var schema = {
                 "name" : "string",

@@ -1,4 +1,5 @@
 var chars = require("./chars").chars;
+var appCharsArr = require("./chars").charsArr;
 
 decoder.prototype._d = function(schema){
     if(ifNil(this.currentChar())){
@@ -85,14 +86,26 @@ decoder.prototype.readFieldValue = function(schemaOfCurrentKey){
             var len = this.dataToDecode.length;
             var start = this.index;
             
-            for(;this.index < len && until.indexOf(this.currentChar()) === -1;this.index++);
+            for(;this.index < len; this.index++){
+                if(this.currentChar() === '/' &&  this.index+1 < len 
+                    && appCharsArr.indexOf(this.dataToDecode[this.index+1]) !== -1){
+                    // remove the backslash
+                    this.dataToDecode = this.dataToDecode.substr(0,this.index)
+                    + this.dataToDecode.substr(this.index+1,this.dataToDecode.length);
+                    continue;
+                }
+                if(until.indexOf(this.currentChar()) === -1){
+                    // not ending char
+                    continue;
+                }
+                break;
+            };
             return this.dataToDecode.substr(start, this.index-start);
         }
     }else{
         return this.dataToDecode[this.index++];
     }    
 }
-
 
 decoder.prototype.decode = function(objStr){
     this.index= 0;
