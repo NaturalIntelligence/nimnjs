@@ -23,10 +23,10 @@ describe('', function(){
         }
         var expected = chars.objStart
             + "32" 
-            + chars.arrStart + '/' + chars.arrStart
-            + "amit" + '/' + chars.arrayEnd + chars.boundryChar 
-            + '/' + chars.boundryChar + "kumar" 
-            + '/' + chars.emptyChar + chars.arrayEnd
+            + chars.arrStart + '\\' + chars.arrStart
+            + "amit" + '\\' + chars.arrayEnd + chars.boundryChar 
+            + '\\' + chars.boundryChar + "kumar" 
+            + '\\' + chars.emptyChar + chars.arrayEnd
             + chars.missingPremitive + chars.missingChar
             + chars.missingPremitive + chars.missingChar;
 
@@ -43,9 +43,9 @@ describe('', function(){
             bool: false
         }
         var expected = chars.objStart + "32" 
-            + chars.arrStart + '/' + chars.missingChar
-            + "amit" + '/' + chars.nilPremitive + chars.boundryChar 
-            + '/' + chars.nilChar + "kumar" + '/' + chars.arrayEnd + chars.arrayEnd 
+            + chars.arrStart + '\\' + chars.missingChar
+            + "amit" + '\\' + chars.nilPremitive + chars.boundryChar 
+            + '\\' + chars.nilChar + "kumar" + '\\' + chars.arrayEnd + chars.arrayEnd 
             + chars.missingPremitive
             + chars.arrStart 
             + "amit2" + chars.boundryChar + "kumar2" + chars.arrayEnd 

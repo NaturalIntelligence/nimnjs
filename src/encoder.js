@@ -37,7 +37,7 @@ Encoder.prototype._e = function(jObj,e_schema){
 Encoder.prototype.processValue= function(str,r){
     if(!this.isAppChar(r[0]) && (!this.isAppChar(str[str.length -1]) 
         || (this.isAppChar(str[str.length -1]) && str.length>1 
-            && str[str.length - 2] === '/'))){
+            && str[str.length - 2] === '\\'))){
         str += chars.boundryChar;
     }
     return str + r;
@@ -66,7 +66,7 @@ Encoder.prototype.getValue= function(value,type){
 function sanitizeData(data) {
     if(typeof data === "string"){
         appCharsArr.forEach(c => {
-            data = data.replace(new RegExp(c, 'g'), '/'+c);
+            data = data.replace(new RegExp(c, 'g'), '\\'+c);
         })
     }
     return data;

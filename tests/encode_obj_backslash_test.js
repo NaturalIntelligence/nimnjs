@@ -27,8 +27,8 @@ describe('backslash in object ',function (){
             name : chars.nilChar+ "gupta" + chars.nilChar + "leo" + chars.nilChar,
             marks : 87.9
         }
-        var expected = chars.objStart + "/" + chars.nilChar + 
-            "gupta/" + chars.nilChar + "leo/" + chars.nilChar + chars.boundryChar + "87.9";
+        var expected = chars.objStart + '\\' + chars.nilChar + 
+            "gupta\\" + chars.nilChar + "leo\\" + chars.nilChar + chars.boundryChar + "87.9";
 
         nimnEncoder.addSchema(schema);
         var result = nimnEncoder.encode(jData);
@@ -49,8 +49,8 @@ describe('backslash in object ',function (){
             name : chars.nilPremitive+ "gupta" + chars.nilPremitive + "leo" + chars.nilPremitive,
             marks : 87.9
         }
-        var expected = chars.objStart + "/" + chars.nilPremitive + 
-            "gupta/" + chars.nilPremitive + "leo/" + chars.nilPremitive + chars.boundryChar + "87.9";
+        var expected = chars.objStart + '\\' + chars.nilPremitive + 
+            "gupta\\" + chars.nilPremitive + "leo\\" + chars.nilPremitive + chars.boundryChar + "87.9";
 
         nimnEncoder.addSchema(schema);
         var result = nimnEncoder.encode(jData);
@@ -71,8 +71,8 @@ describe('backslash in object ',function (){
             name : chars.missingChar+ "gupta" + chars.missingChar + "leo" + chars.missingChar,
             marks : 87.9
         }
-        var expected = chars.objStart + "/" + chars.missingChar + 
-            "gupta/" + chars.missingChar + "leo/" + chars.missingChar + chars.boundryChar + "87.9";
+        var expected = chars.objStart + '\\' + chars.missingChar + 
+            "gupta\\" + chars.missingChar + "leo\\" + chars.missingChar + chars.boundryChar + "87.9";
 
         nimnEncoder.addSchema(schema);
         var result = nimnEncoder.encode(jData);
@@ -93,8 +93,8 @@ describe('backslash in object ',function (){
             name : chars.missingPremitive+ "gupta" + chars.missingPremitive + "leo" + chars.missingPremitive,
             marks : 87.9
         }
-        var expected = chars.objStart + "/" + chars.missingPremitive + 
-            "gupta/" + chars.missingPremitive + "leo/" + chars.missingPremitive + chars.boundryChar + "87.9";
+        var expected = chars.objStart + '\\' + chars.missingPremitive + 
+            "gupta\\" + chars.missingPremitive + "leo\\" + chars.missingPremitive + chars.boundryChar + "87.9";
 
         nimnEncoder.addSchema(schema);
         var result = nimnEncoder.encode(jData);
@@ -115,8 +115,8 @@ describe('backslash in object ',function (){
             name : chars.boundryChar+ "gupta" + chars.boundryChar + "leo" + chars.boundryChar,
             marks : 87.9
         }
-        var expected = chars.objStart + "/" + chars.boundryChar + 
-            "gupta/" + chars.boundryChar + "leo/" + chars.boundryChar + chars.boundryChar + "87.9";
+        var expected = chars.objStart + '\\' + chars.boundryChar + 
+            "gupta\\" + chars.boundryChar + "leo\\" + chars.boundryChar + chars.boundryChar + "87.9";
 
         nimnEncoder.addSchema(schema);
         var result = nimnEncoder.encode(jData);
@@ -137,8 +137,8 @@ describe('backslash in object ',function (){
             name : chars.emptyChar+ "gupta" + chars.emptyChar + "leo" + chars.emptyChar,
             marks : 87.9
         }
-        var expected = chars.objStart + "/" + chars.emptyChar + 
-            "gupta/" + chars.emptyChar + "leo/" + chars.emptyChar + chars.boundryChar + "87.9";
+        var expected = chars.objStart + '\\' + chars.emptyChar + 
+            "gupta\\" + chars.emptyChar + "leo\\" + chars.emptyChar + chars.boundryChar + "87.9";
 
         nimnEncoder.addSchema(schema);
         var result = nimnEncoder.encode(jData);
@@ -161,8 +161,8 @@ describe('backslash in object ',function (){
             name : testChar + "gupta" + testChar + "leo" + testChar,
             marks : 87.9
         }
-        var expected = chars.objStart + "/" + testChar + 
-            "gupta/" + testChar + "leo/" + testChar + chars.boundryChar + "87.9";
+        var expected = chars.objStart + '\\' + testChar + 
+            "gupta\\" + testChar + "leo\\" + testChar + chars.boundryChar + "87.9";
 
         nimnEncoder.addSchema(schema);
         var result = nimnEncoder.encode(jData);
@@ -186,8 +186,8 @@ describe('backslash in object ',function (){
             name : testChar + "gupta" + testChar + "leo" + testChar,
             marks : 87.9
         }
-        var expected = chars.objStart + "/" + testChar + 
-            "gupta/" + testChar + "leo/" + testChar + chars.boundryChar + "87.9";
+        var expected = chars.objStart + '\\' + testChar + 
+            "gupta\\" + testChar + "leo\\" + testChar + chars.boundryChar + "87.9";
 
         nimnEncoder.addSchema(schema);
         var result = nimnEncoder.encode(jData);
@@ -211,8 +211,8 @@ describe('backslash in object ',function (){
             name : testChar + "gupta" + testChar + "leo" + testChar,
             marks : 87.9
         }
-        var expected = chars.objStart + "/" + testChar + 
-            "gupta/" + testChar + "leo/" + testChar + chars.boundryChar + "87.9";
+        var expected = chars.objStart + '\\' + testChar + 
+            "gupta\\" + testChar + "leo\\" + testChar + chars.boundryChar + "87.9";
 
         nimnEncoder.addSchema(schema);
         var result = nimnEncoder.encode(jData);
@@ -236,8 +236,8 @@ describe('backslash in object ',function (){
             name : testChar + "gupta" + testChar + "leo" + testChar,
             marks : 87.9
         }
-        var expected = chars.objStart + "/" + testChar + 
-            "gupta/" + testChar + "leo/" + testChar + chars.boundryChar + "87.9";
+        var expected = chars.objStart + '\\' + testChar + 
+            "gupta\\" + testChar + "leo\\" + testChar + chars.boundryChar + "87.9";
 
         nimnEncoder.addSchema(schema);
         var result = nimnEncoder.encode(jData);

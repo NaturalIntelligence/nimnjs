@@ -87,7 +87,7 @@ decoder.prototype.readFieldValue = function(schemaOfCurrentKey){
             var start = this.index;
             
             for(;this.index < len; this.index++){
-                if(this.currentChar() === '/' &&  this.index+1 < len 
+                if(this.currentChar() === '\\' &&  this.index+1 < len 
                     && appCharsArr.indexOf(this.dataToDecode[this.index+1]) !== -1){
                     // remove the backslash
                     this.dataToDecode = this.dataToDecode.substr(0,this.index)
