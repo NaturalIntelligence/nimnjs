@@ -22,12 +22,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nimndata/nimnjs-node.git"
+    "url": "https://github.com/nimndata/nimnjs.git"
   },
   "bugs": {
-    "url": "https://github.com/nimndata/nimnjs-node/issues"
+    "url": "https://github.com/nimndata/nimnjs/issues"
   },
-  "homepage": "https://github.com/nimndata/nimnjs-node",
+  "homepage": "https://github.com/nimndata/nimnjs",
   "dependencies": {
     "nimn-date-parser": "^1.0.0",
     "nimn_schema_builder": "^1.0.0"
