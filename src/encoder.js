@@ -65,9 +65,8 @@ Encoder.prototype.getValue= function(value,type){
  */
 function sanitizeData(data) {
     if(typeof data === "string"){
-        appCharsArr.forEach(c => {
-            data = data.replace(new RegExp(c, 'g'), '\\'+c);
-        })
+        let regex = new RegExp(appCharsArr.join('|'), 'g');
+        data = data.replace(regex, '\\$&');
     }
     return data;
 }
