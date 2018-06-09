@@ -1,6 +1,8 @@
 var chars = require("./chars").chars;
 var appCharsArr = require("./chars").charsArr;
 
+const appCharRegex = new RegExp(appCharsArr.join('|'), 'g');
+        
 Encoder.prototype._e = function(jObj,e_schema){
     if(typeof e_schema.type === "string"){//premitive
         return this.getValue(jObj,e_schema.type);
@@ -65,8 +67,7 @@ Encoder.prototype.getValue= function(value,type){
  */
 function sanitizeData(data) {
     if(typeof data === "string"){
-        let regex = new RegExp(appCharsArr.join('|'), 'g');
-        data = data.replace(regex, '\\$&');
+        data = data.replace(appCharRegex, '\\$&');
     }
     return data;
 }
