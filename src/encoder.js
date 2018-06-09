@@ -1,6 +1,8 @@
 var chars = require("./chars").chars;
 var appCharsArr = require("./chars").charsArr;
 
+const appCharRegex = new RegExp(appCharsArr.join('|'), 'g');
+        
 Encoder.prototype._e = function(jObj,e_schema){
     if(typeof e_schema.type === "string"){//premitive
         return this.getValue(jObj,e_schema.type);
@@ -35,7 +37,9 @@ Encoder.prototype._e = function(jObj,e_schema){
 }
 
 Encoder.prototype.processValue= function(str,r){
-    if(!this.isAppChar(r[0]) && !this.isAppChar(str[str.length -1])){
+    if(!this.isAppChar(r[0]) && (!this.isAppChar(str[str.length -1]) 
+        || (this.isAppChar(str[str.length -1]) && str.length>1 
+            && str[str.length - 2] === '\\'))){
         str += chars.boundryChar;
     }
     return str + r;
@@ -43,17 +47,29 @@ Encoder.prototype.processValue= function(str,r){
 
 /**
  * 
- * @param {*} a 
+ * @param {*} value 
  * @param {*} type 
  * @return {string} return either the parsed value or a special char representing the value
  */
-Encoder.prototype.getValue= function(a,type){
-    switch(a){
+Encoder.prototype.getValue= function(value,type){
+    switch(value){
         case undefined: return chars.missingPremitive;
         case null: return chars.nilPremitive;
         case "": return chars.emptyValue;
-        default: return this.dataHandlers[type].parse(a);
+        default: return sanitizeData(this.dataHandlers[type].parse(value));
     }
+}
+
+/**
+ * 
+ * @param {string} data 
+ * @return {string} return the sanitized string by adding backslash to the special chars
+ */
+function sanitizeData(data) {
+    if(typeof data === "string"){
+        data = data.replace(appCharRegex, '\\$&');
+    }
+    return data;
 }
 
 /**
