@@ -1,7 +1,7 @@
 {
     "version": "0.2.0",
     "configurations": [
-        {
+        /* {
             "type": "node",
             "request": "launch",
             "name": "Jasmine Tests",
@@ -9,6 +9,13 @@
             "args": [
                 "${workspaceFolder}/test/encode_test.js"
             ],
+            "internalConsoleOptions": "openOnSessionStart"
+        } */
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Jasmine Tests",
+            "program": "${workspaceFolder}/src/testParser.js",
             "internalConsoleOptions": "openOnSessionStart"
         }
     ]
