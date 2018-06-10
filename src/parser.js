@@ -35,12 +35,12 @@ var DataType = {
     NUMBER : 5,
 }
 
-var decodeNimnChar = {};
+/* var decodeNimnChar = {};
 decodeNimnChar[char(175)] = null;
 decodeNimnChar[char(184)] = undefined;
 decodeNimnChar[char(177)] = "";
 decodeNimnChar[char(181)] = true;
-decodeNimnChar[char(183)] = false;
+decodeNimnChar[char(183)] = false; */
 
 /* var booleanValues = {};
 booleanValues[undefined] = chars.missingPremitive;
@@ -57,9 +57,16 @@ var numberValues = {};
 numberValues[undefined] = chars.missingPremitive;
 numberValues[null] = chars.nilPremitive; */
 
-function BooleanType(fName){
+function BooleanType(fName, defaultVal){
     this._name = fName;
     this._type = DataType.BOOLEAN;
+
+    this._decodeChar = {};
+    this._decodeChar[char(175)] = null;
+    this._decodeChar[char(184)] = defaultVal;
+    this._decodeChar[char(181)] = true;
+    this._decodeChar[char(183)] = false;
+
     this._encode = function(v){
         if(v){
             return chars.yes;
@@ -75,16 +82,22 @@ function BooleanType(fName){
     this._decode = function(v,i){
         return {
             index: i+1,
-            value: decodeNimnChar[ v[i] ]
+            value: this._decodeChar[ v[i] ]
         }
     };
 }
 
-function StringType(fName, shouldSanitize){
+function StringType(fName, defaultVal, shouldSanitize){
     this._name = fName;
     this._type = DataType.STRING;
     this._sanitize = shouldSanitize ? sanitize : doNothing;
     this._removeBackspace = shouldSanitize ? removeBackspace : doNothing;
+
+    this._decodeChar = {};
+    this._decodeChar[char(175)] = null;
+    this._decodeChar[char(184)] = defaultVal;
+    this._decodeChar[char(177)] = "";
+
     this._encode = function (v){
         if(v){
             return this._sanitize(v);
@@ -101,7 +114,7 @@ function StringType(fName, shouldSanitize){
         if( inRange(v[i])){
             return {
                 index: i+1,
-                value: decodeNimnChar[ v[i] ]
+                value: this._decodeChar[ v[i] ]
             }
         }else{
             var nextIndex = read(v,i);
@@ -110,9 +123,14 @@ function StringType(fName, shouldSanitize){
     };
 }
 
-function NumberType(fName){
+function NumberType(fName, defaultVal){
     this._name = fName;
     this._type = DataType.NUMBER;
+
+    this._decodeChar = {};
+    this._decodeChar[char(175)] = null;
+    this._decodeChar[char(184)] = defaultVal;
+
     this._encode = function(v){
         if(v === undefined){
             return chars.missingPremitive;
@@ -128,7 +146,7 @@ function NumberType(fName){
         if( inRange(v[i]) ){
             return {
                 index: i+1,
-                value: decodeNimnChar[ v[i] ]
+                value: this._decodeChar[ v[i] ]
             }
         }else{
             var nextIndex = read(v,i);
@@ -291,11 +309,11 @@ function buildSchema(schema, shouldSanitize){
         listSchema._item = buildSchema(schema.detail, shouldSanitize);
         return listSchema;
     }else if(schema.type === "boolean"){
-        return new BooleanType(schema.name);
+        return new BooleanType(schema.name, schema.default);
     }else  if(schema.type === "string"){
-        return new StringType(schema.name, shouldSanitize);
+        return new StringType(schema.name, schema.default, shouldSanitize);
     }else{//number
-        return new NumberType(schema.name);
+        return new NumberType(schema.name, schema.default);
     }
 }
 

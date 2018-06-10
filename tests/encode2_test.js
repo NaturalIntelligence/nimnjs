@@ -107,12 +107,97 @@ describe("Nimn Encoder", function () {
 
     }); 
 
-    function assert(schema,jData, expected){
+    it("should return default value for undefined ", function () {
+        
+        var schema = {
+              type : "map",
+              detail : [{
+                  name : "name",
+                  type : "string"
+                },{
+                  name : "age",
+                  type : "number",
+                  default : 45
+                },{
+                  name : "isHuman",
+                  type : "boolean"
+                },{
+                  name : "address",
+                  type : "string"
+                },{
+                  name : "hobbies",
+                  type : "list",
+                  detail : {
+                    type : "string"
+                  }
+                },{
+                  name : "project",
+                  type : "map",
+                  detail: [{
+                      name: "title",
+                      type : "string"
+                    },{
+                      name: "description",
+                      type : "string",
+                      default: "As usual fast"
+                    },{
+                      name: "status",
+                      type : "string"
+                    }
+                  ]
+                }
+              ]
+            }
+          
+          var newSchema = parser.buildSchema(schema);
+
+        var jData = {
+            "name" : "somename",
+            hobbies : null,
+            project : {
+                title : "nimn",
+                //description : "it is 80% smaller",
+                status : "rocking"
+            }
+        };
+
+        var expectedjData = {
+            "name" : "somename",
+            age : 45,
+            hobbies : null,
+            project : {
+                title : "nimn",
+                description : "As usual fast",
+                status : "rocking"
+            }
+        };
+        
+        var expected = parser.chars.objStart 
+                + "somename" 
+                + parser.chars.missingPremitive
+                + parser.chars.missingPremitive
+                + parser.chars.missingPremitive
+                + parser.chars.nilChar
+                + parser.chars.objStart 
+                        + "nimn" //No boundary char if next field is nimn char
+                        +  parser.chars.missingPremitive
+                        + "rocking" //last field can not have boundary char
+                + parser.chars.objEnd
+            + parser.chars.objEnd;
+        
+        assert(newSchema,jData, expected, expectedjData);
+
+        assert(newSchema,{}, parser.chars.emptyChar);
+        assert(newSchema,null, parser.chars.nilChar);
+
+    }); 
+
+    function assert(schema,jData, expected, expectedjData){
         var result = parser.parse(schema, jData);
         
         expect(result).toEqual(expected);
         result = parser.parseBack(schema, result);
         //console.log(JSON.stringify(result, null, 4));
-        expect(result).toEqual(jData); 
+        expect(result).toEqual(expectedjData || jData ); 
     }
 });
