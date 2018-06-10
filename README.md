@@ -23,69 +23,71 @@ $npm install nimnjs
 ```js
 var nimn = require("nimnjs");
 
-var schema = {
-    "name": "string",
-    "age": "number",
-    "human": "boolean",
-    "projects": [{
-        "name": "string",
-        "decription": "string"
-    }]
-}
-
-var nimnInstance = new nimn();
-nimnInstance.addSchema(schema);
-
-var data = {
-    "name" : "amit",
-    "age" : 32,
-    "human" : true,
-    "projects" : [
-        {
-            "name": "some",
-            "decription" : "some long description"
+var objStructure = {
+    type : "list",
+    detail : {
+        type : "map",
+        detail : [{
+            name : "name",
+            type : "string"
+        },{
+            name : "age",
+            type : "number"
+        },{
+            name : "isHuman",
+            type : "boolean"
+        },{
+            name : "address",
+            type : "string"
+        },{
+            name : "hobbies",
+            type : "list",
+            detail : {
+                type : "string"
+            }
+        },{
+            name : "project",
+            type : "map",
+            detail: [{
+                name: "title",
+                type : "string"
+            },{
+                name: "description",
+                type : "string"
+            },{
+                name: "status",
+                type : "string"
+            }
+            ]
         }
-    ]
+        ]
+    }
 }
 
-var result = nimnInstance.encode(data);//Æamitº32ÙÇÆsomeºsome long description
-result = nimnInstance.decode(result);
-expect(result).toEqual(data); 
+
+var schema = nimn.buildSchema(objStructure);
+
+var jData = [{
+    "name" : "somename",
+    "isHuman" : true,
+    "age": 32,
+    "address" : "I'll not tell you",
+    hobbies : [ 
+        null
+        , "not reading "+ parser.chars.missingPremitive +" book"
+        , "watching \\"+ parser.chars.nilPremitive +" movie"
+    ],
+    project : {
+        title : "nimn",
+        //description : "it is 80% smaller",
+        status : "rocking"
+    }
+}]
+
+var nimnDataString = nimn.stringify(schema, jData);
+var result = nimn.parse(schema, nimnDataString);
+expect(result).toEqual(jData); 
 ```
-
-For date compression
-```js
-var nimnDateparser = require("nimn-date-parser");
-//generate schema and data
-var nimnInstance = new nimn();
-nimnInstance.addDataHandler("date",function(val){
-    return nimnDateparser.parse(val,true,true,true)
-},function(val){
-    return nimnDateparser.parseBack(val,true,true,true)
-});
-nimnInstance.addSchema(schema); //add after adding all data handlers
-
-var nimndata = nimnInstance.encode(data);
-```
-
-
-Encode enum type
-```js
-var nimnInstance = new nimn();
-nimnInstance.addDataHandler("status",null,null,{
-    "M" : "Married",
-    "S" : "Single"
-});
-nimnInstance.addSchema(schema); //add after adding all data handlers
-```
-
-Just mark a data type
-```js
-var nimnInstance = new nimn();
-nimnInstance.addDataHandler("image");
-nimnInstance.addSchema(schema); //add after adding all data handlers
-```
-
 
 Include [dist](dist/nimn.js) in your HTML to use it in browser.
 
@@ -94,7 +96,7 @@ Check the [demo](https://nimndata.github.io/nimnjs-node/) for instant use. It ge
 
 
 ## Support
-I need your expert advice, and contribution to grow nimn (निम्न) so that it can support all mazor languages. Please join the [official organization](https://github.com/nimndata) on github to support it. And ask your friends, and colleagues to give it a try. It can not only save bandwidth but speed up communication, search and much more.
+Join the [official organization](https://github.com/nimndata) on github to support it. It can not only save bandwidth but speed up communication, search and much more.
 
 ## Users
 List of applications and projects using Nimn. (Raise an issue to submit yours)
