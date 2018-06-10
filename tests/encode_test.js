@@ -1,251 +1,203 @@
-var nimn = require("../src/nimn");
-var chars = require("../src/chars").chars;
+var parser = require("../src/parser"); 
 
 describe("Nimn Encoder", function () {
 
-    it("should append boundry char if last field can have dynamic value", function () {
-        var schema = {
-                "name" : "string",
-                "marks" : "number"
-        };
-
-        var nimnEncoder = new nimn();
-
-        var jData = {
-            name : "gupta",
-            marks : 87.9
-        }
-        var expected = chars.objStart + "gupta" + chars.boundryChar + "87.9";
-
-        nimnEncoder.addSchema(schema);
-        var result = nimnEncoder.encode(jData);
-        expect(result).toEqual(expected);
-        result = nimnEncoder.decode(result);
-        //console.log(JSON.stringify(result));
-        expect(result).toEqual(jData); 
-    });
-
-    it("should append undefined or null char without boundry char if last field undefined or null", function () {
-        var schema = {
-            "name" : "string",
-            "age" : "number"
-        };
-
-        var nimnEncoder = new nimn();
-        nimnEncoder.addSchema(schema);
-
-        var jData = {
-            age : 32
-        }
-        //var expected = chars.objStart + chars.missingPremitive + "32";
-        var expected = chars.objStart + chars.missingPremitive + "32";
-
+    it("should append boundry char only if any of two consecutive fields are not nimn char ", function () {
         
-        var result = nimnEncoder.encode(jData);
-        expect(result).toEqual(expected);
-        result = nimnEncoder.decode(result);
-        //console.log(JSON.stringify(result));
-        expect(result).toEqual(jData); 
-
-        var jData = {
-            name : null,
-            age : 32
+        var schema = {
+            type : "list",
+            detail : {
+              type : "map",
+              detail : [{
+                  name : "name",
+                  type : "string"
+                },{
+                  name : "age",
+                  type : "number"
+                },{
+                  name : "isHuman",
+                  type : "boolean"
+                },{
+                  name : "address",
+                  type : "string"
+                },{
+                  name : "hobbies",
+                  type : "list",
+                  detail : {
+                    type : "string"
+                  }
+                },{
+                  name : "project",
+                  type : "map",
+                  detail: [{
+                      name: "title",
+                      type : "string"
+                    },{
+                      name: "description",
+                      type : "string"
+                    },{
+                      name: "status",
+                      type : "string"
+                    }
+                  ]
+                }
+              ]
+            }
         }
-        var expected = chars.objStart + chars.nilPremitive + "32";
-        var result = nimnEncoder.encode(jData);
-        expect(result).toEqual(expected);
-        result = nimnEncoder.decode(result);
-        //console.log(JSON.stringify(result));
-        expect(result).toEqual(jData); 
+          
+          var newSchema = parser.buildSchema(schema);
+
+        var jData = [{
+                "name" : "somename",
+                "isHuman" : true,
+                "age": 32,
+                "address" : "I'll not tell you",
+                hobbies : [ 
+                    null
+                    , "not reading "+ parser.chars.missingPremitive +" book"
+                    , "watching \\"+ parser.chars.nilPremitive +" movie"
+                ],
+                project : {
+                    title : "nimn",
+                    //description : "it is 80% smaller",
+                    status : "rocking"
+                }
+            },{
+            },{
+                "name" : "somename",
+                "isHuman" : null,
+                "address" : "I'll not tell you",
+                hobbies : null,
+                project : null
+            }
+        ];
+        
+        var expected = parser.chars.arrStart 
+                + parser.chars.objStart 
+                    + "somename" + parser.chars.boundaryChar
+                    + "32" 
+                    + parser.chars.yes // Order of the keys should be maintained as per schema not the data
+                    + "I'll not tell you"
+                    + parser.chars.arrStart
+                        + parser.chars.nilPremitive
+                        + "not reading \\"+ parser.chars.missingPremitive +" book"  +  parser.chars.boundaryChar
+                        + "watching \\\\"+ parser.chars.nilPremitive +" movie"
+                    + parser.chars.arrEnd
+                    + parser.chars.objStart 
+                            + "nimn" //No boundary char if next field is nimn char
+                            +  parser.chars.missingPremitive
+                            + "rocking" //last field can not have boundary char
+                    + parser.chars.objEnd
+                + parser.chars.objEnd
+                + parser.chars.emptyChar
+                + parser.chars.objStart 
+                    + "somename" 
+                    + parser.chars.missingPremitive
+                    + parser.chars.nilPremitive // Order of the keys should be maintained as per schema not the data
+                    + "I'll not tell you"
+                    + parser.chars.nilChar
+                    + parser.chars.nilChar
+                + parser.chars.objEnd
+            + parser.chars.arrEnd;
+        
+        assert(newSchema,jData, expected);
+
+        assert(newSchema,[], parser.chars.emptyChar);
+        assert(newSchema,null, parser.chars.nilChar);
 
     }); 
 
-    it("should append boundry char if last field can have dynamic value and not undefined or null", function () {
-        var schema = {
-            "name" : {
-                "first" : "string" ,
-                "middle" : "string" ,
-                "last" : "string"
-            },
-            "age" : "number"
-        };
-
-        var nimnEncoder = new nimn();
-        nimnEncoder.addSchema(schema);
-
-        var jData = {
-            name : { first : null , middle: "kumar", last: "gupta"} ,
-            age : 32
-        }
-        var expected = chars.objStart + chars.objStart + chars.nilPremitive  + "kumar" + chars.boundryChar + "gupta"
-            + chars.boundryChar
-            + "32";
-        var result = nimnEncoder.encode(jData);
-        expect(result).toEqual(expected);
-        result = nimnEncoder.decode(result);
-        //console.log(JSON.stringify(result));
-        expect(result).toEqual(jData); 
-    });
-
-    it("should not append boundry char if last field can have dynamic value but it is undefined or null", function () {
-        var schema = {
-            "name" : {
-                "first" : "string" ,
-                "middle" : "string" ,
-                "last" : "string"
-            },
-            "age" : "number"
-        };
-
-        var nimnEncoder = new nimn();
-        nimnEncoder.addSchema(schema);
-        
-        var jData = {
-            name : { first : null , middle: "kumar", last: null} ,
-            age : 32
-        }
-        var expected = chars.objStart + chars.objStart + chars.nilPremitive + "kumar" + chars.nilPremitive
-            + "32";
-        var result = nimnEncoder.encode(jData);
-        expect(result).toEqual(expected);
-        result = nimnEncoder.decode(result);
-        //console.log(JSON.stringify(result));
-        expect(result).toEqual(jData); 
-
-        var jData = {
-            name : { first : null , middle: "kumar"} ,
-            age : 32
-        }
-        var expected = chars.objStart + chars.objStart + chars.nilPremitive + "kumar" + chars.missingPremitive
-            + "32";
-        var result = nimnEncoder.encode(jData);
-        expect(result).toEqual(expected);
-        result = nimnEncoder.decode(result);
-        //console.log(JSON.stringify(result));
-        expect(result).toEqual(jData); 
-
-        var jData = {
-            name : null ,
-            age : 32
-        }
-        var expected = chars.objStart + chars.nilChar + "32";
-        var result = nimnEncoder.encode(jData);
-        expect(result).toEqual(expected);
-        result = nimnEncoder.decode(result);
-        //console.log(JSON.stringify(result));
-        expect(result).toEqual(jData); 
-
-        var jData = {
-            //name : {},
-            age : 32
-        }
-        var expected = chars.objStart + chars.missingChar + "32";
-        var result = nimnEncoder.encode(jData);
-        expect(result).toEqual(expected);
-        result = nimnEncoder.decode(result);
-        //console.log(JSON.stringify(result));
-        expect(result).toEqual(jData); 
-
-    });
-
-    it("should not append boundry char if last field is empty object", function () {
-        var schema = {
-            "name" : {
-                "first" : "string" ,
-                "middle" : "string" ,
-                "last" : "string"
-            },
-            "age" : "number"
-        };
-
-        var nimnEncoder = new nimn();
-        nimnEncoder.addSchema(schema);
-
-        var jData = {
-            name : {},
-            age : 32
-        }
-        var expected = chars.objStart + chars.emptyChar + "32";
-        var result = nimnEncoder.encode(jData);
-        expect(result).toEqual(expected); 
-        result = nimnEncoder.decode(result);
-        //console.log(JSON.stringify(result));
-        expect(result).toEqual(jData); 
-    });
-
-    it("should encode data in the order it defines in schema", function () {
-
-        var project = {
-            "name" :  "string",
-            "description" : "string"
-        }
+    it("should return default value for undefined ", function () {
         
         var schema = {
-            "name" : {
-                    "first" : "string",
-                    "middle" : "string",
-                    "last" : "string"
-            },
-            "projects" : [ project ],
-            "age" : "number"
-        }
-        
-        var jData = {
-            age : 32,
-            name : { first : null , middle: "kumar", last: "gupta"} ,
-            projects : [
-                {
-                    name : "Stubmatic",
-                    description : "QA friendly tool to mock HTTP(s) calls"
+              type : "map",
+              detail : [{
+                  name : "name",
+                  type : "string"
                 },{
-                    name : "java aggregator",
-                    description: "1"
+                  name : "age",
+                  type : "number",
+                  default : 45
+                },{
+                  name : "isHuman",
+                  type : "boolean"
+                },{
+                  name : "address",
+                  type : "string"
+                },{
+                  name : "hobbies",
+                  type : "list",
+                  detail : {
+                    type : "string"
+                  }
+                },{
+                  name : "project",
+                  type : "map",
+                  detail: [{
+                      name: "title",
+                      type : "string"
+                    },{
+                      name: "description",
+                      type : "string",
+                      default: "As usual fast"
+                    },{
+                      name: "status",
+                      type : "string"
+                    }
+                  ]
                 }
-            ]
-        }
+              ]
+            }
+          
+          var newSchema = parser.buildSchema(schema);
 
-        var expected = chars.objStart + chars.objStart + chars.nilPremitive + "kumar" + chars.boundryChar + "gupta"
-            + chars.arrStart 
-            + chars.objStart + "Stubmatic" + chars.boundryChar + "QA friendly tool to mock HTTP(s) calls"
-            + chars.objStart + "java aggregator" + chars.boundryChar + "1"
-            + chars.arrayEnd
-            + "32";
-
-        var nimnEncoder = new nimn();
-        nimnEncoder.addSchema(schema);
-        var result = nimnEncoder.encode(jData);
-        //console.log(result.length);
-        //console.log(result);
-        expect(result).toEqual(expected);
-        result = nimnEncoder.decode(result);
-        //console.log(JSON.stringify(result));
-        expect(result).toEqual(jData); 
-    });
-
-    it("should not separate empty values with boundryChar ", function () {
-
-        var project = {
-            "name" :  "string",
-            "summary" : "string",
-            "detail" : "string"
-        }
-        
         var jData = {
-            "name" :  "",
-            "summary" : "",
-            "detail" : ""
-        }
+            "name" : "somename",
+            hobbies : null,
+            project : {
+                title : "nimn",
+                //description : "it is 80% smaller",
+                status : "rocking"
+            }
+        };
 
-        var expected = chars.objStart + chars.emptyValue + chars.emptyValue + chars.emptyValue;
+        var expectedjData = {
+            "name" : "somename",
+            age : 45,
+            hobbies : null,
+            project : {
+                title : "nimn",
+                description : "As usual fast",
+                status : "rocking"
+            }
+        };
+        
+        var expected = parser.chars.objStart 
+                + "somename" 
+                + parser.chars.missingPremitive
+                + parser.chars.missingPremitive
+                + parser.chars.missingPremitive
+                + parser.chars.nilChar
+                + parser.chars.objStart 
+                        + "nimn" //No boundary char if next field is nimn char
+                        +  parser.chars.missingPremitive
+                        + "rocking" //last field can not have boundary char
+                + parser.chars.objEnd
+            + parser.chars.objEnd;
+        
+        assert(newSchema,jData, expected, expectedjData);
 
-        var nimnEncoder = new nimn();
-        nimnEncoder.addSchema(project);
-        var result = nimnEncoder.encode(jData);
-        //console.log(result.length);
-        //console.log(result);
+        assert(newSchema,{}, parser.chars.emptyChar);
+        assert(newSchema,null, parser.chars.nilChar);
+
+    }); 
+
+    function assert(schema,jData, expected, expectedjData){
+        var result = parser.parse(schema, jData);
+        
         expect(result).toEqual(expected);
-        result = nimnEncoder.decode(result);
-        //console.log(JSON.stringify(result));
-        expect(result).toEqual(jData); 
-    });
+        result = parser.parseBack(schema, result);
+        //console.log(JSON.stringify(result, null, 4));
+        expect(result).toEqual(expectedjData || jData ); 
+    }
 });
