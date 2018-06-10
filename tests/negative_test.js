@@ -1,4 +1,4 @@
-var parser = require("../src/parser"); 
+var parser = require("../src/nimn"); 
 
 describe("Nimn ", function () {
     var schema = {
@@ -26,11 +26,11 @@ describe("Nimn ", function () {
             names : ["amit", "kumar"]
         }
         
-        var nimnData = parser.parse(newSchema, jData);
+        var nimnData = parser.stringify(newSchema, jData);
         nimnData = parser.chars.arrStart + nimnData.substr(1);
         
         expect(function(){
-            parser.parseBack(newSchema, nimnData);
+            parser.parse(newSchema, nimnData);
         }).toThrow(); 
     });
 
@@ -41,11 +41,11 @@ describe("Nimn ", function () {
             names : ["amit", "kumar"]
         }
 
-        var nimnData = parser.parse(newSchema, jData);
+        var nimnData = parser.stringify(newSchema, jData);
         nimnData =  nimnData.substr(0,3) + parser.chars.objStart + nimnData.substr(5);
 
         expect(function(){
-            parser.parseBack(newSchema, nimnData);
+            parser.parse(newSchema, nimnData);
         }).toThrow(); 
     });
 
@@ -57,7 +57,7 @@ describe("Nimn ", function () {
         }
 
         expect(function(){
-            parser.parseBack(newSchema, "");
+            parser.parse(newSchema, "");
         }).toThrow(); 
     });
 });

@@ -1,4 +1,4 @@
-var parser = require("../src/parser"); 
+var parser = require("../src/nimn"); 
 
 describe("Nimn Encoder", function () {
 
@@ -193,10 +193,10 @@ describe("Nimn Encoder", function () {
     }); 
 
     function assert(schema,jData, expected, expectedjData){
-        var result = parser.parse(schema, jData);
+        var result = parser.stringify(schema, jData);
         
         expect(result).toEqual(expected);
-        result = parser.parseBack(schema, result);
+        result = parser.parse(schema, result);
         //console.log(JSON.stringify(result, null, 4));
         expect(result).toEqual(expectedjData || jData ); 
     }

@@ -3,7 +3,7 @@ var path = require('path');
 var Benchmark = require('benchmark');
 var suite = new Benchmark.Suite("JSON transformation benchmark");
 
-var parser = require("../src/parser");
+var parser = require("../src/nimn");
 
 var schema = {
   //name : "person",
@@ -106,7 +106,7 @@ var data = [{
   ];
 
 var newSchema = parser.buildSchema(schema,false);
-var nimnData = parser.parse(newSchema, data);
+var nimnData = parser.stringify(newSchema, data);
 //console.log(nimnData)
 var simplifiedForm = nimnData.replace(/\xB6/g,'{');
 simplifiedForm = simplifiedForm.replace(/\xB4/g,'}');
@@ -114,7 +114,7 @@ simplifiedForm = simplifiedForm.replace(/\xBB/g,'[');
 simplifiedForm = simplifiedForm.replace(/\xB9/g,']');
 simplifiedForm = simplifiedForm.replace(/\xB3/g,'|');
 //console.log(simplifiedForm);
-var jsObj = parser.parseBack(newSchema, nimnData);
+var jsObj = parser.parse(newSchema, nimnData);
 
 var jsonStr =  JSON.stringify(data); 
 
@@ -123,14 +123,14 @@ suite
     JSON.stringify(data); 
 })
 .add('nimn Encode', function() {
-  parser.parse(newSchema, data);
+  parser.stringify(newSchema, data);
 })
 
 .add('JSON.parse', function() {
     JSON.parse(jsonStr); 
 })
 .add('nimn Decode', function() {
-  parser.parseBack(newSchema, nimnData);
+  parser.parse(newSchema, nimnData);
 }) 
 
 .on('start',function(){
