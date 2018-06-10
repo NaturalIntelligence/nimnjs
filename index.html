@@ -22,7 +22,7 @@
 
         <script src="static/js/jquery-confirm.min.js"></script>
         <script src="dist/nimn.js"></script>
-        <script src="static/js/nimn-schema-builder.js"></script>
+        <script src="https://cdn.rawgit.com/nimndata/nimnjs-schema-builder/1f50f478/dist/nimn-schema-builder.js"></script>
         <script src="static/js/nimn-dateparser.js"></script>
     </head>
     <body>
@@ -47,7 +47,7 @@
                                 <button id="j2n" style="width: 100%" class="btn btn-primary" type="button">&gt;&gt; NIMN  data</button>
                                 <br>
                                 <br>
-                                <input id="nimnDt" class="" type="checkbox">Compress dates
+                                <input id="nimnDt" class="" type="checkbox" disabled>Compress dates
                                 <br>
                                 <button id="n2j" style="width: 100%" class="btn btn-primary" type="button">&lt;&lt; JSON</button>
                                 <br>
@@ -84,16 +84,15 @@
                                 $('#txtNimnSchema').text(JSON.stringify(schema,null,4));
                             }
 
-                            var nimnEncoder = new nimn();
-                            nimnEncoder.addSchema(schema)
-                            if($("#nimnDt").prop("checked")){
+                            var newSchema = nimn.buildSchema(schema)
+                            /* if($("#nimnDt").prop("checked")){
                                 nimnEncoder.addDataHandler("date",function(val){
                                     return nimnDateparser.parse(val,true,true,true)
                                 },function(val){
                                      return nimnDateparser.parseBack(val,true,true,true)
                                 });
-                            }
-                            var result = nimnEncoder.encode(jObj);
+                            } */
+                            var result = nimn.stringify(newSchema, jObj);
                             $('#txtNimn').val(result);
                             $("#lengthJson")[0].innerText= JSON.stringify(jObj).length;
                             $("#lengthNimn")[0].innerText= result.length;
@@ -123,16 +122,15 @@
                                 });
                             } else{
                                 var schema = JSON.parse(schemaStr);
-                                var nimnDecoder = new nimn();
-                                nimnDecoder.addSchema(schema)
-                                if($("#nimnDt").prop("checked")){
+                                var newSchema = nimn.buildSchema(schema);
+                                /* if($("#nimnDt").prop("checked")){
                                     nimnDecoder.addDataHandler("date",function(val){
                                         return nimnDateparser.parse(val,true,true,true)
                                     },function(val){
                                          return nimnDateparser.parseBack(val,true,true,true)
                                     });
-                                }
-                                var result = nimnDecoder.decode(nimnData);
+                                } */
+                                var result = nimn.parse(nimnData);
                                 $('#txtJson').val(
                                     JSON.stringify(result,null,4)
                                 );
