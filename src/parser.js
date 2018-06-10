@@ -16,7 +16,7 @@ const chars= {
     emptyChar : char(178),
     emptyPremitive:  char(177),//empty Premitive
     
-    boundryChar : char(179),
+    boundaryChar : char(179),
     
     objStart: char(182),
     objEnd: char(180),
@@ -80,12 +80,14 @@ function BooleanType(fName){
     };
 }
 
-function StringType(fName){
+function StringType(fName, shouldSanitize){
     this._name = fName;
     this._type = DataType.STRING;
+    this._sanitize = shouldSanitize ? sanitize : doNothing;
+    this._removeBackspace = shouldSanitize ? removeBackspace : doNothing;
     this._encode = function (v){
         if(v){
-            return santize(v);
+            return this._sanitize(v);
         }else if(v === undefined){
             return chars.missingPremitive;
         }else if(v === null){
@@ -93,7 +95,7 @@ function StringType(fName){
         }else if(v === ""){
             return chars.emptyPremitive;
         }
-        //return stringValues[v] || santize(v);
+        //return stringValues[v] || sanitize(v);
     };
     this._decode = function(v,i){
         if( inRange(v[i])){
@@ -103,7 +105,7 @@ function StringType(fName){
             }
         }else{
             var nextIndex = read(v,i);
-            return { index: nextIndex, value: v.substring(i,nextIndex)};
+            return { index: nextIndex, value: this._removeBackspace( v.substring(i,nextIndex) )};
         }
     };
 }
@@ -162,7 +164,7 @@ function MapType(fName){
                 if( isNimnChar || wasNimnChar ){
                     str += newStr;
                 }else{
-                    str += `${chars.boundryChar}${newStr}`;
+                    str += `${chars.boundaryChar}${newStr}`;
                 }
                 wasNimnChar = isNimnChar;
             }
@@ -181,16 +183,20 @@ function MapType(fName){
             var currentObj = {};
             var str = this._keys[0]._decode( v,i );
             i = str.index;
-            currentObj[ this._keys[ 0 ]._name ] = str.value;
+            if(str.value !== undefined){
+                currentObj[ this._keys[ 0 ]._name ] = str.value;
+            }
             for(var key_i=1; key_i < this._len && v[i] !== chars.objEnd; key_i++){
                 var keyVal ;
-                if(v[i] === chars.boundryChar){
+                if(v[i] === chars.boundaryChar){
                     keyVal = this._keys[ key_i ]._decode( v,i +1 );
                 }else{
                     keyVal = this._keys[ key_i ]._decode( v,i );
                 }
                 i = keyVal.index;
-                currentObj[ this._keys[ key_i ]._name ] = keyVal.value;
+                if(keyVal.value !== undefined){
+                    currentObj[ this._keys[ key_i ]._name ] = keyVal.value;
+                }
             }
             return {
                 index : i+1,
@@ -223,7 +229,7 @@ function ListType(fName){
                 if( isNimnChar || wasNimnChar ){
                     str += newStr;
                 }else{
-                    str += `${chars.boundryChar}${newStr}`;
+                    str += `${chars.boundaryChar}${newStr}`;
                 }
                 wasNimnChar = isNimnChar;
             }
@@ -242,17 +248,19 @@ function ListType(fName){
             var currentArr = [];
             var str = this._item._decode( v,i );
             i = str.index;
-            currentArr.push(str.value);
+            if(str.value !== undefined)
+                currentArr.push(str.value);
             
             for( ; v[i] !== chars.arrEnd ;){
                 var itemVal;
-                if(v[i] === chars.boundryChar){
+                if(v[i] === chars.boundaryChar){
                     itemVal = this._item._decode( v,i +1 );
                 }else{
                     itemVal = this._item._decode( v,i );
                 }
                 i = itemVal.index;
-                currentArr.push(itemVal.value);
+                if(itemVal.value !== undefined)
+                    currentArr.push(itemVal.value);
             }
 
             return {
@@ -265,24 +273,27 @@ function ListType(fName){
         };
 }
 
-function buildSchema(schema){
-    
+function buildSchema(schema, shouldSanitize){
+    if(shouldSanitize !== false){
+        shouldSanitize = true;
+    }
+
     if(schema.type === "map"){
         var mapSchema = new MapType(schema.name);
         mapSchema._keys = [];
         mapSchema._len = schema.detail.length;
         for(var i=0; i < mapSchema._len; i++){
-            mapSchema._keys.push( buildSchema(schema.detail[i]) );
+            mapSchema._keys.push( buildSchema(schema.detail[i], shouldSanitize ) );
         }
         return mapSchema;
     }else if(schema.type === "list"){
         var listSchema = new ListType(schema.name);
-        listSchema._item = buildSchema(schema.detail);
+        listSchema._item = buildSchema(schema.detail, shouldSanitize);
         return listSchema;
     }else if(schema.type === "boolean"){
         return new BooleanType(schema.name);
     }else  if(schema.type === "string"){
-        return new StringType(schema.name);
+        return new StringType(schema.name, shouldSanitize);
     }else{//number
         return new NumberType(schema.name);
     }
@@ -302,7 +313,7 @@ function startsWithNimnChar(str, type){
 
 //var nimnCharRegx = new RegExp("([\xAF\xB0\xB1\xB2\xB3\xB4\xB5\xB6\xB7\xB8\xB9\xBA\xBB])", 'g');
 var nimnCharRegx = new RegExp("[^\]([\xAF-\xBB])", 'g');
-/* function santize(v){
+/* function sanitize(v){
     return v.replace(nimnCharRegx,'\\$1');
     //return v;
 } */
@@ -320,10 +331,10 @@ function read(str,from,to){
     return to;
 }
 
-function santize(str){
+function sanitize(str){
     var newStr = "";
     for(var i=0;i < str.length;i++){
-        if( inRange( str[ i]  ) && str[ i -1 ] !== "\\"){
+        if( inRange( str[ i]  ) ){
             newStr += `\\${str[ i]}`
         }else{
             newStr += str[ i];
@@ -332,6 +343,20 @@ function santize(str){
     return newStr;
 }
 
+function removeBackspace(str){
+    var newStr = "";
+    for(var i=0;i < str.length;i++){
+        if( str[ i ] === "\\" && inRange( str[ i +1 ]  )){
+            continue;
+        }
+        newStr += str[ i ];
+    }
+    return newStr;
+}
+
+function doNothing(a){
+    return a;
+}
 exports.buildSchema = buildSchema;
 exports.parse = parse;
 exports.parseBack = parseBack;
