@@ -192,9 +192,120 @@ describe("Nimn Encoder", function () {
 
     }); 
 
+    it("should append field value separator for dynamic maps ", function () {
+        
+    var schema = {
+        type : "varmap",
+        detail : {
+          type : "map",
+          detail : [{
+              name : "category",
+              type : "string"
+            },{
+              name : "attributes",
+              type : "varmap",
+              detail : {
+                type : "string"
+              }
+            },{
+              name : "bbox",
+              type : "map",
+              detail: [{
+                  name: "x",
+                  type : "number"
+                },{
+                  name: "y",
+                  type : "number"
+                },{
+                  name: "width",
+                  type : "number"
+                },{
+                  name: "height",
+                  type : "number"
+                }
+              ]
+            }
+          ]
+        }
+    }
+      
+    var newSchema = parser.buildSchema(schema);
+
+    var jData = {
+      "face1" : {
+        category : "face",
+        attributes : {
+          gender : "male",
+          age : "32"
+        },
+        bbox : {
+          x : 0,
+          y: 0,
+          width: 100,
+          height: 100
+        }
+      },
+      "face2" : {
+        category : "face",
+        attributes : {
+          gender : "female",
+          age : "31"
+        },
+        bbox : {
+          x : 125,
+          y: 70,
+          width: 70,
+          height: 80
+        }
+      },
+    };
+    
+    var expected = parser.chars.arrStart 
+            + "face1"
+            + parser.chars.fieldNameBoundaryChar 
+            + parser.chars.objStart
+            + "face" 
+            + parser.chars.arrStart
+              + "gender" + parser.chars.fieldNameBoundaryChar + "male"
+              + parser.chars.boundaryChar
+              + "age" + parser.chars.fieldNameBoundaryChar + "32"
+            + parser.chars.arrEnd
+            + parser.chars.objStart
+                + "0" +  parser.chars.boundaryChar
+                + "0" +  parser.chars.boundaryChar
+                + "100" +  parser.chars.boundaryChar
+                + "100" 
+            + parser.chars.objEnd
+            + parser.chars.objEnd
+
+            + "face2"
+            + parser.chars.fieldNameBoundaryChar 
+            + parser.chars.objStart
+            + "face" 
+            + parser.chars.arrStart
+              + "gender" + parser.chars.fieldNameBoundaryChar + "female"
+              + parser.chars.boundaryChar
+              + "age" + parser.chars.fieldNameBoundaryChar + "31"
+            + parser.chars.arrEnd
+            + parser.chars.objStart
+                + "125" +  parser.chars.boundaryChar
+                + "70" +  parser.chars.boundaryChar
+                + "70" +  parser.chars.boundaryChar
+                + "80" 
+            + parser.chars.objEnd
+            + parser.chars.objEnd
+        + parser.chars.arrEnd;
+    
+    assert(newSchema,jData, expected);
+
+    assert(newSchema,{}, parser.chars.emptyChar);
+    assert(newSchema,null, parser.chars.nilChar);
+
+  }); 
+
     function assert(schema,jData, expected, expectedjData){
         var result = parser.stringify(schema, jData);
-        
+        //console.log(result)
         expect(result).toEqual(expected);
         result = parser.parse(schema, result);
         //console.log(JSON.stringify(result, null, 4));
