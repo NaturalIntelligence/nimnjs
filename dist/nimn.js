@@ -5,7 +5,7 @@ var char = function (a){
 
 var range = {
     start : char(175),
-    end : char(187),
+    end : char(188),
 }
 const chars= {
     nilChar : char(176),
@@ -18,6 +18,7 @@ const chars= {
     emptyPremitive:  char(177),//empty Premitive
     
     boundaryChar : char(179),
+    fieldNameBoundaryChar : char(188),
     
     objStart: char(182),
     objEnd: char(180),
@@ -32,8 +33,9 @@ var DataType = {
     BOOLEAN : 1,
     LIST : 2,
     MAP : 3,
-    STRING : 4,
-    NUMBER : 5,
+    VARMAP : 4,
+    STRING : 5,
+    NUMBER : 6,
 }
 
 /* var decodeNimnChar = {};
@@ -100,6 +102,7 @@ function StringType(fName, defaultVal, shouldSanitize){
     this._decodeChar[char(177)] = "";
 
     this._encode = function (v){
+        v = "" + v;
         if(v){
             return this._sanitize(v);
         }else if(v === undefined){
@@ -292,6 +295,82 @@ function ListType(fName){
         };
 }
 
+function VarMapType(fName){
+    this._name = fName;
+    this._type = DataType.VARMAP;
+    this._item = null;
+    this._encode = function (v){
+        if(v === undefined){
+            return chars.missingChar;
+        }else if(v === null){
+            return chars.nilChar;
+        }else if(Object.keys(v).length === 0){
+            return chars.emptyChar;
+        }else {
+            var keys = Object.keys(v);
+            var len = keys.length;
+            var str =  this._item._encode( v[ keys[0] ] );
+            var wasNimnChar = startsWithNimnChar(str,this._item);
+            str = keys[0] + chars.fieldNameBoundaryChar + str;
+
+            for(var i=1; i < len; i++){
+                var newStr = this._item._encode( v[ keys[i] ] );
+                var isNimnChar = startsWithNimnChar(newStr,this._item);
+                newStr = keys[i] + chars.fieldNameBoundaryChar + newStr;
+
+                if( wasNimnChar ){
+                    str += newStr;
+                }else{
+                    str += `${chars.boundaryChar}${newStr}`;
+                }
+                wasNimnChar = isNimnChar;
+            }
+            return `${chars.arrStart}${str}${chars.arrEnd}`;
+        }
+    };
+    this._decode = function(v,i){
+        if(v[i] === chars.emptyChar){
+            return {index: i+1, value: {}};
+        }else if(v[i] === chars.missingChar){
+            return {index: i+1, value: undefined };
+        }else if(v[i] === chars.nilChar){
+            return {index: i+1, value: null }
+        }else if(v[i] === chars.arrStart){
+            i++;
+            var currentObj = {};
+            //get the index of first chars.fieldNameBoundaryChar after i
+            var indexOfFieldSeparator = read(v,i);
+            var fieldName = v.substring( i, indexOfFieldSeparator );
+            i = indexOfFieldSeparator + 1;
+            var str = this._item._decode( v,i );
+            i = str.index;
+            if(str.value !== undefined)
+                currentObj[fieldName] = str.value;
+            
+            for( ; v[i] !== chars.arrEnd ;){
+                var itemVal;
+                if(v[i] === chars.boundaryChar){
+                    i++;
+                }
+                var indexOfFieldSeparator = read(v,i);
+                var fieldName = v.substring( i, indexOfFieldSeparator );
+                i = indexOfFieldSeparator + 1;
+                itemVal = this._item._decode( v,i );
+                i = itemVal.index;
+                if(itemVal.value !== undefined)
+                    currentObj[fieldName] = itemVal.value;
+            }
+
+            return {
+                index : i+1,
+                value: currentObj
+            }
+        }else{
+            throw Error("Invalid character at position " + i);
+        }
+        };
+}
+
 function buildSchema(schema, shouldSanitize){
     if(shouldSanitize !== false){
         shouldSanitize = true;
@@ -307,6 +386,10 @@ function buildSchema(schema, shouldSanitize){
         return mapSchema;
     }else if(schema.type === "list"){
         var listSchema = new ListType(schema.name);
+        listSchema._item = buildSchema(schema.detail, shouldSanitize);
+        return listSchema;
+    }else if(schema.type === "varmap"){
+        var listSchema = new VarMapType(schema.name);
         listSchema._item = buildSchema(schema.detail, shouldSanitize);
         return listSchema;
     }else if(schema.type === "boolean"){
@@ -327,7 +410,7 @@ function parseBack(schema, nimnData){
 }
 
 function startsWithNimnChar(str, type){
-    return type._type < 4 || ( str.length === 1 && inRange(str) );
+    return type._type < 5 || ( str.length === 1 && inRange(str) );
 }
 
 //var nimnCharRegx = new RegExp("([\xAF\xB0\xB1\xB2\xB3\xB4\xB5\xB6\xB7\xB8\xB9\xBA\xBB])", 'g');
