@@ -1,6 +1,6 @@
 {
   "name": "nimnjs",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "Schema aware compression of JS object/JSON data. 60% more compressed than json",
   "main": "src/nimn.js",
   "scripts": {
@@ -27,7 +27,7 @@
   "bugs": {
     "url": "https://github.com/nimndata/nimnjs/issues"
   },
-  "homepage": "https://github.com/nimndata/nimnjs",
+  "homepage": "http://nimn.in/nimnjs",
   "dependencies": {
     "nimn-date-parser": "^1.0.0",
     "nimn_schema_builder": "^1.0.0"
