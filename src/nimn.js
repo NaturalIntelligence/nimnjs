@@ -101,6 +101,7 @@ function StringType(fName, defaultVal, shouldSanitize){
     this._decodeChar[char(177)] = "";
 
     this._encode = function (v){
+        v = "" + v;
         if(v){
             return this._sanitize(v);
         }else if(v === undefined){
