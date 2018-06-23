@@ -130,7 +130,7 @@
                                          return nimnDateparser.parseBack(val,true,true,true)
                                     });
                                 } */
-                                var result = nimn.parse(nimnData);
+                                var result = nimn.parse(newSchema, nimnData);
                                 $('#txtJson').val(
                                     JSON.stringify(result,null,4)
                                 );
