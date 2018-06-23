@@ -1,10 +1,10 @@
 # nimnjs-node
 JS implementation of nimn specification. Highly Compressed JS object/JSON. 60% or more compressed than JSON, 40% or more compressed than msgpack
 
-[![Known Vulnerabilities](https://snyk.io/test/github/nimndata/nimnjs-node//badge.svg)](https://snyk.io/test/github/nimndata/nimnjs-node/) 
-[![Travis ci Build Status](https://travis-ci.org/nimndata/nimnjs-node.svg?branch=master)](https://travis-ci.org/nimndata/nimnjs-node/) 
-[![Coverage Status](https://coveralls.io/repos/github/nimndata/nimnjs-node/badge.svg?branch=master)](https://coveralls.io/github/nimndata/nimnjs-node/?branch=master)
-[<img src="https://img.shields.io/badge/Try-me-blue.svg?colorA=FFA500&colorB=0000FF" alt="Try me"/>](https://nimndata.github.io/nimnjs-node/)
+[![Known Vulnerabilities](https://snyk.io/test/github/nimndata/nimnjs//badge.svg)](https://snyk.io/test/github/nimndata/nimnjs/) 
+[![Travis ci Build Status](https://travis-ci.org/nimndata/nimnjs.svg?branch=master)](https://travis-ci.org/nimndata/nimnjs/) 
+[![Coverage Status](https://coveralls.io/repos/github/nimndata/nimnjs/badge.svg?branch=master)](https://coveralls.io/github/nimndata/nimnjs/?branch=master)
+[<img src="https://img.shields.io/badge/Try-me-blue.svg?colorA=FFA500&colorB=0000FF" alt="Try me"/>](https://nimndata.github.io/nimnjs/)
 [![Twitter URL](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/nimnformat)
 
 <a href="https://www.patreon.com/bePatron?u=9531404" data-patreon-widget-type="become-patron-button"><img src="https://c5.patreon.com/external/logo/become_a_patron_button.png" alt="Become a Patron!" width="200" /></a>
@@ -89,6 +89,15 @@ var nimnDataString = nimn.stringify(schema, jData);
 var result = nimn.parse(schema, nimnDataString);
 expect(result).toEqual(jData); 
 ```
+
+**Supported type**
+
+* *map* : Fixed key value pairs
+* *varmap* : Variable key value pairs where the values of any key have same structure
+* *list* : list of similar values
+* *boolean* : true / false
+* *string* : Any valid string
+* *number* : Any valid number
 
 Include [dist](dist/nimn.js) in your HTML to use it in browser.
 
