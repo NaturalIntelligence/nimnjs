@@ -7,7 +7,7 @@ var range = {
     start : char(175),
     end : char(188),
 }
-const chars= {
+var chars= {
     nilChar : char(176),
     nilPremitive : char(175),
 
