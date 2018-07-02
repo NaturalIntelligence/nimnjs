@@ -1,4 +1,5 @@
 var parser = require("../src/nimn"); 
+var chars = require("../src/common").chars; 
 
 describe("Nimn Encoder", function () {
 
@@ -54,8 +55,8 @@ describe("Nimn Encoder", function () {
                 "address" : "I'll not tell you",
                 hobbies : [ 
                     null
-                    , "not reading "+ parser.chars.missingPremitive +" book"
-                    , "watching \\"+ parser.chars.nilPremitive +" movie"
+                    , "not reading "+ chars.missingPremitive +" book"
+                    , "watching \\"+ chars.nilPremitive +" movie"
                 ],
                 project : {
                     title : "nimn",
@@ -72,38 +73,38 @@ describe("Nimn Encoder", function () {
             }
         ];
         
-        var expected = parser.chars.arrStart 
-                + parser.chars.objStart 
-                    + "somename" + parser.chars.boundaryChar
+        var expected = chars.arrStart 
+                + chars.objStart 
+                    + "somename" + chars.boundaryChar
                     + "32" 
-                    + parser.chars.yes // Order of the keys should be maintained as per schema not the data
+                    + chars.yes // Order of the keys should be maintained as per schema not the data
                     + "I'll not tell you"
-                    + parser.chars.arrStart
-                        + parser.chars.nilPremitive
-                        + "not reading \\"+ parser.chars.missingPremitive +" book"  +  parser.chars.boundaryChar
-                        + "watching \\\\"+ parser.chars.nilPremitive +" movie"
-                    + parser.chars.arrEnd
-                    + parser.chars.objStart 
+                    + chars.arrStart
+                        + chars.nilPremitive
+                        + "not reading \\"+ chars.missingPremitive +" book"  +  chars.boundaryChar
+                        + "watching \\\\"+ chars.nilPremitive +" movie"
+                    + chars.arrEnd
+                    + chars.objStart 
                             + "nimn" //No boundary char if next field is nimn char
-                            +  parser.chars.missingPremitive
+                            +  chars.missingPremitive
                             + "rocking" //last field can not have boundary char
-                    + parser.chars.objEnd
-                + parser.chars.objEnd
-                + parser.chars.emptyChar
-                + parser.chars.objStart 
+                    + chars.objEnd
+                + chars.objEnd
+                + chars.emptyChar
+                + chars.objStart 
                     + "somename" 
-                    + parser.chars.missingPremitive
-                    + parser.chars.nilPremitive // Order of the keys should be maintained as per schema not the data
+                    + chars.missingPremitive
+                    + chars.nilPremitive // Order of the keys should be maintained as per schema not the data
                     + "I'll not tell you"
-                    + parser.chars.nilChar
-                    + parser.chars.nilChar
-                + parser.chars.objEnd
-            + parser.chars.arrEnd;
+                    + chars.nilChar
+                    + chars.nilChar
+                + chars.objEnd
+            + chars.arrEnd;
         
         assert(newSchema,jData, expected);
 
-        assert(newSchema,[], parser.chars.emptyChar);
-        assert(newSchema,null, parser.chars.nilChar);
+        assert(newSchema,[], chars.emptyChar);
+        assert(newSchema,null, chars.nilChar);
 
     }); 
 
@@ -172,23 +173,23 @@ describe("Nimn Encoder", function () {
             }
         };
         
-        var expected = parser.chars.objStart 
+        var expected = chars.objStart 
                 + "somename" 
-                + parser.chars.missingPremitive
-                + parser.chars.missingPremitive
-                + parser.chars.missingPremitive
-                + parser.chars.nilChar
-                + parser.chars.objStart 
+                + chars.missingPremitive
+                + chars.missingPremitive
+                + chars.missingPremitive
+                + chars.nilChar
+                + chars.objStart 
                         + "nimn" //No boundary char if next field is nimn char
-                        +  parser.chars.missingPremitive
+                        +  chars.missingPremitive
                         + "rocking" //last field can not have boundary char
-                + parser.chars.objEnd
-            + parser.chars.objEnd;
+                + chars.objEnd
+            + chars.objEnd;
         
         assert(newSchema,jData, expected, expectedjData);
 
-        assert(newSchema,{}, parser.chars.emptyChar);
-        assert(newSchema,null, parser.chars.nilChar);
+        assert(newSchema,{}, chars.emptyChar);
+        assert(newSchema,null, chars.nilChar);
 
     }); 
 
@@ -260,46 +261,46 @@ describe("Nimn Encoder", function () {
       },
     };
     
-    var expected = parser.chars.arrStart 
+    var expected = chars.arrStart 
             + "face1"
-            + parser.chars.fieldNameBoundaryChar 
-            + parser.chars.objStart
+            + chars.fieldNameBoundaryChar 
+            + chars.objStart
             + "face" 
-            + parser.chars.arrStart
-              + "gender" + parser.chars.fieldNameBoundaryChar + "male"
-              + parser.chars.boundaryChar
-              + "age" + parser.chars.fieldNameBoundaryChar + "32"
-            + parser.chars.arrEnd
-            + parser.chars.objStart
-                + "0" +  parser.chars.boundaryChar
-                + "0" +  parser.chars.boundaryChar
-                + "100" +  parser.chars.boundaryChar
+            + chars.arrStart
+              + "gender" + chars.fieldNameBoundaryChar + "male"
+              + chars.boundaryChar
+              + "age" + chars.fieldNameBoundaryChar + "32"
+            + chars.arrEnd
+            + chars.objStart
+                + "0" +  chars.boundaryChar
+                + "0" +  chars.boundaryChar
+                + "100" +  chars.boundaryChar
                 + "100" 
-            + parser.chars.objEnd
-            + parser.chars.objEnd
+            + chars.objEnd
+            + chars.objEnd
 
             + "face2"
-            + parser.chars.fieldNameBoundaryChar 
-            + parser.chars.objStart
+            + chars.fieldNameBoundaryChar 
+            + chars.objStart
             + "face" 
-            + parser.chars.arrStart
-              + "gender" + parser.chars.fieldNameBoundaryChar + "female"
-              + parser.chars.boundaryChar
-              + "age" + parser.chars.fieldNameBoundaryChar + "31"
-            + parser.chars.arrEnd
-            + parser.chars.objStart
-                + "125" +  parser.chars.boundaryChar
-                + "70" +  parser.chars.boundaryChar
-                + "70" +  parser.chars.boundaryChar
+            + chars.arrStart
+              + "gender" + chars.fieldNameBoundaryChar + "female"
+              + chars.boundaryChar
+              + "age" + chars.fieldNameBoundaryChar + "31"
+            + chars.arrEnd
+            + chars.objStart
+                + "125" +  chars.boundaryChar
+                + "70" +  chars.boundaryChar
+                + "70" +  chars.boundaryChar
                 + "80" 
-            + parser.chars.objEnd
-            + parser.chars.objEnd
-        + parser.chars.arrEnd;
+            + chars.objEnd
+            + chars.objEnd
+        + chars.arrEnd;
     
     assert(newSchema,jData, expected);
 
-    assert(newSchema,{}, parser.chars.emptyChar);
-    assert(newSchema,null, parser.chars.nilChar);
+    assert(newSchema,{}, chars.emptyChar);
+    assert(newSchema,null, chars.nilChar);
 
   }); 
 
