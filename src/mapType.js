@@ -2,7 +2,6 @@ var DataType = require("./common").DataType;
 var chars = require("./common").chars;
 var startsWithNimnChar = require("./common").startsWithNimnChar;
 
-
 function MapType(fName){
     this._name = fName;
     this._type = DataType.MAP;
@@ -61,6 +60,9 @@ MapType.prototype._decode = function(v,i){
                 currentObj[ this._keys[ key_i ]._name ] = keyVal.value;
             }
         }
+        if(v[i] !== chars.objEnd){
+            i = skipUntilThisObjectEnds(v, i);
+        }
         return {
             index : i+1,
             value: currentObj
@@ -69,5 +71,21 @@ MapType.prototype._decode = function(v,i){
         throw Error("Invalid character at position " + i);
     }
 };
+
+
+var skipUntilThisObjectEnds = function(str, from,to){
+    to = to || str.length;
+    var count = 0;
+    for(;from < to; from++){
+        if(chars.objStart === str[ from ]) {
+            count ++;
+        }else if( chars.objEnd === str[ from ] && str[ from -1 ] !== "\\" ){
+            if(count === 0) return from;
+            else count --;
+        }
+    }
+    return from;
+}
+
 
 module.exports = MapType;

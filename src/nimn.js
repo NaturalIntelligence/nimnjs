@@ -1,11 +1,3 @@
-
-var char = require("./common").char;
-var inRange = require("./common").inRange;
-var startsWithNimnChar = require("./common").startsWithNimnChar;
-var read = require("./common").read;
-var sanitize = require("./common").sanitize;
-var removeBackspace = require("./common").removeBackspace;
-
 /* var decodeNimnChar = {};
 decodeNimnChar[char(175)] = null;
 decodeNimnChar[char(184)] = undefined;
