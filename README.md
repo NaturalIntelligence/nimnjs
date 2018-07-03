@@ -90,6 +90,15 @@ var result = nimn.parse(schema, nimnDataString);
 expect(result).toEqual(jData); 
 ```
 
+### Flexibility
+
+* You can use old schema to parse nimn data created with old or new schema.
+* You can use new schema to parse nimn data created with old or new schema.
+
+Note that the fields must be added or deleted in the end of the map (object)
+
+* Fields name can be chaged in the schema used for encoding and decoding. But their type and order must not be changed.
+
 **Supported type**
 
 * *map* : Fixed key value pairs
