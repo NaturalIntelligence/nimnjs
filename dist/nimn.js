@@ -441,8 +441,10 @@ StringType.prototype._encode = function (v){
             return chars.nilPremitive;
         }else if(v === ""){
             return chars.emptyPremitive;
+        }else{
+            v = "" + v;
+            return this._sanitize(v);
         }
-        //return stringValues[v] || sanitize(v);
     };
 StringType.prototype._decode = function(v,i){
         if( inRange(v[i])){
