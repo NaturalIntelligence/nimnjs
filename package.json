@@ -30,16 +30,18 @@
   "homepage": "http://nimn.in/nimnjs",
   "dependencies": {
     "nimn-date-parser": "^1.0.0",
-    "nimn_schema_builder": "^1.0.0"
+    "nimn_schema_builder": "^1.1.0",
+    "pbf": "^3.1.0",
+    "protocol-buffers": "^4.1.0"
   },
   "devDependencies": {
     "benchmark": "^2.1.4",
     "browserify": "^15.1.0",
+    "cbor": "^4.1.1",
     "istanbul": "^0.4.5",
-    "jasmine": "^3.0.0",
+    "jasmine": "^3.3.0",
     "jasmine-core": "^2.99.1",
-    "cbor": "^4.0.0",
-    "notepack.io": "^2.1.2",
-    "msgpack": "^1.0.2"
+    "msgpack": "^1.0.2",
+    "notepack.io": "^2.1.3"
   }
 }
