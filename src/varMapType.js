@@ -1,45 +1,41 @@
-var DataType = require("./common").DataType;
-var chars = require("./common").chars;
-var startsWithNimnChar = require("./common").startsWithNimnChar;
-var read = require("./common").read;
+var mapType = require("./mapType");
 
-function VarMapType(fName){
-    this._name = fName;
-    this._type = DataType.VARMAP;
-    this._item = null;
+function VarMapType(f_id, keyType, valueType){
+    this._id = f_id;
+    
+    this._map = new MapType(id);
+    map._keys = {
+        key : keyType,
+        value : valueType
+    };
+    this._fieldDetailBytes = Buffer.from( buildFieldDetailBytes(f_id, 2) );
 }
 
 VarMapType.prototype._encode = function (v){
-    if(v === undefined){
-        return chars.missingChar;
-    }else if(v === null){
-        return chars.nilChar;
-    }else if(Object.keys(v).length === 0){
-        return chars.emptyChar;
+    if(!v){
+        return [];
     }else {
         var keys = Object.keys(v);
-        var len = keys.length;
-        var str =  this._item._encode( v[ keys[0] ] );
-        var wasNimnChar = startsWithNimnChar(str,this._item);
-        str = keys[0] + chars.fieldNameBoundaryChar + str;
-
-        for(var i=1; i < len; i++){
-            var newStr = this._item._encode( v[ keys[i] ] );
-            var isNimnChar = startsWithNimnChar(newStr,this._item);
-            newStr = keys[i] + chars.fieldNameBoundaryChar + newStr;
-
-            if( wasNimnChar ){
-                str += newStr;
-            }else{
-                str += `${chars.boundaryChar}${newStr}`;
-            }
-            wasNimnChar = isNimnChar;
+        if( keys.length === 0){
+            return [];
+        }else{
+        var byteArray = [];
+        var len = v.length;
+        for(var i=0; i < keys.length; i++){    
+            this._fieldDetailBytes
+            this._map.encode( {
+                key : keys[i],
+                value : v[ keyName ]
+            } )
+            Buffer.from([this._fieldDetailBytes]), ... 
+            
         }
-        return `${chars.arrStart}${str}${chars.arrEnd}`;
+
+        return byteArray;
     }
 };
 
-VarMapType.prototype._decode = function(v,i){
+/* VarMapType.prototype._decode = function(v,i){
     if(v[i] === chars.emptyChar){
         return {index: i+1, value: {}};
     }else if(v[i] === chars.missingChar){
@@ -79,7 +75,7 @@ VarMapType.prototype._decode = function(v,i){
     }else{
         throw Error("Invalid character at position " + i);
     }
-};
+}; */
 
 
 module.exports = VarMapType;

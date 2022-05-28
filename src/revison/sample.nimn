@@ -1,0 +1,24 @@
+Status {
+    m: married
+    b: bechlor
+    d: divorced
+}
+
+Project {
+    1. string name //this is the comment
+    2. string desc
+}
+
+Book {
+    1. string name //this is the comment
+}
+
+Person {
+    1. string name //this is the comment
+    2. number age
+    3. boolean male
+    4. list<string> interests
+    5. map<string, Project> projects
+    6. Book myBook
+    7. Status status
+}

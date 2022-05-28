@@ -1,0 +1,20 @@
+message Data {
+    optional double length = 1;
+    optional double dbl = 1;
+    repeated string text = 3;
+}
+
+message Person {
+    required string user_name        = 1;
+    optional int64  favourite_number = 2;
+    required Data data = 3;
+    repeated string interests        = 4; 
+    required bool male        = 5; 
+    optional int64  dt = 6;
+    enum Size {
+        SMALL = 0;
+        BIG = 1;
+    }
+    required Size  size = 7;
+    double salary = 8;
+}

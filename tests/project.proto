@@ -1,0 +1,14 @@
+message ProjectDetail{
+    string name = 1;
+    int32 age = 2;
+    bool male = 3;
+}
+
+message Person {
+    string name = 2;
+    repeated ProjectDetail projectDetail = 1;
+}
+
+message People {
+    repeated Person person = 1;
+}

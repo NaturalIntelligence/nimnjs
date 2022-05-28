@@ -1,0 +1,11 @@
+enum Frequency {
+    LOW = 1;
+    MEDIUM = 2;
+    HIGH = 3;
+}
+
+message Signals {
+    string name = 1;
+    map<string, string> features = 2;
+    float salary = 3;
+}
