@@ -1,6 +1,6 @@
 {
   "name": "nimnjs",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "Schema aware compression of JS object/JSON data. 60% more compressed than json",
   "main": "src/nimn.js",
   "scripts": {
@@ -22,12 +22,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/nimndata/nimnjs.git"
+    "url": "https://github.com/NaturalIntelligence/nimnjs.git"
   },
   "bugs": {
-    "url": "https://github.com/nimndata/nimnjs/issues"
+    "url": "https://github.com/NaturalIntelligence/nimnjs/issues"
   },
-  "homepage": "http://nimn.in/nimnjs",
+  "homepage": "https://amitkumargupta.work/nimn/",
   "dependencies": {
     "nimn-date-parser": "^1.0.0",
     "nimn_schema_builder": "^1.1.0"
