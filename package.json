@@ -27,7 +27,7 @@
   "bugs": {
     "url": "https://github.com/NaturalIntelligence/nimnjs/issues"
   },
-  "homepage": "https://amitkumargupta.work/nimn/",
+  "homepage": "https://solothought.com/nimn/",
   "dependencies": {
     "nimn-date-parser": "^1.0.0",
     "nimn_schema_builder": "^1.1.0"
